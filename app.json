@@ -2,14 +2,18 @@
   "expo": {
     "name": "sudoku-for-all",
     "slug": "sudoku-for-all",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "sudokuforall",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kishannareshpal.sudoku",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -37,6 +41,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5d542005-89e3-49c2-beec-1f32b17b9d99"
+      }
+    },
+    "owner": "kishannareshpal"
   }
 }

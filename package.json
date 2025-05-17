@@ -1,14 +1,45 @@
 {
+  "private": true,
   "name": "sudoku-for-all",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "//engines-comment": "Enforces the use of NPM as the package manager and NodeJS LTS.",
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10",
+    "yarn": "Please use NPM (from the latest NodeJS LTS) instead of yarn to manage your dependencies. Thank you"
+  },
   "scripts": {
     "start": "expo start",
-    "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
-    "lint": "expo lint"
+    "start:clear": "expo start --clear",
+    "//build:comment": "Learn more about builds in this project by reading the Builds section of our README document.",
+    "eas": "npx eas-cli@latest",
+    "build:with-eas:all": "npm run eas -- build",
+    "build:with-eas:ios": "npm run eas -- build -p ios",
+    "build:with-eas:android": "npm run eas -- build -p android",
+    "build:store": "npm run build:with-eas:all -- -e production --no-wait",
+    "build:store:ios": "npm run build:with-eas:ios -- -e production --no-wait",
+    "build:store:android": "npm run build:with-eas:android -- -e production --no-wait",
+    "build:preview": "npm run build:with-eas:all -- -e preview",
+    "build:preview:ios": "npm run build:with-eas:ios -- -e preview",
+    "build:preview:android": "npm run build:with-eas:android -- -e preview",
+    "build:preview:ios:simulator": "npm run build:with-eas:ios -- -e preview:simulator",
+    "build:development": "npm run build:with-eas:all -- -e development",
+    "build:development:ios": "npm run build:with-eas:ios -- -e development",
+    "build:development:android": "npm run build:with-eas:android -- -e development",
+    "build:development:ios:simulator": "npm run build:with-eas:ios -- -e development:simulator",
+    "doctor": "npx expo-doctor@latest",
+    "expo:gen:typings": "npx expo customize tsconfig.json",
+    "pretest": "npm run expo:gen:typings",
+    "test": "jest --color",
+    "test:watch": "npm run test -- --watch",
+    "test:ci": "npm run test --runInBand",
+    "precompile": "npm run expo:gen:typings",
+    "compile": "tsc --noEmit --skipLibCheck",
+    "prelint": "npm run expo:gen:typings",
+    "lint": "expo lint",
+    "lint:fix": "npm run lint -- --fix",
+    "prepare": "husky"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
@@ -18,6 +49,7 @@
     "expo": "~53.0.9",
     "expo-blur": "~14.1.4",
     "expo-constants": "~17.1.6",
+    "expo-dev-client": "~5.1.8",
     "expo-font": "~13.3.1",
     "expo-haptics": "~14.1.4",
     "expo-image": "~2.1.7",
@@ -41,9 +73,14 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.0.10",
-    "typescript": "~5.8.3",
     "eslint": "^9.25.0",
-    "eslint-config-expo": "~9.2.0"
+    "eslint-config-expo": "~9.2.0",
+    "husky": "^9.1.7",
+    "typescript": "~5.8.3"
   },
-  "private": true
+  "lint-staged": {
+    "**/*.{ts,tsx,js}": [
+      "npm run lint:fix"
+    ]
+  }
 }
