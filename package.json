@@ -46,6 +46,8 @@
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
+    "@shopify/react-native-skia": "v2.0.0-next.4",
+    "array-fns": "^1.0.0",
     "expo": "~53.0.9",
     "expo-blur": "~14.1.4",
     "expo-constants": "~17.1.6",
@@ -69,8 +71,8 @@
     "react-native-screens": "~4.10.0",
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
-    "zustand": "^5.0.4",
-    "@shopify/react-native-skia": "v2.0.0-next.4"
+    "use-immer": "^0.11.0",
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
