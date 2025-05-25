@@ -1,8 +1,7 @@
-import { Gesture, GestureDetector, Pressable, PressableProps, State, } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { PropsWithChildren } from "react";
 import { ViewProps } from "react-native";
-import { setShouldAnimateExitingForTag } from "react-native-reanimated/lib/typescript/core";
+import { Gesture, GestureDetector, Pressable, PressableProps } from 'react-native-gesture-handler';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 export type PressableScaleProps = PropsWithChildren<Omit<PressableProps, 'style'> & {
     /**
