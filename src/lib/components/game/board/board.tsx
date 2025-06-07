@@ -1,30 +1,62 @@
-import { BOARD_OUTLINE_WIDTH, COLUMNS_COUNT, ROWS_COUNT } from "@/lib/constants/board";
-import { StyleSheet, View } from "react-native";
-import { useState } from "react";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { Point } from "@/lib/shared-types";
-import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
-import { gameplayStoreState } from "@/lib/store/gameplay-store";
 import { useBoardCanvasContext } from "@/lib/components/game/board/board-context";
 import { BoardWrapper } from "@/lib/components/game/board/board-wrapper";
 import { Cell } from "@/lib/components/game/board/cell/cell";
 import { CursorCell } from "@/lib/components/game/board/cell/cursor-cell";
+import { COLUMNS_COUNT, ROWS_COUNT } from "@/lib/constants/board";
+import { CellHelper } from "@/lib/helpers/cell-helper";
+import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
+import { Point, Puzzle } from "@/lib/shared-types";
+import { StyleSheet, View } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { BoardCellDivisions } from "./board-cell-divisions";
 
-export const Board = () => {
+type BoardProps = {
+    puzzle: Puzzle
+}
+
+export const Board = (
+    {puzzle}: BoardProps
+) => {
     return (
         <View style={{flex: 1}}>
             <BoardWrapper>
-                <BoardContent/>
+                <PuzzleScene puzzle={puzzle}/>
             </BoardWrapper>
         </View>
     )
 }
 
-const BoardContent = () => {
+type PuzzleSceneProps = {
+    puzzle: Puzzle
+}
+
+const PuzzleScene = ({puzzle}: PuzzleSceneProps) => {
     const boardCanvas = useBoardCanvasContext();
 
-    const [notes, setNotes] = useState<number[]>([]);
-    const [value, setValue] = useState<number>(0);
+    const panGesture = Gesture
+        .Pan()
+        .averageTouches(true)
+        .onBegin((event) => {
+            handleCursorMovementOnTouch({x: event.x, y: event.y})
+        })
+        .onChange((event) => {
+            handleCursorMovementOnTouch({x: event.x, y: event.y})
+        })
+        .runOnJS(true);
+
+    const handleCursorMovementOnTouch = (touchedPoint: Point) => {
+        const newGridPosition = GridPositionHelper.createFromPoint(
+            touchedPoint,
+            boardCanvas.cellLength,
+        )
+
+        if (!newGridPosition) {
+            // Out of bounds, do nothing
+            return;
+        }
+
+        CellHelper.moveCursorTo(newGridPosition);
+    }
 
     const renderGrid = () => {
         const rows = [];
@@ -33,13 +65,17 @@ const BoardContent = () => {
             const columnCells = [];
 
             for (let colIndex = 0; colIndex < COLUMNS_COUNT; colIndex++) {
+                const playerValue = puzzle.player[rowIndex][colIndex];
+                const givenValue = puzzle.given[rowIndex][colIndex];
+                const notesValue = puzzle.notes[rowIndex][colIndex] ?? [];
+
                 columnCells.push(
                     <Cell
                         key={rowIndex + '-' + colIndex}
-                        row={rowIndex}
                         col={colIndex}
-                        value={value}
-                        notes={notes}
+                        row={rowIndex}
+                        value={givenValue || playerValue}
+                        notes={notesValue}
                     />
                 );
             }
@@ -58,30 +94,12 @@ const BoardContent = () => {
         );
     }
 
-    const tapGesture = Gesture
-        .Pan()
-        .averageTouches(true)
-        .onBegin((event) => {
-            handleCursorMovementOnTouch({x: event.x, y: event.y})
-        })
-        .onChange((event) => {
-            handleCursorMovementOnTouch({x: event.x, y: event.y})
-        })
-        .runOnJS(true);
-
-    const handleCursorMovementOnTouch = (touchedPoint: Point) => {
-        const newGridPosition = GridPositionHelper.createFromPoint(
-            touchedPoint,
-            boardCanvas.cellLength,
-        )
-
-        gameplayStoreState().moveCursorTo(newGridPosition);
-    }
-
     return (
-        <GestureDetector gesture={tapGesture}>
+        <GestureDetector gesture={panGesture}>
             <View style={styles.container}>
                 {renderGrid()}
+
+                <BoardCellDivisions/>
 
                 <CursorCell/>
             </View>
@@ -91,20 +109,16 @@ const BoardContent = () => {
 
 const styles = StyleSheet.create({
     container: {
+        position: 'relative',
         flexShrink: 1,
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        outlineWidth: BOARD_OUTLINE_WIDTH,
-        outlineColor: '#3D2E00'
+        flexDirection: 'column',
     },
 
     gridContainer: {
-        flex: 1,
-        flexDirection: 'row'
+        flexDirection: 'column',
     },
 
     gridRow: {
-        flex: 1,
-        flexDirection: 'column'
+        flexDirection: 'row',
     }
 })

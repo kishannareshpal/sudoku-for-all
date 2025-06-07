@@ -1,12 +1,12 @@
-import { BOARD_OUTLINE_WIDTH } from "@/lib/constants/board";
-import { StyleSheet } from "react-native";
+import { CELL_OUTLINE_WIDTH } from "@/lib/constants/board";
+import { StyleSheet, View } from "react-native";
 import { useGameplayStore } from "@/lib/store/gameplay-store";
 import { useBoardCanvasContext } from "@/lib/components/game/board/board-context";
 import { BaseCell } from "@/lib/components/game/board/cell/base-cell";
 
 export const CursorCell = () => {
     const boardCanvas = useBoardCanvasContext();
-    const {cursorGridPosition} = useGameplayStore();
+    const cursorGridPosition = useGameplayStore((state) => state.cursorGridPosition);
 
     // TODO: Haptic feedback
     // useStoreSubscription(
@@ -35,15 +35,22 @@ export const CursorCell = () => {
                     left: boardCanvas.cellLength * cursorGridPosition.col,
                 }
             ]}
-        />
+        >
+            <View style={styles.cursorBackground}/>
+        </BaseCell>
     )
 }
 
 const styles = StyleSheet.create({
     cursor: {
         position: 'absolute',
-        backgroundColor: '#221A00',
-        outlineWidth: BOARD_OUTLINE_WIDTH,
+        outlineWidth: CELL_OUTLINE_WIDTH,
         outlineColor: '#F0B719'
+    },
+    cursorBackground: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#221A00',
+        zIndex: -1
     }
 })

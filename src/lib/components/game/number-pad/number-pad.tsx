@@ -1,19 +1,49 @@
-import { StyleSheet, View } from "react-native";
 import { NumberPadButton } from "@/lib/components/game/number-pad/number-pad-button";
-import Animated, { Easing, useAnimatedStyle, withSpring, withTiming } from "react-native-reanimated";
-import { useGameplayStore } from "@/lib/store/gameplay-store";
+import { CellHelper } from "@/lib/helpers/cell-helper";
+import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
+import { useStoreSubscription } from "@/lib/hooks/use-store-subscription";
+import { BoardNotesGridNotationValue } from "@/lib/shared-types";
+import { gameplayStore, useGameplayStore } from "@/lib/store/gameplay-store";
+import { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
+import shallowequal from "shallowequal";
 
 export const NumberPad = () => {
+    const [cursorCellToggledNotes, setCursorCellToggledNotes] = useState<BoardNotesGridNotationValue>([]);
+
     const cursorMode = useGameplayStore((store) => store.cursorMode);
 
-    const animatedStyle = useAnimatedStyle(
+    const animatedContainerStyle = useAnimatedStyle(
         () => ({
             backgroundColor: withTiming(cursorMode === 'note' ? '#222222' : 'transparent', {
                 duration: 200,
             }),
         }),
         [cursorMode]
-    )
+    );
+
+
+
+    useStoreSubscription(
+        gameplayStore,
+        (store) => [store.cursorMode, store.cursorGridPosition, store.puzzle.notes],
+        () => {
+            // On cursor movement...
+            setCursorCellToggledNotes(CellHelper.getToggledNotesAtCursor());
+        },
+        {
+            equalityFn: shallowequal
+        }
+    );
+
+    const onNumberPress = (value: number) => {
+        if (cursorMode === 'number') {
+            CellHelper.changePlayerValueAtCursorTo(value);
+        } else {
+            CellHelper.toggleNotesValueAtCursor([value]);
+        }
+    }
 
     const renderButtons = () => {
         const buttonRows = [];
@@ -22,17 +52,25 @@ export const NumberPad = () => {
             const buttonRow = [];
 
             for (let colIndex = 0; colIndex < 3; colIndex++) {
-                const number = (colIndex + rowIndex * 3) + 1
+                const value = (colIndex + rowIndex * 3) + 1;
+                const selected = (cursorMode === 'note') && cursorCellToggledNotes.includes(value);
 
                 buttonRow.push(
                     <NumberPadButton
-                        value={number}
+                        key={GridPositionHelper.stringNotationOf({row: rowIndex, col: colIndex})}
+                        value={value}
+                        onPress={() => onNumberPress(value)}
+                        onLongPress={() => onNumberPress(value)}
+                        selected={selected}
                     />
                 )
             }
 
             buttonRows.push(
-                <View style={styles.row}>
+                <View
+                    key={rowIndex}
+                    style={styles.row}
+                >
                     {buttonRow}
                 </View>
             );
@@ -42,7 +80,7 @@ export const NumberPad = () => {
     }
 
     return (
-        <Animated.View style={[styles.container, animatedStyle]}>
+        <Animated.View style={[styles.container, animatedContainerStyle]}>
             {renderButtons()}
         </Animated.View>
     );

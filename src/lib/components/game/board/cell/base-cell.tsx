@@ -36,9 +36,6 @@ export const BaseCell = (
 
 const styles = StyleSheet.create({
     cell: {
-        outlineStyle: 'solid',
-        outlineWidth: 1,
-        outlineColor: '#3D2E00',
         justifyContent: 'center',
         alignItems: 'center',
     }

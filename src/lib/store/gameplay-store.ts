@@ -1,22 +1,40 @@
+import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
+import {
+    BoardGridNotationValue,
+    BoardNotesGridNotationValue,
+    CursorMode, ForceToggleOperation,
+    GridPosition,
+    Puzzle
+} from "@/lib/shared-types";
+import { produce } from "immer";
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import { CursorMode, GridPosition } from "@/lib/shared-types";
 
 type GameplayStoreState = {
     cursorMode: CursorMode,
-    cursorGridPosition: GridPosition
+    cursorGridPosition: GridPosition,
+    puzzle?: Puzzle,
 }
 
 type GameplayStoreActions = {
-    moveCursorTo: (gridPosition: GridPosition | undefined) => void,
-    toggleCursorMode: (mode?: CursorMode) => void,
+    updateCursorGridPosition: (position: GridPosition) => void,
+    updateCursorMode: (mode: CursorMode) => void,
+    updatePuzzle: (puzzle: Puzzle) => void,
+    updatePlayerValueAt: (position: GridPosition, value: BoardGridNotationValue) => void,
+    erasePlayerValueAt: (position: GridPosition) => void,
+    toggleNotesValueAt: (
+        position: GridPosition,
+        notes: BoardNotesGridNotationValue,
+        forceOperation?: ForceToggleOperation
+    ) => void,
 }
 
 type GameplayStore = GameplayStoreState & GameplayStoreActions;
 
 const initialState: GameplayStoreState = {
     cursorMode: 'number',
-    cursorGridPosition: {row: 0, col: 0},
+    cursorGridPosition: GridPositionHelper.zero(),
+    puzzle: undefined
 }
 
 export const useGameplayStore = create<GameplayStore>()(
@@ -24,25 +42,84 @@ export const useGameplayStore = create<GameplayStore>()(
         (set, get) => ({
             ...initialState,
 
-            moveCursorTo: (gridPosition) => {
-                set({
-                    cursorGridPosition: gridPosition
-                });
+            updateCursorGridPosition: (position) => {
+                set({cursorGridPosition: position})
             },
 
-            toggleCursorMode: (mode) => {
-                let newCursorMode = mode;
-                if (!newCursorMode) {
-                    // Switch
-                    newCursorMode = get().cursorMode === 'number' ? 'note' : 'number';
+            updateCursorMode: (mode) => {
+                set({cursorMode: mode})
+            },
+
+            updatePuzzle: (puzzle) => {
+                set({puzzle: puzzle})
+            },
+
+            erasePlayerValueAt: (position) => {
+                // Ensure a puzzle exists
+                if (!get().puzzle) {
+                    return;
                 }
 
-                set({
-                    cursorMode: newCursorMode
-                })
-            }
-        })
+                set(
+                    produce((state: GameplayStoreState) => {
+                        if (state.puzzle) {
+                            state.puzzle.player[position.row][position.col] = 0;
+                            state.puzzle.notes[position.row][position.col] = [];
+                        }
+                    })
+                )
+            },
+
+            updatePlayerValueAt: (position, value) => {
+                // Ensure a puzzle exists
+                if (!get().puzzle) {
+                    return;
+                }
+
+                set(
+                    produce((state: GameplayStoreState) => {
+                        if (state.puzzle) {
+                            state.puzzle.player[position.row][position.col] = value;
+                            state.puzzle.notes[position.row][position.col] = [];
+                        }
+                    })
+                )
+            },
+
+            toggleNotesValueAt: (position, notes, forceOperation) => {
+                // Ensure a puzzle exists
+                if (!get().puzzle) {
+                    return;
+                }
+
+                set(
+                    produce((state: GameplayStoreState) => {
+                        if (state.puzzle) {
+                            for (const note of notes) {
+                                const noteIndexInCurrentValues = state.puzzle.notes[position.row][position.col].findIndex((value) => value === note);
+
+                                if (noteIndexInCurrentValues !== -1) {
+                                    // Added already
+                                    if (!forceOperation || forceOperation === 'remove') {
+                                        state.puzzle.notes[position.row][position.col].splice(noteIndexInCurrentValues, 1);
+                                    }
+                                } else {
+                                    // Not added yet
+                                    if (!forceOperation || forceOperation === 'add') {
+                                        state.puzzle.notes[position.row][position.col].push(note);
+                                    }
+                                }
+                            }
+                        }
+                    })
+                )
+            }})
     )
 )
+
+/**
+ * Just an alias
+ */
+export const gameplayStore = useGameplayStore;
 
 export const gameplayStoreState = (): GameplayStore => useGameplayStore.getState();

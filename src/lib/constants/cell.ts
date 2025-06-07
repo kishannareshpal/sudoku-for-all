@@ -1,1 +1,0 @@
-export const CELL_OUTLINE_WIDTH: number = 1 as const;

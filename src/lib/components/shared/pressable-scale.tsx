@@ -12,6 +12,13 @@ export type PressableScaleProps = PropsWithChildren<Omit<PressableProps, 'style'
     activeScale?: number;
 
     /**
+     * The opacity for when the button is active.
+     *
+     * @default 1
+     */
+    activeOpacity?: number
+
+    /**
      * How long the transition lasts when the button is pressed in milliseconds.
      *
      * @default 60ms
@@ -21,39 +28,48 @@ export type PressableScaleProps = PropsWithChildren<Omit<PressableProps, 'style'
     style?: ViewProps['style']
 }>;
 
-const PRESSABLE_SCALE_DEFAULT_ACTIVE_SCALE = 0.85;
+const PRESSABLE_SCALE_INACTIVE_SCALE = 1;
+const PRESSABLE_SCALE_INACTIVE_OPACITY = 1;
+
+const PRESSABLE_SCALE_DEFAULT_ACTIVE_SCALE = 0.95;
 const PRESSABLE_SCALE_DEFAULT_TRANSITION_DURATION_IN_MS = 60;
+const PRESSABLE_SCALE_DEFAULT_ACTIVE_OPACITY = 1;
 
 export const PressableScale = (
     {
         style,
         children,
         activeScale = PRESSABLE_SCALE_DEFAULT_ACTIVE_SCALE,
+        activeOpacity = PRESSABLE_SCALE_DEFAULT_ACTIVE_OPACITY,
         transitionDurationInMs = PRESSABLE_SCALE_DEFAULT_TRANSITION_DURATION_IN_MS,
         ...restProps
     }: PressableScaleProps
 ) => {
-    const currentScale = useSharedValue(1);
+    const currentScale = useSharedValue(PRESSABLE_SCALE_INACTIVE_SCALE);
+    const currentOpacity = useSharedValue(PRESSABLE_SCALE_INACTIVE_OPACITY)
 
     const tapGesture = Gesture
-        .LongPress()
+        .Tap()
         .onBegin(() => {
             currentScale.value = withSpring(activeScale);
+            currentOpacity.value = withSpring(activeOpacity);
         })
         .onFinalize(() => {
-            currentScale.value = withSpring(1);
+            currentScale.value = withSpring(PRESSABLE_SCALE_INACTIVE_SCALE);
+            currentOpacity.value = withSpring(PRESSABLE_SCALE_INACTIVE_OPACITY);
         })
 
     const animatedStyle = useAnimatedStyle(() => ({
+        opacity: currentOpacity.value,
         transform: [{
             scale: currentScale.value,
-        }]
+        }],
     }));
 
     return (
         <GestureDetector gesture={tapGesture}>
             <Pressable {...restProps}>
-                <Animated.View style={[style, animatedStyle]}>
+                <Animated.View style={[animatedStyle, style]}>
                     {children}
                 </Animated.View>
             </Pressable>

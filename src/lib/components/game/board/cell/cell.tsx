@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         fontSize: 12,
+        color: 'white',
         textAlign: 'center',
         fontFamily: 'SplineSansMonoBold',
         lineHeight: 12
@@ -118,5 +119,6 @@ const styles = StyleSheet.create({
         fontSize: 28,
         textAlign: 'center',
         fontFamily: 'SplineSansMonoBold',
+        color: 'white'
     }
 })

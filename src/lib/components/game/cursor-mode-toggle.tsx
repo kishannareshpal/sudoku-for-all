@@ -1,11 +1,16 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { LayoutChangeEvent, StyleSheet, Text, View } from "react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming, } from "react-native-reanimated";
 import { PressableScale } from "@/lib/components/shared/pressable-scale";
-import { gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay-store";
 import { CursorMode } from "@/lib/shared-types";
-import { useImmer } from "use-immer";
+import { gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay-store";
+import React, { useCallback, useEffect } from "react";
+import { LayoutChangeEvent, StyleSheet, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
+    withTiming
+} from "react-native-reanimated";
+import { useImmer } from "use-immer";
 
 type Option = {
     label: string,
@@ -48,22 +53,10 @@ export const CursorModeToggle = () => {
         const selectedOptionIndex = OPTIONS.findIndex((option) => option.value === mode);
 
         const pastOptions = OPTIONS.slice(0, selectedOptionIndex);
-        // const offsetX = pastOptions.map((option) => {
-        //     return getOptionElementWidthFor(option.value) + styles.container.gap;
-        // }).reduce((acc, curr) => acc + curr, 0);
-
         return pastOptions.reduce(
             (currentSum, iteratingOption) => currentSum + getOptionElementWidthFor(iteratingOption.value) + styles.container.gap,
             0
         );
-
-        // const offsetX = getOptionElementWidthFor('number') * 2;
-
-        // // const optionElementWidth = getOptionElementWidthFor(mode);
-        // // const optionElementStartingPositionX = mode === 'number'
-        //     ? 0
-        //     : getOptionElementWidthFor('number') + styles.container.gap;
-        // return offsetX
     }, [getOptionElementWidthFor]);
 
     const moveSliderTo = useCallback((mode: CursorMode) => {
@@ -76,11 +69,10 @@ export const CursorModeToggle = () => {
 
     useEffect(() => {
         moveSliderTo(cursorMode);
-    }, [moveSliderTo, cursorMode]);
+    }, [moveSliderTo, cursorMode, optionElementWidthMap]);
 
     const onToggle = (mode: CursorMode) => {
-        gameplayStoreState().toggleCursorMode(mode);
-        moveSliderTo(mode);
+        gameplayStoreState().updateCursorMode(mode);
     }
 
     const onOptionElementLayoutFor = (

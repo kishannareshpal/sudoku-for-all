@@ -2,17 +2,28 @@ import { GridPosition, Point } from "@/lib/shared-types";
 import { COLUMNS_COUNT, ROWS_COUNT } from "@/lib/constants/board";
 
 export class GridPositionHelper {
+    static zero(): GridPosition {
+        return {
+            row: 0,
+            col: 0
+        };
+    }
+
     static createFromPoint(point: Point, cellLength: number): GridPosition | undefined {
         const col = Math.floor(point.x / cellLength);
         const row = Math.floor(point.y / cellLength);
 
-        const gridPosition = { row, col };
+        const gridPosition = {row, col};
 
         if (this.isOutOfBounds(gridPosition)) {
             return undefined;
         }
 
         return gridPosition;
+    }
+
+    static stringNotationOf(gridPosition: GridPosition): string {
+        return `${gridPosition.row},${gridPosition.col}`;
     }
 
     static changed(previousGridPosition: GridPosition | undefined, newGridPosition: GridPosition | undefined): boolean {
@@ -51,10 +62,6 @@ export class GridPositionHelper {
             return true;
         }
 
-        if (gridPosition.col < 0 || gridPosition.col >= COLUMNS_COUNT) {
-            return true;
-        }
-
-        return false;
+        return gridPosition.col < 0 || gridPosition.col >= COLUMNS_COUNT;
     }
 }

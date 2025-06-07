@@ -1,33 +1,63 @@
-import { StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { CursorModeToggle } from "@/lib/components/game/cursor-mode-toggle";
-import { Board } from "@/lib/components/game/board/board";
-import { NumberPad } from "@/lib/components/game/number-pad/number-pad";
+import { NewGameOptions } from "@/lib/components/home/new-game-options";
+import { Title } from "@/lib/components/home/title";
+import { GameHelper } from "@/lib/helpers/game-helper";
+import { Difficulty } from "@/lib/shared-types";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { StyleSheet } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const HomeScreen = () => {
+    const router = useRouter();
+
+    const [loading, setLoading] = useState<boolean>(false);
+
+    const handleStartNewGame = (difficulty: Difficulty) => {
+        GameHelper.newGame(difficulty);
+
+        setTimeout(() => {
+            router.push({
+                pathname: '/game',
+                params: { difficulty: difficulty }
+            });
+        }, 2000);
+    }
+
+    const safeAreaInsets = useSafeAreaInsets();
+
     return (
-        <SafeAreaView style={styles.container}>
-            <Board/>
+        <ScrollView
+            style={styles.scrollViewContainer}
+            contentContainerStyle={
+                [
+                    styles.container,
+                    {
+                        paddingTop: safeAreaInsets.top + 12,
+                        paddingBottom: safeAreaInsets.bottom + 12,
+                        paddingLeft: safeAreaInsets.left + 12,
+                        paddingRight: safeAreaInsets.right + 12
+                    }
+                ]
+            }
+        >
+            <Title />
 
-            <View style={styles.controls}>
-                <NumberPad/>
-
-                <CursorModeToggle/>
-            </View>
-        </SafeAreaView>
+            <NewGameOptions
+                onOptionPress={(option) => handleStartNewGame(option.value)}
+            />
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    scrollViewContainer: {
         flex: 1,
-        padding: 12,
-        backgroundColor: '#000000'
     },
-    controls: {
-        flexDirection: 'column',
-        gap: 8
-    }
+    container: {
+        alignItems: 'center',
+        gap: 24
+    },
 })
 
 export default HomeScreen;

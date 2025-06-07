@@ -1,21 +1,47 @@
-import React from 'react';
-import { StyleSheet, Text } from "react-native";
 import { PressableScale, PressableScaleProps } from "@/lib/components/shared/pressable-scale";
+import React from 'react';
+import { StyleSheet } from "react-native";
+import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
 
 type NumberPadButtonProps = PressableScaleProps & {
-    value: number
+    value: number,
+    selected?: boolean
 }
 
 export const NumberPadButton = (
     {
-        value
+        value,
+        selected,
+        ...restProps
     }: NumberPadButtonProps,
 ) => {
+    const animatedButtonStyle = useAnimatedStyle(
+        () => ({
+            backgroundColor: withTiming(selected ? '#FFD147' : '#222222', {
+                duration: 260,
+            })
+        }),
+        [selected]
+    );
+
+    const animatedButtonTextStyle = useAnimatedStyle(
+        () => ({
+            color: withTiming(selected ? 'black' : 'white', {
+                duration: 260,
+            })
+        }),
+        [selected]
+    );
+
     return (
-        <PressableScale style={styles.button}>
-            <Text style={styles.buttonText}>
+        <PressableScale
+            activeScale={0.90}
+            style={[styles.button, animatedButtonStyle]}
+            {...restProps}
+        >
+            <Animated.Text style={[styles.buttonText, animatedButtonTextStyle]}>
                 {value}
-            </Text>
+            </Animated.Text>
         </PressableScale>
     );
 };
@@ -28,11 +54,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 12,
         borderRadius: 12,
-        backgroundColor: '#222222'
     },
 
     buttonText: {
-        color: 'white',
-        fontWeight: 'bold',
+        fontWeight: 'medium',
+        fontSize: 22
     }
 })
