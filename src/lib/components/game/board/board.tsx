@@ -2,25 +2,35 @@ import { useBoardCanvasContext } from "@/lib/components/game/board/board-context
 import { BoardWrapper } from "@/lib/components/game/board/board-wrapper";
 import { Cell } from "@/lib/components/game/board/cell/cell";
 import { CursorCell } from "@/lib/components/game/board/cell/cursor-cell";
-import { BOARD_OUTLINE_WIDTH, COLUMNS_COUNT, ROWS_COUNT } from "@/lib/constants/board";
+import { COLUMNS_COUNT, ROWS_COUNT } from "@/lib/constants/board";
 import { CellHelper } from "@/lib/helpers/cell-helper";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { Point, Puzzle } from "@/lib/shared-types";
+import { Children, PropsWithChildren } from "react";
 import { StyleSheet, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { BoardCellDivisions } from "./board-cell-divisions";
 
-type BoardProps = {
+type BoardProps = PropsWithChildren<{
     puzzle: Puzzle
-}
+}>
 
 export const Board = (
-    {puzzle}: BoardProps
+    {
+        puzzle,
+        children,
+    }: BoardProps
 ) => {
     return (
-        <View style={styles.boardContainer}>
+        <View style={styles.container}>
             <BoardWrapper>
                 <PuzzleScene puzzle={puzzle}/>
+
+                {Children.count(children) ? (
+                    <View style={styles.overlayContainer}>
+                        {children}
+                    </View>
+                ) : null}
             </BoardWrapper>
         </View>
     )
@@ -48,7 +58,7 @@ const PuzzleScene = ({puzzle}: PuzzleSceneProps) => {
         const newGridPosition = GridPositionHelper.createFromPoint(
             touchedPoint,
             boardCanvas.cellLength,
-        )
+        );
 
         if (!newGridPosition) {
             // Out of bounds, do nothing
@@ -98,9 +108,7 @@ const PuzzleScene = ({puzzle}: PuzzleSceneProps) => {
         <GestureDetector gesture={panGesture}>
             <View style={styles.puzzleSceneContainer}>
                 {renderGrid()}
-
                 <BoardCellDivisions/>
-
                 <CursorCell/>
             </View>
         </GestureDetector>
@@ -108,9 +116,13 @@ const PuzzleScene = ({puzzle}: PuzzleSceneProps) => {
 }
 
 const styles = StyleSheet.create({
-    boardContainer: {
+    container: {
+        flex: 1
+    },
+
+    overlayContainer: {
+        ...StyleSheet.absoluteFillObject,
         flex: 1,
-        margin: BOARD_OUTLINE_WIDTH
     },
 
     puzzleSceneContainer: {

@@ -1,7 +1,7 @@
 import { BoardCanvasContext } from "@/lib/components/game/board/board-context";
 import { COLUMNS_COUNT } from "@/lib/constants/board";
 import { PropsWithChildren, useState } from "react";
-import { LayoutChangeEvent, View, ViewProps } from "react-native";
+import { LayoutChangeEvent, StyleSheet, View, ViewProps } from "react-native";
 
 export type BoardWrapperProps = PropsWithChildren<ViewProps>;
 
@@ -28,7 +28,7 @@ export const BoardWrapper = (
     return (
         <View
             onLayout={handleCanvasLayoutChange}
-            style={{flex: 1}}
+            style={styles.container}
             {...restProps}
         >
             <BoardCanvasContext.Provider
@@ -42,3 +42,9 @@ export const BoardWrapper = (
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    }
+})

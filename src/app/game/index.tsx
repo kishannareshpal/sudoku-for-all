@@ -68,9 +68,9 @@ const GameScreen = () => {
 
                 </View>
 
-                <NumberPad/>
+                <NumberPad />
 
-                <CursorModeToggle/>
+                <CursorModeToggle />
             </View>
         </SafeAreaView>
     );
@@ -85,9 +85,9 @@ const GameBoard = () => {
 
     return (
         <View style={styles.boardContainer}>
-            <Board puzzle={puzzle}/>
-
-            <PausedGameOverlay />
+            <Board puzzle={puzzle}>
+                <PausedGameOverlay />
+            </Board>
         </View>
     )
 }

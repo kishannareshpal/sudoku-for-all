@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 
 export const BoardCellDivisions = () => {
-    const innerDivisions = useMemo(() => {
+    const innerLines = useMemo(() => {
         const items = [];
 
         // Here we can use either ROWS_COUNT or COLUMNS_COUNT because we know it's a square board
@@ -33,11 +33,13 @@ export const BoardCellDivisions = () => {
         }
 
         return items;
-    }, [])
+    }, []);
 
     return (
         <View style={styles.container}>
-            {innerDivisions}
+            {innerLines}
+
+            <OuterBorder />
         </View>
     )
 }
@@ -47,6 +49,12 @@ type DividerProps = {
     alignment: 'before' | 'after',
     orientation: 'row' | 'col',
     index: GridIndex,
+}
+
+const OuterBorder = () => {
+    return (
+        <View style={styles.outerBorder} />
+    )
 }
 
 const Divider = (
@@ -111,17 +119,24 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
-        outlineStyle: 'solid',
-        outlineWidth: BOARD_OUTLINE_WIDTH,
-        outlineColor: '#3D2E00',
     },
+
+    outerBorder: {
+        flex: 1,
+
+        borderWidth: BOARD_OUTLINE_WIDTH,
+        borderColor: '#3D2E00',
+    },
+
     dividerColor: {
         backgroundColor: '#3D2E00',
     },
+
     rowDivider: {
         position: 'absolute',
         width: '100%',
     },
+
     colDivider: {
         position: 'absolute',
         height: '100%'

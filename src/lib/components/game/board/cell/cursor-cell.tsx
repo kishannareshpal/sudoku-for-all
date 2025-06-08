@@ -1,8 +1,8 @@
-import { CELL_OUTLINE_WIDTH } from "@/lib/constants/board";
-import { StyleSheet, View } from "react-native";
-import { useGameplayStore } from "@/lib/store/gameplay-store";
 import { useBoardCanvasContext } from "@/lib/components/game/board/board-context";
 import { BaseCell } from "@/lib/components/game/board/cell/base-cell";
+import { CELL_OUTLINE_WIDTH } from "@/lib/constants/board";
+import { useGameplayStore } from "@/lib/store/gameplay-store";
+import { StyleSheet, View } from "react-native";
 
 export const CursorCell = () => {
     const boardCanvas = useBoardCanvasContext();
@@ -44,8 +44,8 @@ export const CursorCell = () => {
 const styles = StyleSheet.create({
     cursor: {
         position: 'absolute',
-        outlineWidth: CELL_OUTLINE_WIDTH,
-        outlineColor: '#F0B719'
+        borderWidth: CELL_OUTLINE_WIDTH,
+        borderColor: '#F0B719'
     },
     cursorBackground: {
         width: '100%',
