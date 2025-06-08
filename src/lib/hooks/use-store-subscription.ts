@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect } from 'react';
 
 /**
  * The following types have been copied directly from the `zustand` library (specifically from version 4.4.7), as they
@@ -45,5 +45,5 @@ export const useStoreSubscription = <TStoreState, USelectedState>(
     useEffect(() => {
         // Subscribe for changes on mount. Returns the unsubscription callback that is used when unmounted.
         return subscribableStore.subscribe(selector, listener, options);
-    }, []);
+    }, [listener, options, selector, subscribableStore]);
 }

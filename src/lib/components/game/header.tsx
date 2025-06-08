@@ -1,37 +1,16 @@
 import { TextHelper } from "@/lib/helpers/text-helper";
 import { TimeHelper } from "@/lib/helpers/time-helper";
-import { useGameplayStore } from "@/lib/store/gameplay-store";
+import { gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay-store";
 import { router } from "expo-router";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { IconButton } from "../shared/icon-button";
 
 export const Header = () => {
-    const handleNavigateBack = () => {
-        router.back();
-    }
-
-    const handlePauseGame = () => {
-        Alert.alert('Paused');
-    }
-
     return (
         <View style={styles.container}>
             <View style={styles.buttonsContainer}>
-                <IconButton
-                    iconProps={{
-                        type: 'ionicons',
-                        name: 'chevron-back-outline'
-                    }}
-                    onPress={handleNavigateBack}
-                />
-
-                <IconButton
-                    iconProps={{
-                        type: 'ionicons',
-                        name: 'pause'
-                    }}
-                    onPress={handlePauseGame}
-                />
+                <BackButton />
+                <PauseButton />
             </View>
 
             <View style={styles.descriptionContainer}>
@@ -40,6 +19,40 @@ export const Header = () => {
             </View>
         </View>
     );
+}
+
+const BackButton = () => {
+    const handleNavigateBack = (): void => {
+        router.back();
+    }
+
+    return (
+        <IconButton
+            iconProps={{
+                type: 'ionicons',
+                name: 'chevron-back-outline'
+            }}
+            onPress={handleNavigateBack}
+        />
+    )
+}
+
+const PauseButton = () => {
+    const gameState = useGameplayStore((state) => state.state);
+
+    const handlePauseGame = (): void => {
+        gameplayStoreState().toggleGameState();
+    }
+
+    return (
+        <IconButton
+            iconProps={{
+                type: 'ionicons',
+                name: gameState === 'paused' ? 'play' : 'pause'
+            }}
+            onPress={handlePauseGame}
+        />
+    )
 }
 
 const Timer = () => {

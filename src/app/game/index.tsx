@@ -3,30 +3,25 @@ import { ControlButton } from "@/lib/components/game/control-button";
 import { CursorModeToggle } from "@/lib/components/game/cursor-mode-toggle";
 import { Header } from "@/lib/components/game/header";
 import { NumberPad } from "@/lib/components/game/number-pad/number-pad";
+import { PausedGameOverlay } from "@/lib/components/game/paused-game-overlay";
 import { gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay-store";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const GameScreen = () => {
-    const puzzle = useGameplayStore((store) => store.puzzle);
-
-    if (!puzzle) {
-        return null;
-    }
-
-    const handleUndo = () => {
+    const handleUndo = (): void => {
 
     }
 
-    const handleRedo = () => {
+    const handleRedo = (): void => {
 
     }
 
-    const handleHint = () => {
+    const handleHint = (): void => {
 
     }
 
-    const handleEraser = () => {
+    const handleEraser = (): void => {
         const { cursorGridPosition, erasePlayerValueAt } = gameplayStoreState();
         erasePlayerValueAt(cursorGridPosition);
     }
@@ -35,7 +30,7 @@ const GameScreen = () => {
         <SafeAreaView style={styles.container}>
             <Header />
 
-            <Board puzzle={puzzle}/>
+            <GameBoard />
 
             <View style={styles.controlsContainer}>
                 <View style={styles.controlsRow}>
@@ -81,6 +76,22 @@ const GameScreen = () => {
     );
 }
 
+const GameBoard = () => {
+    const puzzle = useGameplayStore((store) => store.puzzle);
+
+    if (!puzzle) {
+        return null;
+    }
+
+    return (
+        <View style={styles.boardContainer}>
+            <Board puzzle={puzzle}/>
+
+            <PausedGameOverlay />
+        </View>
+    )
+}
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -99,7 +110,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         gap: 12
-    }
+    },
+
+    boardContainer: {
+        width: '100%',
+        height: 'auto',
+        aspectRatio: 1,
+        position: 'relative'
+    },
 })
 
 export default GameScreen;

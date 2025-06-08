@@ -2,7 +2,7 @@ import { useBoardCanvasContext } from "@/lib/components/game/board/board-context
 import { BoardWrapper } from "@/lib/components/game/board/board-wrapper";
 import { Cell } from "@/lib/components/game/board/cell/cell";
 import { CursorCell } from "@/lib/components/game/board/cell/cursor-cell";
-import { COLUMNS_COUNT, ROWS_COUNT } from "@/lib/constants/board";
+import { BOARD_OUTLINE_WIDTH, COLUMNS_COUNT, ROWS_COUNT } from "@/lib/constants/board";
 import { CellHelper } from "@/lib/helpers/cell-helper";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { Point, Puzzle } from "@/lib/shared-types";
@@ -18,7 +18,7 @@ export const Board = (
     {puzzle}: BoardProps
 ) => {
     return (
-        <View style={{flex: 1}}>
+        <View style={styles.boardContainer}>
             <BoardWrapper>
                 <PuzzleScene puzzle={puzzle}/>
             </BoardWrapper>
@@ -96,7 +96,7 @@ const PuzzleScene = ({puzzle}: PuzzleSceneProps) => {
 
     return (
         <GestureDetector gesture={panGesture}>
-            <View style={styles.container}>
+            <View style={styles.puzzleSceneContainer}>
                 {renderGrid()}
 
                 <BoardCellDivisions/>
@@ -108,7 +108,12 @@ const PuzzleScene = ({puzzle}: PuzzleSceneProps) => {
 }
 
 const styles = StyleSheet.create({
-    container: {
+    boardContainer: {
+        flex: 1,
+        margin: BOARD_OUTLINE_WIDTH
+    },
+
+    puzzleSceneContainer: {
         position: 'relative',
         flexShrink: 1,
         flexDirection: 'column',

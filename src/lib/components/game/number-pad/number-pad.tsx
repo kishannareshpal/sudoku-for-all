@@ -23,11 +23,9 @@ export const NumberPad = () => {
         [cursorMode]
     );
 
-
-
     useStoreSubscription(
         gameplayStore,
-        (store) => [store.cursorMode, store.cursorGridPosition, store.puzzle.notes],
+        (store) => [store.cursorMode, store.cursorGridPosition, store.puzzle?.notes],
         () => {
             // On cursor movement...
             setCursorCellToggledNotes(CellHelper.getToggledNotesAtCursor());

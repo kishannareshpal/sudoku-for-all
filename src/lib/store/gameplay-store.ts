@@ -3,6 +3,7 @@ import {
     BoardGridNotationValue,
     BoardNotesGridNotationValue,
     CursorMode, ForceToggleOperation,
+    GameState,
     GridPosition,
     Puzzle
 } from "@/lib/shared-types";
@@ -11,12 +12,15 @@ import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 
 type GameplayStoreState = {
+    state: GameState,
     cursorMode: CursorMode,
     cursorGridPosition: GridPosition,
     puzzle?: Puzzle,
 }
 
 type GameplayStoreActions = {
+    updateGameState: (state: GameState) => void,
+    toggleGameState: () => void,
     updateCursorGridPosition: (position: GridPosition) => void,
     updateCursorMode: (mode: CursorMode) => void,
     updatePuzzle: (puzzle: Puzzle) => void,
@@ -32,6 +36,7 @@ type GameplayStoreActions = {
 type GameplayStore = GameplayStoreState & GameplayStoreActions;
 
 const initialState: GameplayStoreState = {
+    state: 'paused',
     cursorMode: 'number',
     cursorGridPosition: GridPositionHelper.zero(),
     puzzle: undefined
@@ -41,6 +46,20 @@ export const useGameplayStore = create<GameplayStore>()(
     subscribeWithSelector(
         (set, get) => ({
             ...initialState,
+
+            updateGameState: (state) => {
+                set({ state: state });
+            },
+
+            toggleGameState: () => {
+                const currentState = get().state;
+                if (currentState === 'over') {
+                    // Cannot toggle a finished game
+                    return;
+                }
+
+                set({ state: currentState === 'paused' ? 'playing' : 'paused' })
+            },
 
             updateCursorGridPosition: (position) => {
                 set({cursorGridPosition: position})
