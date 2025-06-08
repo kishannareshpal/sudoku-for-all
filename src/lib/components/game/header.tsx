@@ -1,6 +1,7 @@
 import { TextHelper } from "@/lib/helpers/text-helper";
 import { TimeHelper } from "@/lib/helpers/time-helper";
 import { gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay-store";
+import * as Haptics from 'expo-haptics';
 import { router } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { IconButton } from "../shared/icon-button";
@@ -42,6 +43,8 @@ const PauseButton = () => {
 
     const handlePauseGame = (): void => {
         gameplayStoreState().toggleGameState();
+
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
 
     return (

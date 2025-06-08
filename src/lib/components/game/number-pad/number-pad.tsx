@@ -2,8 +2,9 @@ import { NumberPadButton } from "@/lib/components/game/number-pad/number-pad-but
 import { CellHelper } from "@/lib/helpers/cell-helper";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { useStoreSubscription } from "@/lib/hooks/use-store-subscription";
-import { BoardNotesGridNotationValue } from "@/lib/shared-types";
+import { BoardNotesGridNotationValue, GridIndex } from "@/lib/shared-types";
 import { gameplayStore, useGameplayStore } from "@/lib/store/gameplay-store";
+import * as Haptics from 'expo-haptics';
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
@@ -41,6 +42,8 @@ export const NumberPad = () => {
         } else {
             CellHelper.toggleNotesValueAtCursor([value]);
         }
+
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
 
     const renderButtons = () => {
@@ -55,7 +58,7 @@ export const NumberPad = () => {
 
                 buttonRow.push(
                     <NumberPadButton
-                        key={GridPositionHelper.stringNotationOf({row: rowIndex, col: colIndex})}
+                        key={GridPositionHelper.stringNotationOf({ row: rowIndex as GridIndex, col: colIndex as GridIndex })}
                         value={value}
                         onPress={() => onNumberPress(value)}
                         onLongPress={() => onNumberPress(value)}

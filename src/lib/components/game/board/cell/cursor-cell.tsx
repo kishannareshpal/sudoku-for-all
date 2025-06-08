@@ -1,24 +1,27 @@
 import { useBoardCanvasContext } from "@/lib/components/game/board/board-context";
 import { BaseCell } from "@/lib/components/game/board/cell/base-cell";
 import { CELL_OUTLINE_WIDTH } from "@/lib/constants/board";
+import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
+import { useStoreSubscription } from "@/lib/hooks/use-store-subscription";
 import { useGameplayStore } from "@/lib/store/gameplay-store";
+import * as Haptics from 'expo-haptics';
 import { StyleSheet, View } from "react-native";
+
 
 export const CursorCell = () => {
     const boardCanvas = useBoardCanvasContext();
     const cursorGridPosition = useGameplayStore((state) => state.cursorGridPosition);
 
-    // TODO: Haptic feedback
-    // useStoreSubscription(
-    //     useGameplayStore,
-    //     (state) => state.cursorGridPosition,
-    //     () => {
-    //         Haptics.selectionAsync().catch()
-    //     },
-    //     {
-    //         equalityFn: GridPositionHelper.notChanged
-    //     }
-    // )
+    useStoreSubscription(
+        useGameplayStore,
+        (state) => state.cursorGridPosition,
+        () => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid)
+        },
+        {
+            equalityFn: GridPositionHelper.notChanged
+        }
+    )
 
     if (!cursorGridPosition) {
         return null;

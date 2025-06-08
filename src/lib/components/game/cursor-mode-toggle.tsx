@@ -1,6 +1,7 @@
 import { PressableScale } from "@/lib/components/shared/pressable-scale";
 import { CursorMode } from "@/lib/shared-types";
 import { gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay-store";
+import * as Haptics from 'expo-haptics';
 import React, { useCallback, useEffect } from "react";
 import { LayoutChangeEvent, StyleSheet, Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -33,12 +34,15 @@ export const CursorModeToggle = () => {
     const selectedOptionElementWidth = useSharedValue(0);
     const [optionElementWidthMap, updateOptionElementWidthMap] = useImmer<OptionElementWidthMap>({});
 
-    const animatedStyle = useAnimatedStyle(() => ({
-        transform: [{
-            translateX: sliderBackgroundPositionX.value,
-        }],
-        width: selectedOptionElementWidth.value,
-    }));
+    const animatedStyle = useAnimatedStyle(
+        () => ({
+            transform: [{
+                translateX: sliderBackgroundPositionX.value,
+            }],
+            width: selectedOptionElementWidth.value,
+        }),
+        [selectedOptionElementWidth, sliderBackgroundPositionX]
+    );
 
     const getOptionElementWidthFor = useCallback((mode: CursorMode) => {
         return optionElementWidthMap[mode] ?? 0;
@@ -71,8 +75,24 @@ export const CursorModeToggle = () => {
         moveSliderTo(cursorMode);
     }, [moveSliderTo, cursorMode, optionElementWidthMap]);
 
-    const onToggle = (mode: CursorMode) => {
+    const onToggle = async (mode: CursorMode) => {
+        if (mode === cursorMode) {
+            // No change. Do nothing
+            return;
+        }
+
         gameplayStoreState().updateCursorMode(mode);
+
+        performDoubleHaptics();
+    }
+
+    const performDoubleHaptics = async () => {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+
+        // Don't really need to handle the timeout cancellation I think in this situation.
+        setTimeout(() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+        }, 120);
     }
 
     const onOptionElementLayoutFor = (
