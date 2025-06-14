@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 12,
-        backgroundColor: '#000000',
+        backgroundColor: '#191509',
         gap: 24
     },
 
@@ -116,7 +116,8 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 'auto',
         aspectRatio: 1,
-        position: 'relative'
+        position: 'relative',
+        backgroundColor: 'black'
     },
 })
 

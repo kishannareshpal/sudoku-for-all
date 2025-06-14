@@ -36,7 +36,7 @@ type GameplayStoreActions = {
 type GameplayStore = GameplayStoreState & GameplayStoreActions;
 
 const initialState: GameplayStoreState = {
-    state: 'paused',
+    state: 'playing',
     cursorMode: 'number',
     cursorGridPosition: GridPositionHelper.zero(),
     puzzle: undefined

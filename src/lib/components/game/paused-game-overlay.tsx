@@ -87,15 +87,15 @@ export const PausedGameOverlay = () => {
                     height={boardCanvas.boardLength}
                 >
                     <RadialGradient
-                        c={vec(boardCanvas.boardLength / 2, boardCanvas.boardLength / 2)}
-                        r={boardCanvas.boardLength / 2}
-                        colors={['transparent', 'transparent', 'black']} //! TODO: Change black with board bg color?
+                        c={vec(boardCanvas.boardLength / 2)}
+                        r={boardCanvas.boardLength - 4} // TODO: Explain this magic number 4 (border width?)
+                        colors={['transparent', '#191509']} //! TODO: Change black with board bg color?
                     />
                 </Rect>
             </Canvas>
 
             <Animated.Text style={[animatedTextStyle, styles.text]}>
-                Paused
+                Paused game
             </Animated.Text>
         </Animated.View>
     )
