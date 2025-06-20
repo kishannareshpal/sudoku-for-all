@@ -16,6 +16,11 @@ export type ForceToggleOperation = 'add' | 'remove'
 
 export type CursorMode = 'number' | 'note';
 
+export type Bounds = {
+    min: number,
+    max: number,
+}
+
 export type Size = {
     width: number,
     height: number,

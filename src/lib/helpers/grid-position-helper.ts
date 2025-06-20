@@ -1,5 +1,6 @@
-import { GridPosition, Point } from "@/lib/shared-types";
-import { COLUMNS_COUNT, ROWS_COUNT } from "@/lib/constants/board";
+import { GridIndex, GridPosition, Point } from "@/lib/shared-types";
+import { COLUMNS_COUNT, ROWS_COUNT, ROW_INDEX_BOUNDS, COL_INDEX_BOUNDS } from "@/lib/constants/board";
+import { NumberHelper } from "@/lib/helpers/number-helper";
 
 export class GridPositionHelper {
     static zero(): GridPosition {
@@ -9,11 +10,18 @@ export class GridPositionHelper {
         };
     }
 
-    static createFromPoint(point: Point, cellLength: number): GridPosition | undefined {
-        const col = Math.floor(point.x / cellLength);
-        const row = Math.floor(point.y / cellLength);
+    static createFromIndexes(rowIndex: number, colIndex: number): GridPosition {
+        const row = NumberHelper.clamp(rowIndex, ROW_INDEX_BOUNDS) as GridIndex;
+        const col = NumberHelper.clamp(colIndex, COL_INDEX_BOUNDS) as GridIndex;
 
-        const gridPosition = {row, col};
+        return {row, col};
+    }
+
+    static createFromPoint(point: Point, cellLength: number): GridPosition | undefined {
+        const colIndex = Math.floor(point.x / cellLength);
+        const rowIndex = Math.floor(point.y / cellLength);
+
+        const gridPosition = this.createFromIndexes(rowIndex, colIndex);
 
         if (this.isOutOfBounds(gridPosition)) {
             return undefined;

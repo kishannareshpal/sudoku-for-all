@@ -42,7 +42,7 @@ export const NumberPad = () => {
         } else {
             CellHelper.toggleNotesValueAtCursor([value]);
         }
-
+                      
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
 

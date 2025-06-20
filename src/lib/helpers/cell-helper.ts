@@ -2,6 +2,7 @@ import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import {
     BoardGridNotation,
     BoardGridNotationValue,
+    BoardNotesGridNotation,
     BoardNotesGridNotationValue, CursorMode,
     ForceToggleOperation,
     GridPosition
@@ -9,11 +10,22 @@ import {
 import { gameplayStoreState } from "@/lib/store/gameplay-store";
 
 export class CellHelper {
-    static getToggledNotesAtCursor(): BoardNotesGridNotationValue {
-        const store = gameplayStoreState();
-        const cursorGridPosition = store.cursorGridPosition;
+    static getToggledNotesAtCursor(
+        notesGridNotation: BoardNotesGridNotation | undefined = gameplayStoreState().puzzle?.notes
+    ): BoardNotesGridNotationValue {
+        const cursorGridPosition = gameplayStoreState().cursorGridPosition;
+        return this.getToggledNotesAt(cursorGridPosition, notesGridNotation);
+    }
 
-        return store.puzzle.notes[cursorGridPosition.row][cursorGridPosition.col];
+    static getToggledNotesAt(
+        gridPosition: GridPosition,
+        notesGridNotation: BoardNotesGridNotation | undefined = gameplayStoreState().puzzle?.notes
+    ): BoardNotesGridNotationValue {
+        if (!notesGridNotation) {
+            return [];
+        }
+
+        return notesGridNotation[gridPosition.row][gridPosition.col];
     }
 
     static moveCursorTo(
@@ -33,7 +45,11 @@ export class CellHelper {
     ): void {
         const store = gameplayStoreState();
 
-        if (!this.isClearable(gridPosition, store.puzzle.given)) {
+        if (!store.puzzle) {
+            return;
+        }
+
+        if (!this.isClearableAt(gridPosition, store.puzzle.given)) {
             return;
         }
 
@@ -63,7 +79,11 @@ export class CellHelper {
     ): void {
         const store = gameplayStoreState();
 
-        if (!this.isEditable(gridPosition, store.puzzle.given)) {
+        if (!store.puzzle) {
+            return;
+        }
+
+        if (!this.isEditableAt(gridPosition, store.puzzle.given)) {
             return;
         }
 
@@ -86,18 +106,26 @@ export class CellHelper {
     ): void {
         const store = gameplayStoreState();
 
-        if (!this.isAnnotatable(gridPosition, store.puzzle.given, store.puzzle.player)) {
+        if (!store.puzzle) {
+            return;
+        }
+
+        if (!this.isAnnotatableAt(gridPosition, store.puzzle.given, store.puzzle.player)) {
             return;
         }
 
         store.toggleNotesValueAt(gridPosition, notes, forceOperation);
     }
 
-    static isAnnotatable(
+    static isAnnotatableAt(
         gridPosition: GridPosition,
-        givenGridNotation: BoardGridNotation = gameplayStoreState().puzzle.given,
-        playerGridNotation: BoardGridNotation = gameplayStoreState().puzzle.player,
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given,
+        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.player,
     ): boolean {
+        if (!givenGridNotation || !playerGridNotation) {
+            return false;
+        }
+
         if (this.isStaticAt(gridPosition, givenGridNotation)) {
             return false;
         }
@@ -106,24 +134,36 @@ export class CellHelper {
         return this.isValueEmpty(playerGridNotation[gridPosition.row][gridPosition.col]);
     }
 
-    static isClearable(
+    static isClearableAt(
         gridPosition: GridPosition,
-        givenGridNotation: BoardGridNotation = gameplayStoreState().puzzle.given,
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given,
     ): boolean {
-        return !this.isEditable(gridPosition, givenGridNotation);
+        if (!givenGridNotation) {
+            return false;
+        }
+
+        return !this.isEditableAt(gridPosition, givenGridNotation);
     }
 
-    static isEditable(
+    static isEditableAt(
         gridPosition: GridPosition,
-        givenGridNotation: BoardGridNotation = gameplayStoreState().puzzle.given
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given
     ): boolean {
+        if (!givenGridNotation) {
+            return false;
+        }
+
         return this.isValueEmpty(givenGridNotation[gridPosition.row][gridPosition.col])
     }
 
     static isStaticAt(
         gridPosition: GridPosition,
-        givenGridNotation: BoardGridNotation = gameplayStoreState().puzzle.given
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given
     ): boolean {
+        if (!givenGridNotation) {
+            return true;
+        }
+
         return this.isValueNotEmpty(givenGridNotation[gridPosition.row][gridPosition.col])
     }
 
@@ -133,5 +173,35 @@ export class CellHelper {
 
     static isValueNotEmpty(value: number | undefined | null): boolean {
         return !this.isValueEmpty(value);
+    }
+
+    static areNotesEmptyAt(
+        gridPosition: GridPosition,
+        notesGridNotation: BoardNotesGridNotation | undefined = gameplayStoreState().puzzle?.notes
+    ): boolean {
+        if (!notesGridNotation) {
+            return true;
+        }
+
+        return !notesGridNotation[gridPosition.row][gridPosition.col].length;
+    }
+
+    static areNotesNotEmptyAt(
+        gridPosition: GridPosition,
+        notesGridNotation: BoardNotesGridNotation | undefined = gameplayStoreState().puzzle?.notes
+    ): boolean {
+        return this.areNotesEmptyAt(gridPosition, notesGridNotation)
+    }
+
+    static containsToggledNoteAt(
+        gridPosition: GridPosition,
+        noteValue: number,
+        notesGridNotation: BoardNotesGridNotation | undefined = gameplayStoreState().puzzle?.notes
+    ): boolean {
+        if (!notesGridNotation) {
+            return false;
+        }
+
+        return notesGridNotation[gridPosition.row][gridPosition.col].includes(noteValue);
     }
 }
