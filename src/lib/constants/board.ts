@@ -4,6 +4,10 @@ export const ROWS_COUNT: number = 9 as const;
 
 export const COLUMNS_COUNT: number = 9 as const;
 
+export const SUBGRID_ROWS_COUNT: number = 3 as const;
+
+export const SUBGRID_COLUMNS_COUNT: number = 3 as const
+
 export const ROW_INDEX_BOUNDS: Bounds = {min: 0, max: ROWS_COUNT - 1};
 
 export const COL_INDEX_BOUNDS: Bounds = {min: 0, max: COLUMNS_COUNT - 1};

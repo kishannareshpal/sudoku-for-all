@@ -1,6 +1,6 @@
-import { GridIndex, GridPosition, Point } from "@/lib/shared-types";
-import { COLUMNS_COUNT, ROWS_COUNT, ROW_INDEX_BOUNDS, COL_INDEX_BOUNDS } from "@/lib/constants/board";
+import { COLUMNS_COUNT, COL_INDEX_BOUNDS, ROWS_COUNT, ROW_INDEX_BOUNDS } from "@/lib/constants/board";
 import { NumberHelper } from "@/lib/helpers/number-helper";
+import { GridIndex, GridPosition, Point } from "@/lib/shared-types";
 
 export class GridPositionHelper {
     static zero(): GridPosition {
@@ -63,6 +63,14 @@ export class GridPositionHelper {
         const sameCol = gridPositionA.col === gridPositionB.col;
 
         return sameRow && sameCol;
+    }
+
+    static equalRow(gridPositionA: GridPosition, gridPositionB: GridPosition): boolean {
+        return gridPositionA.row === gridPositionB.row;
+    }
+
+    static equalColumn(gridPositionA: GridPosition, gridPositionB: GridPosition): boolean {
+        return gridPositionA.col === gridPositionB.col;
     }
 
     static isOutOfBounds(gridPosition: GridPosition): boolean {

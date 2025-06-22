@@ -95,7 +95,7 @@ export const PausedGameOverlay = () => {
             </Canvas>
 
             <Animated.Text style={[animatedTextStyle, styles.text]}>
-                Paused game
+                Paused
             </Animated.Text>
         </Animated.View>
     )

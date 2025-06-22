@@ -167,6 +167,42 @@ export class CellHelper {
         return this.isValueNotEmpty(givenGridNotation[gridPosition.row][gridPosition.col])
     }
 
+    static isPlayerValueEqualAt(
+        gridPosition: GridPosition,
+        value: number,
+        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.player,
+        options?: { considerEmptyAsEqual: boolean }
+    ): boolean {
+        options ||= { considerEmptyAsEqual: false };
+
+        const valueAtGridPosition = playerGridNotation?.[gridPosition.row][gridPosition.col] || 0;
+        const areTheSame = valueAtGridPosition == value;
+
+        if (options.considerEmptyAsEqual) {
+            return areTheSame;
+        }
+
+        return areTheSame && CellHelper.isValueNotEmpty(valueAtGridPosition);
+    }
+
+    static isValueEmptyAt(
+        gridPosition: GridPosition,
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given,
+        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.player,
+    ): boolean {
+        return this.isValueNotEmpty(givenGridNotation?.[gridPosition.row][gridPosition.col]) 
+            || this.isValueNotEmpty(playerGridNotation?.[gridPosition.row][gridPosition.col]);
+
+    }
+
+    static isValueNotEmptyAt(
+        gridPosition: GridPosition,
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given,
+        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.player,
+    ): boolean {
+        return !this.isValueEmptyAt(gridPosition, givenGridNotation, playerGridNotation);
+    }
+
     static isValueEmpty(value: number | undefined | null): boolean {
         return !value;
     }
