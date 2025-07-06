@@ -3,7 +3,6 @@ import { ControlButton } from "@/lib/components/game/control-button";
 import { CursorModeToggle } from "@/lib/components/game/cursor-mode-toggle";
 import { Header } from "@/lib/components/game/header";
 import { NumberPad } from "@/lib/components/game/number-pad/number-pad";
-import { PausedGameOverlay } from "@/lib/components/game/paused-game-overlay";
 import { gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay-store";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -86,7 +85,7 @@ const GameBoard = () => {
     return (
         <View style={styles.boardContainer}>
             <Board puzzle={puzzle}>
-                <PausedGameOverlay />
+                {/* <PausedGameOverlay /> */}
             </Board>
         </View>
     )

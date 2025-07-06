@@ -4,7 +4,7 @@ import { Canvas, RadialGradient, Rect, vec } from "@shopify/react-native-skia";
 import { BlurView } from "expo-blur";
 import { StyleSheet } from "react-native";
 import Animated, { useAnimatedProps, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
-import { useBoardCanvasContext } from "./board/board-context";
+// import { useBoardGraphicsContext } from "./board/board-graphics-context";
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
@@ -13,7 +13,7 @@ const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
  * again.
  */
 export const PausedGameOverlay = () => {
-    const boardCanvas = useBoardCanvasContext();
+    const boardCanvas = useBoardGraphicsContext();
 
     const currentOpacity = useSharedValue<number>(0);
     const currentContainerOpacity = useSharedValue<number>(0);

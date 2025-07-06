@@ -19,7 +19,7 @@ export class TextHelper {
                 return 'Extreme'
 
             default:
-                break;
+                throw new Error(`Invalid difficulty provided: ${difficulty}`);
         }
     }
 }

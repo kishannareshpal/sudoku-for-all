@@ -1,141 +1,141 @@
-import { useBoardCanvasContext } from "@/lib/components/game/board/board-context";
-import { BoardWrapper } from "@/lib/components/game/board/board-wrapper";
-import { Cell } from "@/lib/components/game/board/cell/cell";
-import { CursorCell } from "@/lib/components/game/board/cell/cursor-cell";
-import { COLUMNS_COUNT, ROWS_COUNT } from "@/lib/constants/board";
-import { CellHelper } from "@/lib/helpers/cell-helper";
-import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
-import { Point, Puzzle } from "@/lib/shared-types";
-import { Children, PropsWithChildren } from "react";
-import { StyleSheet, View } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { BoardCellDivisions } from "./board-cell-divisions";
+// import { useBoardGraphicsContext } from "@/lib/components/game/board/board-graphics-context";
+// import { BoardWrapper } from "@/lib/components/game/board/board-wrapper";
+// import { Cell } from "@/lib/components/game/board/cell/cell";
+// import { CursorCell } from "@/lib/components/game/board/cell/cursor-cell";
+// import { COLUMNS_COUNT, ROWS_COUNT } from "@/lib/constants/board";
+// import { CellHelper } from "@/lib/helpers/cell-helper";
+// import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
+// import { Point, Puzzle } from "@/lib/shared-types";
+// import { Children, PropsWithChildren } from "react";
+// import { StyleSheet, View } from "react-native";
+// import { Gesture, GestureDetector } from "react-native-gesture-handler";
+// import { BoardCellDivisions } from "./board-cell-divisions";
 
-type BoardProps = PropsWithChildren<{
-    puzzle: Puzzle
-}>
+// type BoardProps = PropsWithChildren<{
+//     puzzle: Puzzle
+// }>
 
-export const Board = (
-    {
-        puzzle,
-        children,
-    }: BoardProps
-) => {
-    return (
-        <View style={styles.container}>
-            <BoardWrapper>
-                <PuzzleScene puzzle={puzzle}/>
+// export const Board = (
+//     {
+//         puzzle,
+//         children,
+//     }: BoardProps
+// ) => {
+//     return (
+//         <View style={styles.container}>
+//             <BoardWrapper>
+//                 <PuzzleScene puzzle={puzzle}/>
 
-                {Children.count(children) ? (
-                    <View style={styles.overlayContainer}>
-                        {children}
-                    </View>
-                ) : null}
-            </BoardWrapper>
-        </View>
-    )
-}
+//                 {Children.count(children) ? (
+//                     <View style={styles.overlayContainer}>
+//                         {children}
+//                     </View>
+//                 ) : null}
+//             </BoardWrapper>
+//         </View>
+//     )
+// }
 
-type PuzzleSceneProps = {
-    puzzle: Puzzle
-}
+// type PuzzleSceneProps = {
+//     puzzle: Puzzle
+// }
 
-const PuzzleScene = ({puzzle}: PuzzleSceneProps) => {
-    const boardCanvas = useBoardCanvasContext();
+// const PuzzleScene = ({puzzle}: PuzzleSceneProps) => {
+//     const boardCanvas = useBoardGraphicsContext();
 
-    const panGesture = Gesture
-        .Pan()
-        .averageTouches(true)
-        .onBegin((event) => {
-            handleCursorMovementOnTouch({x: event.x, y: event.y})
-        })
-        .onChange((event) => {
-            handleCursorMovementOnTouch({x: event.x, y: event.y})
-        })
-        .runOnJS(true);
+//     const panGesture = Gesture
+//         .Pan()
+//         .averageTouches(true)
+//         .onBegin((event) => {
+//             handleCursorMovementOnTouch({x: event.x, y: event.y})
+//         })
+//         .onChange((event) => {
+//             handleCursorMovementOnTouch({x: event.x, y: event.y})
+//         })
+//         .runOnJS(true);
 
-    const handleCursorMovementOnTouch = (touchedPoint: Point) => {
-        const newGridPosition = GridPositionHelper.createFromPoint(
-            touchedPoint,
-            boardCanvas.cellLength,
-        );
+//     const handleCursorMovementOnTouch = (touchedPoint: Point) => {
+//         const newGridPosition = GridPositionHelper.createFromPoint(
+//             touchedPoint,
+//             boardCanvas.cellLength,
+//         );
 
-        if (!newGridPosition) {
-            // Out of bounds, do nothing
-            return;
-        }
+//         if (!newGridPosition) {
+//             // Out of bounds, do nothing
+//             return;
+//         }
 
-        CellHelper.moveCursorTo(newGridPosition);
-    }
+//         CellHelper.moveCursorTo(newGridPosition);
+//     }
 
-    const renderGrid = () => {
-        const rows = [];
+//     const renderGrid = () => {
+//         const rows = [];
 
-        for (let rowIndex = 0; rowIndex < ROWS_COUNT; rowIndex++) {
-            const columnCells = [];
+//         for (let rowIndex = 0; rowIndex < ROWS_COUNT; rowIndex++) {
+//             const columnCells = [];
 
-            for (let colIndex = 0; colIndex < COLUMNS_COUNT; colIndex++) {
-                const playerValue = puzzle.player[rowIndex][colIndex];
-                const givenValue = puzzle.given[rowIndex][colIndex];
-                const notesValue = puzzle.notes[rowIndex][colIndex] ?? [];
+//             for (let colIndex = 0; colIndex < COLUMNS_COUNT; colIndex++) {
+//                 const playerValue = puzzle.player[rowIndex][colIndex];
+//                 const givenValue = puzzle.given[rowIndex][colIndex];
+//                 const notesValue = puzzle.notes[rowIndex][colIndex] ?? [];
 
-                columnCells.push(
-                    <Cell
-                        key={rowIndex + '-' + colIndex}
-                        col={colIndex}
-                        row={rowIndex}
-                        value={givenValue || playerValue}
-                        notes={notesValue}
-                    />
-                );
-            }
+//                 columnCells.push(
+//                     <Cell
+//                         key={rowIndex + '-' + colIndex}
+//                         col={colIndex}
+//                         row={rowIndex}
+//                         value={givenValue || playerValue}
+//                         notes={notesValue}
+//                     />
+//                 );
+//             }
 
-            rows.push(
-                <View key={rowIndex} style={styles.gridRow}>
-                    {columnCells}
-                </View>
-            )
-        }
+//             rows.push(
+//                 <View key={rowIndex} style={styles.gridRow}>
+//                     {columnCells}
+//                 </View>
+//             )
+//         }
 
-        return (
-            <View style={styles.gridContainer}>
-                {rows}
-            </View>
-        );
-    }
+//         return (
+//             <View style={styles.gridContainer}>
+//                 {rows}
+//             </View>
+//         );
+//     }
 
-    return (
-        <GestureDetector gesture={panGesture}>
-            <View style={styles.puzzleSceneContainer}>
-                {renderGrid()}
-                <BoardCellDivisions/>
-                <CursorCell/>
-            </View>
-        </GestureDetector>
-    )
-}
+//     return (
+//         <GestureDetector gesture={panGesture}>
+//             <View style={styles.puzzleSceneContainer}>
+//                 {renderGrid()}
+//                 <BoardCellDivisions/>
+//                 <CursorCell/>
+//             </View>
+//         </GestureDetector>
+//     )
+// }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    },
+// const styles = StyleSheet.create({
+//     container: {
+//         flex: 1
+//     },
 
-    overlayContainer: {
-        ...StyleSheet.absoluteFillObject,
-        flex: 1,
-    },
+//     overlayContainer: {
+//         ...StyleSheet.absoluteFillObject,
+//         flex: 1,
+//     },
 
-    puzzleSceneContainer: {
-        position: 'relative',
-        flexShrink: 1,
-        flexDirection: 'column',
-    },
+//     puzzleSceneContainer: {
+//         position: 'relative',
+//         flexShrink: 1,
+//         flexDirection: 'column',
+//     },
 
-    gridContainer: {
-        flexDirection: 'column',
-    },
+//     gridContainer: {
+//         flexDirection: 'column',
+//     },
 
-    gridRow: {
-        flexDirection: 'row',
-    }
-})
+//     gridRow: {
+//         flexDirection: 'row',
+//     }
+// })

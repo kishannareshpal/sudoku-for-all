@@ -1,4 +1,4 @@
-import { useBoardCanvasContext } from "@/lib/components/game/board/board-context";
+import { useBoardGraphicsContext } from "@/lib/components/game/board/board-graphics-context";
 import { StyleSheet, View, ViewProps } from "react-native";
 
 export type BaseCellProps = ViewProps & {
@@ -15,7 +15,7 @@ export const BaseCell = (
         ...restProps
     }: BaseCellProps,
 ) => {
-    const boardCanvas = useBoardCanvasContext();
+    const boardCanvas = useBoardGraphicsContext();
 
     return (
         <View
