@@ -17,4 +17,14 @@ export class PointHelper {
 
         return { x, y };
     }
+
+    // static createFromSubgridPosition(
+    //     subgridPosition: SubgridPosition,
+    //     cellLength: number,
+    // ): Point {
+    //     const x = gridPosition.col * cellLength;
+    //     const y = gridPosition.row * cellLength;
+        
+    //     return { x, y };
+    // }
 }

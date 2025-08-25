@@ -29,12 +29,12 @@ export const BaseCell = (
 
     return (
         <Group>
-            <Rect 
+            <Rect
                 x={point.x}
                 y={point.y}
                 width={boardDimensions.cellLength}
                 height={boardDimensions.cellLength}
-                color="brown"
+                color="white"
             />
 
             {renderChildren?.(boardDimensions, point)}

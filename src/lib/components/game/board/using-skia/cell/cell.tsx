@@ -1,4 +1,5 @@
 import { SizeHelper } from "@/lib/helpers/size-helper";
+import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
 import { GridPosition, Point, Size } from "@/lib/shared-types";
 import { boardDimensionsAtom } from "@/lib/store/atoms/board-canvas-size.atom";
 import { useGameplayStore } from "@/lib/store/gameplay-store";
@@ -31,10 +32,9 @@ export const Cell = (
     const notesValue = useGameplayStore((store) => store.puzzle?.notes?.[gridPosition.row]?.[gridPosition.col] ?? [1, 2, 4]);
 
     return (
-        <BaseCell 
+        <BaseCell
             gridPosition={gridPosition}
             renderChildren={(boardDimensions, cellPointForGridPosition) => {
-
                 return (
                     <NotesCellText
                         font={font}
@@ -84,12 +84,12 @@ const NumberCellText = (
 
     useEffect(() => {
         font?.setSize(boardDimensions.cellLength / 2);
-    }, [boardDimensions])
+    }, [boardDimensions, font])
 
     const text = useSharedValue(value.toString());
-    const textSize = useDerivedValue<Size>(() => {
-        return font?.measureText(value.toString()) ?? SizeHelper.zero();
-    }, [text, font])
+    // const textSize = useDerivedValue<Size>(() => {
+    //     return font?.measureText(value.toString()) ?? SizeHelper.zero();
+    // }, [text, font])
 
 
     const point = {
@@ -123,140 +123,92 @@ const NotesCellText = (
     }: NotesCellTextProps
 ) => {
     const boardDimensions = useAtomValue(boardDimensionsAtom);
+    const fontSize = boardDimensions.cellLength / 3
 
     useEffect(() => {
-        font?.setSize(boardDimensions.cellLength / 3);
+        font?.setSize(fontSize);
     }, [boardDimensions]);
-
-    // const text = useSharedValue(value.toString());
-    // const textSize = useDerivedValue<Size>(() => {
-    //     return font?.measureText(value.toString()) ?? SizeHelper.zero();
-    // }, [text, font])
-
-    const point = {
-        x: cellPointForGridPosition.x, // - (textSize.value.width / 2),
-        y: cellPointForGridPosition.y // + (textSize.value.width / 2)
-    }
 
     return (
         <Group>
-            <Text
-                x={point.x}
-                y={point.y}
-                text="1"
+            <NoteText
+                value={5}
                 font={font}
+                cellPointForGridPosition={cellPointForGridPosition}
             />
 
-            <Text
-                x={point.x}
-                y={point.y}
-                text="1"
+            {/* <NoteText 
+                value={2}
                 font={font}
+                cellPointForGridPosition={cellPointForGridPosition}
             />
 
-            <Text
-                x={point.x}
-                y={point.y}
-                text="1"
+            <NoteText 
+                value={3}
                 font={font}
+                cellPointForGridPosition={cellPointForGridPosition}
             />
 
-            <Text
-                x={point.x}
-                y={point.y}
-                text="1"
+            <NoteText 
+                value={4}
                 font={font}
-            />
+                cellPointForGridPosition={cellPointForGridPosition}
+            /> */}
 
-            <Text
-                x={point.x}
-                y={point.y}
-                text="1"
-                font={font}
-            />
-
-            <Text
-                x={point.x}
-                y={point.y}
-                text="1"
-                font={font}
-            />
-
-            <Text
-                x={point.x}
-                y={point.y}
-                text="1"
-                font={font}
-            />
-
-            <Text
-                x={point.x}
-                y={point.y}
-                text="1"
-                font={font}
-            />
-
-            <Text
-                x={point.x}
-                y={point.y}
-                text="1"
-                font={font}
-            />
         </Group>
     )
 }
 
+type NoteTextProps = {
+    value: number,
+    cellPointForGridPosition: Point,
+    font: SkFont | null
+}
 
-// type CellTextsProps = {
-//     parentCellPoint: Point,
-//     numberParagraph: SkParagraph,
-//     noteParagraph: SkParagraph
-// }
+const NoteText = (
+    {
+        value,
+        cellPointForGridPosition,
+        font
+    }: NoteTextProps
+) => {
+    const boardDimensions = useAtomValue(boardDimensionsAtom);
+    const subgridCellLength = boardDimensions.cellLength / 3;
 
-// const CellText = (
-//     {
-//         parentCellPoint,
-//         numberParagraph,
-//         noteParagraph
-//     }: CellTextsProps
-// ) => {
-//     const boardDimensions = useAtomValue(boardDimensionsAtom);
+    const zero = SizeHelper.zero();
 
-    // const numberTextSize: Size = useMemo(() => {
-    //     if (!numberParagraph) {
-    //         return SizeHelper.zero();
-    //     }
+    const textSize = useDerivedValue<Size>(() => {
+        return font?.measureText(value.toString()) ?? zero;
+    }, [value, font]);
 
-    //     return {
-    //         width: numberParagraph.getLongestLine(),
-    //         height: numberParagraph.getHeight()
-    //     }
-    // }, [numberParagraph])
+    const subgridPosition = SubgridPositionHelper.createFromFlatIndex((value - 1) % 9);
 
-    // const numberTextPoint = {
-    //     x: parentCellPoint.x + (boardDimensions.cellLength / 2) - (numberTextSize.width / 2),
-    //     y: parentCellPoint.y + (boardDimensions.cellLength / 2) - (numberTextSize.height / 2)
+    // const point = {
+    //     x: (cellPointForGridPosition.x + (subgridCellLength * subgridPosition.col)) + (textSize.value.width / 2),
+    //     y: (cellPointForGridPosition.y + (subgridCellLength * subgridPosition.row)) + textSize.value.width
     // }
 
-//     const noteTextSize: Size = useMemo(() => {
-//         if (!noteParagraph) {
-//             return SizeHelper.zero();
-//         }
+    const point = {
+        x: (cellPointForGridPosition.x + (subgridCellLength * subgridPosition.col)), // + (textSize.value.width / 2),
+        y: (cellPointForGridPosition.y + (subgridCellLength * subgridPosition.row)) // + textSize.value.width
+    }
 
-//         return {
-//             width: noteParagraph.getLongestLine(),
-//             height: noteParagraph.getHeight()
-//         }
-//     }, [noteParagraph]);
+    return (
+        <>
+            {/* <Rect
+                x={point.x}
+                y={point.y}
+                color="blue"
+                width={10}
+                height={10}
+            /> */}
 
-//     return (
-//         <Group>
-//             {/* <Paragraph 
-//                 x={numberTextPoint.x}
-//                 y={numberTextPoint.y} 
-//                 paragraph={numberParagraph}
-//                 width={boardDimensions.cellLength}
-//             /> */}
-//         </Group>
-//     )
-// }
+            <Text
+                x={point.x}
+                y={point.y}
+                text={value.toString()}
+                font={font}
+            />
+        </>
+    )
+}

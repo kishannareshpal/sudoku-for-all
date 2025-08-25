@@ -9,6 +9,16 @@ export class SubgridPositionHelper {
         };
     }
 
+    static createFromFlatIndex(index: number): SubgridPosition {
+        const subGridRow = Math.floor(index / 3) as SubgridIndex;
+        const subGridCol = (index % 3) as SubgridIndex;
+
+        return {
+            row: subGridRow,
+            col: subGridCol
+        }
+    }
+
     static createFromGridPosition(gridPosition: GridPosition): SubgridPosition {
         const subGridRow = Math.floor(gridPosition.row / 3) as SubgridIndex;
         const subGridCol = Math.floor(gridPosition.col / 3) as SubgridIndex;

@@ -33,7 +33,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 12,
-        backgroundColor: '#191509',
+        // backgroundColor: '#191509',
+        backgroundColor: 'grey',
         gap: 24
     },
 

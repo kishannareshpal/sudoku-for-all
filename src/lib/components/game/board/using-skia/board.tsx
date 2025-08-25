@@ -24,7 +24,7 @@ export const Board = (
     const currentCanvasSize = useSharedValue<Size>({ width: 0, height: 0 });
     const setRootBoardDimensions = useSetAtom(boardDimensionsAtom);
 
-    const fontManager = useFonts({ 
+    const fontManager = useFonts({
         SplineSansMonoBold: [
             require("@assets/fonts/spline-sans-mono-bold.ttf")
         ],
@@ -67,7 +67,13 @@ export const Board = (
 
     return (
         <Canvas onSize={currentCanvasSize} style={styles.container}>
-            {renderCells()}
+            {/* {renderCells()} */}
+
+            {/* <Cell 
+                gridPosition={{ row: 0, col: 0 }}
+                fontManager={fontManager}
+                font={font}
+            /> */}
 
             <Dividers />
         </Canvas>

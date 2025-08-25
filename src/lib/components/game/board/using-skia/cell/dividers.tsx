@@ -1,7 +1,9 @@
-import { ROWS_COUNT } from "@/lib/constants/board";
+import { CELL_OUTLINE_WIDTH, ROWS_COUNT } from "@/lib/constants/board";
 import { boardDimensionsAtom } from "@/lib/store/atoms/board-canvas-size.atom";
 import { Points, vec } from "@shopify/react-native-skia";
 import { useAtomValue } from "jotai";
+
+const halfOfStrokeWidth = CELL_OUTLINE_WIDTH / 2;
 
 export const Dividers = () => {
 	const boardDimensions = useAtomValue(boardDimensionsAtom);
@@ -11,7 +13,7 @@ export const Dividers = () => {
 		
 		// Build vertical dividing lines
 		for (let rowIndex = 1; rowIndex < ROWS_COUNT; rowIndex++) {
-			const pointX = rowIndex * boardDimensions.cellLength;
+			const pointX = (rowIndex * boardDimensions.cellLength) - halfOfStrokeWidth;
 			
 			lines.push(
 				vec(pointX, 0),
@@ -21,7 +23,7 @@ export const Dividers = () => {
 		
 		// Build the horizontal dividing lines
 		for (let colIndex = 1; colIndex < ROWS_COUNT; colIndex++) {
-			const pointY = colIndex * boardDimensions.cellLength;
+			const pointY = (colIndex * boardDimensions.cellLength) - halfOfStrokeWidth;
 			
 			lines.push(
 				vec(0, pointY),
@@ -30,10 +32,10 @@ export const Dividers = () => {
 		}
 		
 		// Build the outer board stroke (forming a square)
-		const topLeft = vec(0, 0);
-		const topRight = vec(boardDimensions.boardLength, 0);
-		const bottomRight = vec(boardDimensions.boardLength, boardDimensions.boardLength);
-		const bottomLeft = vec(0, boardDimensions.boardLength)
+		const topLeft = vec(halfOfStrokeWidth, halfOfStrokeWidth);
+		const topRight = vec(boardDimensions.boardLength - halfOfStrokeWidth, halfOfStrokeWidth);
+		const bottomRight = vec(boardDimensions.boardLength - halfOfStrokeWidth, boardDimensions.boardLength - halfOfStrokeWidth);
+		const bottomLeft = vec(halfOfStrokeWidth, boardDimensions.boardLength - halfOfStrokeWidth)
 		
 		lines.push(
 			// From top-left to top-right:
@@ -55,11 +57,12 @@ export const Dividers = () => {
 	
 	return (
 		<Points
-		points={buildLines()}
-		mode="lines"
-		color="lightblue"
-		style="stroke"
-		strokeWidth={1}
+            antiAlias
+            points={buildLines()}
+            mode="lines"
+            color="black"
+            style="stroke"
+            strokeWidth={CELL_OUTLINE_WIDTH}
 		/>
 	)
 }

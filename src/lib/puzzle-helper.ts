@@ -1,4 +1,6 @@
+import { init } from "array-fns";
 import { getSudoku } from "sudoku-gen";
+import { CELLS_COUNT } from "./constants/board";
 import { BoardNotationHelper } from "./helpers/board-notation-helper";
 import { Difficulty, Puzzle } from "./shared-types";
 
@@ -29,7 +31,9 @@ export class PuzzleHelper {
          * but our app uses '0' instead. We need to replace all occurences of '-' with '0'
          */
         const givenPlainStringNotation = puzzle.puzzle.replaceAll('-', '0');
-        const solutionPlainStringNotation = puzzle.solution;
+
+        // const solutionPlainStringNotation = puzzle.solution;
+        const solutionPlainStringNotation = init(CELLS_COUNT, () => '6').join(',')
 
         return {
             timeElapsedInSeconds: 0,
