@@ -1,4 +1,4 @@
-import { Board } from "@/lib/components/game/board/using-skia/board";
+import { Board } from "@/lib/components/game/board/board";
 import { useGameplayStore } from "@/lib/store/gameplay-store";
 import { FiberProvider } from "its-fine";
 import { StyleSheet } from "react-native";
