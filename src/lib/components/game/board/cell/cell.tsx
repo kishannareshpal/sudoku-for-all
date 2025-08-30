@@ -7,7 +7,6 @@ import { useGameplayStore } from "@/lib/store/gameplay-store";
 import { Group, Text } from "@shopify/react-native-skia";
 import { init } from "array-fns";
 import { useAtomValue } from "jotai";
-import { useEffect } from "react";
 import { useSharedValue } from "react-native-reanimated";
 import { BaseCell } from "./base-cell";
 
@@ -21,45 +20,33 @@ export const Cell = (
         ...restProps
     }: CellProps,
 ) => {
-    const boardDimensions = useAtomValue(boardDimensionsAtom);
-
     const given = useGameplayStore((store) => store.puzzle?.given?.[gridPosition.row]?.[gridPosition.col]);
     const player = useGameplayStore((store) => store.puzzle?.player?.[gridPosition.row]?.[gridPosition.col]);
+    
     const numberValue: number = given ?? player ?? 0;
-
     const notesValue = useGameplayStore((store) => store.puzzle?.notes?.[gridPosition.row]?.[gridPosition.col] ?? [1, 2, 4]);
 
     return (
         <BaseCell
             gridPosition={gridPosition}
             renderChildren={(boardDimensions, cellPointForGridPosition) => {
-                return (
-                    <NotesCellText
-                        gridPosition={gridPosition}
-                        value={notesValue}
-                        cellPointForGridPosition={cellPointForGridPosition}
-                    />
-                )
-
-                // if (numberValue) {
-                //     return (
-                //         <NumberCellText 
-                //             font={font} 
-                //             value={numberValue}
-                //             cellPointForGridPosition={cellPointForGridPosition}
-                //         />
-                //     )
-                // } else if (notesValue?.length) {
-                //     return (
-                //         <NotesCellText
-                //             font={font}
-                //             value={notesValue}
-                //             cellPointForGridPosition={cellPointForGridPosition}
-                //         />
-                //     )
-                // } else {
-                //     return null;
-                // }
+                if (numberValue) {
+                    return (
+                        <NumberCellText 
+                            value={numberValue}
+                            cellPointForGridPosition={cellPointForGridPosition}
+                        />
+                    )
+                } else if (!notesValue?.length) {
+                    return (
+                        <NotesCellText
+                            value={notesValue}
+                            cellPointForGridPosition={cellPointForGridPosition}
+                        />
+                    )
+                } else {
+                    return null;
+                }
             }}
         />
     )
@@ -73,25 +60,17 @@ type NumberCellTextProps = {
 const NumberCellText = (
     {
         cellPointForGridPosition,
-        value,
-        font
+        value
     }: NumberCellTextProps
 ) => {
+    const { fonts } = useBoard();
     const boardDimensions = useAtomValue(boardDimensionsAtom);
 
-    useEffect(() => {
-        font?.setSize(boardDimensions.cellLength / 2);
-    }, [boardDimensions, font])
-
     const text = useSharedValue(value.toString());
-    // const textSize = useDerivedValue<Size>(() => {
-    //     return font?.measureText(value.toString()) ?? SizeHelper.zero();
-    // }, [text, font])
-
 
     const point = {
-        x: cellPointForGridPosition.x + (boardDimensions.cellLength / 2) - (textSize.value.width / 2),
-        y: cellPointForGridPosition.y + (boardDimensions.cellLength / 2) + (textSize.value.width / 2)
+        x: (cellPointForGridPosition.x + CELL_OUTLINE_WIDTH / 2) + (boardDimensions.cellLength / 3),
+        y: cellPointForGridPosition.y + (boardDimensions.numberTextSize / 2) + (boardDimensions.cellLength / 2) - CELL_OUTLINE_WIDTH,
     }
 
     return (
@@ -100,7 +79,7 @@ const NumberCellText = (
                 x={point.x}
                 y={point.y}
                 text={text}
-                font={font}
+                font={fonts.number}
             />
         </Group>
     )
@@ -108,13 +87,11 @@ const NumberCellText = (
 
 type NotesCellTextProps = {
     value: number[],
-    gridPosition: GridPosition,
     cellPointForGridPosition: Point
 }
 
 const NotesCellText = (
     {
-        gridPosition,
         cellPointForGridPosition,
         value,
     }: NotesCellTextProps
@@ -126,7 +103,6 @@ const NotesCellText = (
                     <NoteText
                         key={index}
                         value={index}
-                        gridPosition={gridPosition}
                         cellPointForGridPosition={cellPointForGridPosition}
                     />
                 ))
@@ -171,14 +147,12 @@ const NotesCellText = (
 
 type NoteTextProps = {
     value: number,
-    gridPosition: GridPosition,
     cellPointForGridPosition: Point
 }
 
 const NoteText = (
     {
         value,
-        gridPosition,
         cellPointForGridPosition
     }: NoteTextProps
 ) => {
@@ -191,13 +165,6 @@ const NoteText = (
     const paddingY = halfOfStrokeWidth;
     
     const subgridPosition = SubgridPositionHelper.createFromFlatIndex((value - 1) % 9);
-    // const point = {
-    //     x: cellPointForGridPosition.x + (subgridPosition.col * subgridCellLength) + (subgridCellLength / 2),
-    //     // x: (cellPointForGridPosition.x + paddingX) + ((subgridCellLength - paddingX) * subgridPosition.col),
-    //     y: (cellPointForGridPosition.y + paddingY) + ((subgridCellLength - paddingY) * subgridPosition.row) + boardDimensions.noteTextSize - halfOfStrokeWidth,
-    // };
-
-    const centerX = (boardDimensions.cellLength / 2) - (CELL_OUTLINE_WIDTH / 2) - paddingX;
 
     const point = {
         x: (cellPointForGridPosition.x + paddingX) + CELL_OUTLINE_WIDTH

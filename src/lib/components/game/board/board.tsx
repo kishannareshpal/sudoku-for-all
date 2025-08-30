@@ -27,7 +27,7 @@ export const Board = (
 
     const fontManager = useFonts({
         SplineSansMonoRegular: [
-            require("@assets/fonts/spline-sans-mono-regular.ttf")
+            require("@assets/fonts/spline-sans-mono-bold.ttf")
         ],
     })!;
 
