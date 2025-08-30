@@ -3,10 +3,9 @@ import { boardDimensionsAtom } from "@/lib/store/atoms/board-dimensions-atom";
 import { Points, vec } from "@shopify/react-native-skia";
 import { useAtomValue } from "jotai";
 
-const halfOfStrokeWidth = CELL_OUTLINE_WIDTH / 8;
-
 export const Dividers = () => {
 	const boardDimensions = useAtomValue(boardDimensionsAtom);
+	const halfOfStrokeWidth = CELL_OUTLINE_WIDTH / 8;
 	
 	const buildLines = () => {
 		const lines = [];
@@ -60,7 +59,7 @@ export const Dividers = () => {
             antiAlias
             points={buildLines()}
             mode="lines"
-            color="black"
+            color="grey"
             style="stroke"
             strokeWidth={CELL_OUTLINE_WIDTH}
 		/>

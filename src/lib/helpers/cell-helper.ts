@@ -82,11 +82,11 @@ export class CellHelper {
         if (!store.puzzle) {
             return;
         }
-
+    
         if (!this.isEditableAt(gridPosition, store.puzzle.given)) {
             return;
         }
-
+        
         store.updatePlayerValueAt(gridPosition, value);
     }
 

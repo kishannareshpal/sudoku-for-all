@@ -1,25 +1,22 @@
-import { BaseCell } from "@/lib/components/game/board/cell/base-cell";
-import { CELL_OUTLINE_WIDTH } from "@/lib/constants/board";
-import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
-import { useStoreSubscription } from "@/lib/hooks/use-store-subscription";
+import { CURSOR_CELL_OUTLINE_WIDTH } from "@/lib/constants/board";
 import { useGameplayStore } from "@/lib/store/gameplay-store";
-import * as Haptics from 'expo-haptics';
-import { StyleSheet, View } from "react-native";
+import { Rect } from "@shopify/react-native-skia";
+import { BaseCell } from "./base-cell";
 
 
 export const CursorCell = () => {
     const cursorGridPosition = useGameplayStore((state) => state.cursorGridPosition);
 
-    useStoreSubscription(
-        useGameplayStore,
-        (state) => state.cursorGridPosition,
-        () => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid)
-        },
-        {
-            equalityFn: GridPositionHelper.notChanged
-        }
-    )
+    // useStoreSubscription(
+    //     useGameplayStore,
+    //     (state) => state.cursorGridPosition,
+    //     () => {
+    //         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid)
+    //     },
+    //     {
+    //         equalityFn: GridPositionHelper.notChanged
+    //     }
+    // )
 
     if (!cursorGridPosition) {
         return null;
@@ -28,23 +25,19 @@ export const CursorCell = () => {
     return (
         <BaseCell
             gridPosition={cursorGridPosition}
-            renderChildren={() => {
-                return <View style={styles.cursorBackground}/>
+            renderChildren={(boardDimensions, cellPointForGridPosition) => {
+                return (
+                    <Rect
+                        x={cellPointForGridPosition.x}
+                        y={cellPointForGridPosition.y}
+                        width={boardDimensions.cellLength}
+                        height={boardDimensions.cellLength}
+                        style="stroke"
+                        strokeWidth={CURSOR_CELL_OUTLINE_WIDTH}
+                        color="red"
+                    />
+                )
             }} 
         />
     )
 }
-
-const styles = StyleSheet.create({
-    cursor: {
-        position: 'absolute',
-        borderWidth: CELL_OUTLINE_WIDTH,
-        borderColor: '#F0B719'
-    },
-    cursorBackground: {
-        width: '100%',
-        height: '100%',
-        backgroundColor: '#221A00',
-        zIndex: -1
-    }
-})

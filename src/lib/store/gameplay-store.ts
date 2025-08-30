@@ -16,6 +16,7 @@ type GameplayStoreState = {
     cursorMode: CursorMode,
     cursorGridPosition: GridPosition,
     puzzle?: Puzzle,
+    somevalue: number,
 }
 
 type GameplayStoreActions = {
@@ -31,6 +32,7 @@ type GameplayStoreActions = {
         notes: BoardNotesGridNotationValue,
         forceOperation?: ForceToggleOperation
     ) => void,
+    setSomeValue: (val: number) => void
 }
 
 type GameplayStore = GameplayStoreState & GameplayStoreActions;
@@ -39,13 +41,18 @@ const initialState: GameplayStoreState = {
     state: 'playing',
     cursorMode: 'number',
     cursorGridPosition: GridPositionHelper.zero(),
-    puzzle: undefined
+    puzzle: undefined,
+    somevalue: 0,
 }
 
 export const useGameplayStore = create<GameplayStore>()(
     subscribeWithSelector(
         (set, get) => ({
             ...initialState,
+
+            setSomeValue(val) {
+                set({ somevalue: val })
+            },
 
             updateGameState: (state) => {
                 set({ state: state });
