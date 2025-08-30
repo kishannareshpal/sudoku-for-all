@@ -1,16 +1,34 @@
 import { Board } from "@/lib/components/game/board/board";
 import { ControlButton } from "@/lib/components/game/control-button";
 import { CursorModeToggle } from "@/lib/components/game/cursor-mode-toggle";
+import { Header } from "@/lib/components/game/header";
 import { NumberPad } from "@/lib/components/game/number-pad/number-pad";
-import { useGameplayStore } from "@/lib/store/gameplay-store";
-import { FiberProvider } from "its-fine";
+import { gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay-store";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const GameScreen = () => {
+    const handleUndo = (): void => {
+
+    }
+
+    const handleRedo = (): void => {
+
+    }
+
+    const handleHint = (): void => {
+
+    }
+
+    const handleEraser = (): void => {
+        const { cursorGridPosition, erasePlayerValueAt } = gameplayStoreState();
+        erasePlayerValueAt(cursorGridPosition);
+    }
+
     return (
         <SafeAreaView style={styles.container}>
-            {/* <Header /> */}
+            <Header />
+
             <GameBoard />
 
             <View style={styles.controlsContainer}>
@@ -20,7 +38,7 @@ const GameScreen = () => {
                             type: 'material',
                             name: 'undo-variant'
                         }}
-                        // onPress={handleUndo}
+                        onPress={handleUndo}
                     />
 
                     <ControlButton
@@ -28,7 +46,7 @@ const GameScreen = () => {
                             type: 'material',
                             name: 'redo-variant'
                         }}
-                        // onPress={handleRedo}
+                        onPress={handleRedo}
                     />
 
                     <ControlButton
@@ -36,7 +54,7 @@ const GameScreen = () => {
                             type: 'material',
                             name: 'lightbulb'
                         }}
-                        // onPress={handleHint}
+                        onPress={handleHint}
                     />
 
                     <ControlButton
@@ -44,7 +62,7 @@ const GameScreen = () => {
                             type: 'material',
                             name: 'eraser'
                         }}
-                        // onPress={handleEraser}
+                        onPress={handleEraser}
                     />
 
                 </View>
@@ -65,13 +83,11 @@ const GameBoard = () => {
     }
 
     return (
-        <FiberProvider>
-            {/* <BoardProvider fontManager={fontManager} fonts={{ number: fonts[0], note: fonts[1] }}> */}
+        <View style={styles.boardContainer}>
             <Board>
                 {/* <PausedGameOverlay /> */}
             </Board>
-            {/* </BoardProvider> */}
-        </FiberProvider>
+        </View>
     )
 }
 
@@ -79,7 +95,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 12,
-        backgroundColor: 'grey',
+        backgroundColor: '#191509',
         gap: 24
     },
 

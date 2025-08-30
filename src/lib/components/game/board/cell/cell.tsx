@@ -1,8 +1,9 @@
 import { CELL_OUTLINE_WIDTH } from "@/lib/constants/board";
-import { useBoard } from "@/lib/contexts/board-context";
+// import { useBoard } from "@/lib/contexts/board-context";
 import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
 import { GridPosition, Point } from "@/lib/shared-types";
 import { boardDimensionsAtom } from "@/lib/store/atoms/board-dimensions-atom";
+import { fontsAtom } from "@/lib/store/atoms/fonts-atom";
 import { useGameplayStore } from "@/lib/store/gameplay-store";
 import { Group, Text } from "@shopify/react-native-skia";
 import { init } from "array-fns";
@@ -63,14 +64,15 @@ const NumberCellText = (
         value
     }: NumberCellTextProps
 ) => {
-    const { fonts } = useBoard();
+    const fonts = useAtomValue(fontsAtom);
+    // const { fonts } = useBoard();
     const boardDimensions = useAtomValue(boardDimensionsAtom);
 
     const text = useSharedValue(value.toString());
 
     const point = {
         x: (cellPointForGridPosition.x + CELL_OUTLINE_WIDTH / 2) + (boardDimensions.cellLength / 3),
-        y: cellPointForGridPosition.y + (boardDimensions.numberTextSize / 2) + (boardDimensions.cellLength / 2) - CELL_OUTLINE_WIDTH,
+        y: cellPointForGridPosition.y + (fonts.numberFontSize / 2) + (boardDimensions.cellLength / 2) - CELL_OUTLINE_WIDTH,
     }
 
     return (
@@ -79,7 +81,7 @@ const NumberCellText = (
                 x={point.x}
                 y={point.y}
                 text={text}
-                font={fonts.number}
+                font={fonts.numberFont}
             />
         </Group>
     )
@@ -156,7 +158,7 @@ const NoteText = (
         cellPointForGridPosition
     }: NoteTextProps
 ) => {
-    const { fonts } = useBoard();
+    const fonts = useAtomValue(fontsAtom);
     const boardDimensions = useAtomValue(boardDimensionsAtom);
 
     const subgridCellLength = boardDimensions.cellLength / 3;
@@ -170,12 +172,12 @@ const NoteText = (
         x: (cellPointForGridPosition.x + paddingX) + CELL_OUTLINE_WIDTH
             + (subgridPosition.col * (subgridCellLength - paddingX))
             + (subgridCellLength / 2)
-            - (boardDimensions.noteTextSize / 2),
+            - (fonts.notesFontSize / 2),
 
         y: (cellPointForGridPosition.y + paddingY) - (CELL_OUTLINE_WIDTH / 2)
             + (subgridPosition.row * (subgridCellLength - paddingY))
             + (subgridCellLength / 2)
-            + (boardDimensions.noteTextSize / 2),
+            + (fonts.notesFontSize / 2),
     };
 
     return (
@@ -184,7 +186,7 @@ const NoteText = (
                 x={point.x}
                 y={point.y}
                 text={value.toString()}
-                font={fonts.note}
+                font={fonts.notesFont}
                 color="black"
             />
         </>

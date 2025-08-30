@@ -1,4 +1,3 @@
-import { useBoardGraphicsContext } from "@/lib/components/game/board/board-graphics-context";
 import { BaseCell } from "@/lib/components/game/board/cell/base-cell";
 import { CELL_OUTLINE_WIDTH } from "@/lib/constants/board";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
@@ -9,7 +8,6 @@ import { StyleSheet, View } from "react-native";
 
 
 export const CursorCell = () => {
-    const boardCanvas = useBoardGraphicsContext();
     const cursorGridPosition = useGameplayStore((state) => state.cursorGridPosition);
 
     useStoreSubscription(
@@ -29,18 +27,11 @@ export const CursorCell = () => {
 
     return (
         <BaseCell
-            row={cursorGridPosition.row}
-            col={cursorGridPosition.col}
-            style={[
-                styles.cursor,
-                {
-                    top: boardCanvas.cellLength * cursorGridPosition.row,
-                    left: boardCanvas.cellLength * cursorGridPosition.col,
-                }
-            ]}
-        >
-            <View style={styles.cursorBackground}/>
-        </BaseCell>
+            gridPosition={cursorGridPosition}
+            renderChildren={() => {
+                return <View style={styles.cursorBackground}/>
+            }} 
+        />
     )
 }
 
