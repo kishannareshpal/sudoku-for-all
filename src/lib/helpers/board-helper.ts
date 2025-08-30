@@ -57,7 +57,8 @@ export class BoardHelper {
         peerFoundCallback?: (peerGridPosition: GridPosition, peerType: PeerType) => void,
         nonPeerFoundCallback?: (nonPeerGridPosition: GridPosition) => void,
         options?: ProcessEachPeerAndNonPeerCellOptions,
-    ) {
+        abortSignal?: AbortSignal
+    ): void {
         const puzzle = gameplayStoreState().puzzle;
 
         const defaultedOptions: ProcessEachPeerAndNonPeerCellOptions = {
@@ -71,6 +72,10 @@ export class BoardHelper {
 
         for (let rowIndex = 0; rowIndex < ROWS_COUNT; rowIndex++) {
             for (let colIndex = 0; colIndex < COLUMNS_COUNT; colIndex++) {
+                if (abortSignal?.aborted) {
+                    return;
+                }
+
                 const currentGridPosition = GridPositionHelper.createFromIndexes(rowIndex, colIndex);
 
                 // Check note peer condition

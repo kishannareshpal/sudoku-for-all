@@ -28,6 +28,24 @@ export class CellHelper {
         return notesGridNotation[gridPosition.row][gridPosition.col];
     }
 
+    static getNumberValueAtCursor(
+        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.player,
+    ): BoardGridNotationValue {
+        const cursorGridPosition = gameplayStoreState().cursorGridPosition;
+        return this.getNumberValueAt(cursorGridPosition, playerGridNotation);
+    }
+
+    static getNumberValueAt(
+        gridPosition: GridPosition,
+        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.player,
+    ): BoardGridNotationValue {
+        if (!playerGridNotation) {
+            return 0;
+        }
+        
+        return playerGridNotation[gridPosition.row][gridPosition.col];
+    }
+
     static moveCursorTo(
         gridPosition: GridPosition
     ): void {

@@ -5,10 +5,10 @@ import { Point } from "@/lib/shared-types";
 import { boardDimensionsAtom } from "@/lib/store/atoms/board-dimensions-atom";
 import { fontsAtom } from "@/lib/store/atoms/fonts-atom";
 import {
-    Canvas,
-    matchFont,
-    useCanvasSize,
-    useFonts,
+  Canvas,
+  matchFont,
+  useCanvasSize,
+  useFonts,
 } from "@shopify/react-native-skia";
 import { useAtom, useSetAtom } from "jotai";
 import React, { useEffect } from "react";
@@ -17,6 +17,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { Cell } from "./cell/cell";
 import { CursorCell } from "./cell/cursor-cell";
 import { Dividers } from "./cell/dividers";
+import { RelatedCells } from "./cell/related-cells";
 
 export const Board = () => {
   const { ref, size: canvasSize } = useCanvasSize();
@@ -110,9 +111,19 @@ export const Board = () => {
   return (
     <GestureDetector gesture={panGesture}>
       <Canvas ref={ref} style={styles.container}>
+        {/* 
+          Render order matters here:
+          - Elements listed earlier are drawn first / appear "behind"
+          - Elements listed later are drawn on top / appear "after / atop" the ones earlier
+          This is like z-index: later children overlay earlier ones 
+        */}
+        
+        <RelatedCells />
+
         {renderCells()}
 
         <Dividers />
+
 
         <CursorCell />
       </Canvas>

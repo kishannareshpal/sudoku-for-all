@@ -6,9 +6,9 @@ import { fontsAtom } from "@/lib/store/atoms/fonts-atom";
 import { useGameplayStore } from "@/lib/store/gameplay-store";
 import { Group, Text } from "@shopify/react-native-skia";
 import { useAtomValue } from "jotai";
-import { BaseCell, CommonBaseCellProps } from "./base-cell";
+import { BaseCell, CommonCellProps } from "./base-cell";
 
-type CellProps = CommonBaseCellProps & {};
+type CellProps = CommonCellProps & {};
 
 export const Cell = ({ gridPosition }: CellProps) => {
     const given = useGameplayStore((store) => store.puzzle?.given?.[gridPosition.row]?.[gridPosition.col]);

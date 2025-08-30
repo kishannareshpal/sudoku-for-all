@@ -4,11 +4,11 @@ import { BoardDimensions, boardDimensionsAtom } from "@/lib/store/atoms/board-di
 import { Group } from "@shopify/react-native-skia";
 import { useAtomValue } from "jotai";
 
-export type CommonBaseCellProps = {
+export type CommonCellProps = {
     gridPosition: GridPosition,
 }
 
-export type BaseCellProps = CommonBaseCellProps & {
+export type BaseCellProps = CommonCellProps & {
     renderChildren?: (boardDimensions: BoardDimensions, point: Point) => React.ReactNode
 }
 
