@@ -20,7 +20,9 @@ export const CELLS_COUNT: number = ROWS_COUNT * COLUMNS_COUNT;
 
 export const CELL_OUTLINE_WIDTH: number = 1 as const;
 
-export const CURSOR_CELL_OUTLINE_WIDTH: number = 2 as const;
+export const SUBGRID_OUTLINE_WIDTH: number = 3 as const;
+
+export const CURSOR_CELL_OUTLINE_WIDTH: number = SUBGRID_OUTLINE_WIDTH;
 
 /**
  * The outer border width of the board.

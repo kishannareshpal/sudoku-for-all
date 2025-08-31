@@ -1,4 +1,10 @@
-import { COLUMNS_COUNT, ROWS_COUNT } from "@/lib/constants/board";
+import {
+    CELL_OUTLINE_WIDTH,
+    COLUMNS_COUNT,
+    CURSOR_CELL_OUTLINE_WIDTH,
+    ROWS_COUNT,
+    SUBGRID_OUTLINE_WIDTH
+} from "@/lib/constants/board";
 import { CellHelper } from "@/lib/helpers/cell-helper";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { Point } from "@/lib/shared-types";
@@ -35,8 +41,8 @@ export const Board = () => {
     const boardLength = Math.min(canvasSize.width, canvasSize.height);
     const cellLength = boardLength / COLUMNS_COUNT;
 
-    const numberFontSize = cellLength / 2;
-    const notesFontSize = cellLength / 3;
+    const numberFontSize = cellLength * 0.8;
+    const notesFontSize = (cellLength / 3) - CURSOR_CELL_OUTLINE_WIDTH;
 
     setBoardDimensionsAtom({
       boardLength,

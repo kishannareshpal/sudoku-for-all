@@ -2,12 +2,26 @@ import { Board } from "@/lib/components/game/board/board";
 import { ControlButton } from "@/lib/components/game/control-button";
 import { CursorModeToggle } from "@/lib/components/game/cursor-mode-toggle";
 import { NumberPad } from "@/lib/components/game/number-pad/number-pad";
-import { gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay-store";
+import { CellHelper } from "@/lib/helpers/cell-helper";
+import { useGameplayStore } from "@/lib/store/gameplay-store";
 import { FiberProvider } from "its-fine";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const GameScreen = () => {
+    const handleUndo = () => {
+    }
+
+    const handleRedo = () => {
+    }
+
+    const handleHint = () => {
+    }
+
+    const handleEraser = () => {
+        CellHelper.eraseAtCursor();
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             {/* <Header /> */}
@@ -15,15 +29,12 @@ const GameScreen = () => {
 
             <View style={styles.controlsContainer}>
                 <View style={styles.controlsRow}>
-                    <ControlButton
+                    {/* <ControlButton
                         iconProps={{
                             type: 'material',
                             name: 'undo-variant'
                         }}
-                        onPress={() => {
-                            const state = gameplayStoreState();
-                            state.setSomeValue(state.somevalue - 1);
-                        }}
+                        onPress={handleUndo}
                     />
 
                     <ControlButton
@@ -31,11 +42,7 @@ const GameScreen = () => {
                             type: 'material',
                             name: 'redo-variant'
                         }}
-                        onPress={() => {
-                            const state = gameplayStoreState();
-                            state.setSomeValue(state.somevalue + 1);
-                        }}
-                        // onPress={handleRedo}
+                        onPress={handleRedo}
                     />
 
                     <ControlButton
@@ -43,15 +50,15 @@ const GameScreen = () => {
                             type: 'material',
                             name: 'lightbulb'
                         }}
-                        // onPress={handleHint}
-                    />
+                        onPress={handleHint}
+                    /> */}
 
                     <ControlButton
                         iconProps={{
                             type: 'material',
                             name: 'eraser'
                         }}
-                        // onPress={handleEraser}
+                        onPress={handleEraser}
                     />
                 </View>
 

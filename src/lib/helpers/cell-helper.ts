@@ -56,7 +56,13 @@ export class CellHelper {
         store.updateCursorGridPosition(gridPosition);
     }
 
-    static clearAt(
+    static applyHintAt(
+        gridPosition: GridPosition
+    ): void {
+
+    }
+
+    static eraseAt(
         gridPosition: GridPosition
     ): void {
         const store = gameplayStoreState();
@@ -65,11 +71,17 @@ export class CellHelper {
             return;
         }
 
-        if (!this.isClearableAt(gridPosition, store.puzzle.given)) {
+        if (!this.isEraseableAt(gridPosition, store.puzzle.given)) {
             return;
         }
 
-        store.updatePlayerValueAt(gridPosition, 0);
+        store.erasePlayerValueAt(gridPosition);
+    }
+
+    static eraseAtCursor(): void {
+        const store = gameplayStoreState();
+        const cursorGridPosition = store.cursorGridPosition;
+        this.eraseAt(cursorGridPosition);
     }
 
     static changePlayerValueAtCursorTo(
@@ -150,7 +162,7 @@ export class CellHelper {
         return this.isValueEmpty(playerGridNotation[gridPosition.row][gridPosition.col]);
     }
 
-    static isClearableAt(
+    static isEraseableAt(
         gridPosition: GridPosition,
         givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given,
     ): boolean {
@@ -158,7 +170,7 @@ export class CellHelper {
             return false;
         }
 
-        return !this.isEditableAt(gridPosition, givenGridNotation);
+        return this.isEditableAt(gridPosition, givenGridNotation);
     }
 
     static isEditableAt(
