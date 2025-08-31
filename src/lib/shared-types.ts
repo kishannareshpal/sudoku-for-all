@@ -42,6 +42,16 @@ export type SubgridPosition = {
     col: SubgridIndex
 };
 
+/**
+ * The type of peer found during the processing via {@link CellHelper.processEachPeerAndNonPeerCell}
+ */
+export type PeerType = 'note' | 'number' | 'both';
+
+export type PeerCellMetadata = {
+    gridPosition: GridPosition,
+    type: PeerType
+}
+
 export type Puzzle = {
     difficulty: Difficulty,
     solution: BoardGridNotation,

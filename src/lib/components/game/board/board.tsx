@@ -23,7 +23,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { Cell } from "./cell/cell";
 import { CursorCell } from "./cell/cursor-cell";
 import { Dividers } from "./cell/dividers";
-import { RelatedCells } from "./cell/related-cells";
+import { PeerCells } from "./cell/peer-cells";
 
 export const Board = () => {
   const { ref, size: canvasSize } = useCanvasSize();
@@ -124,7 +124,7 @@ export const Board = () => {
           This is like z-index: later children overlay earlier ones 
         */}
         
-        <RelatedCells />
+        <PeerCells />
 
         {renderCells()}
 

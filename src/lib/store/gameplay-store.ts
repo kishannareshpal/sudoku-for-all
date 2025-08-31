@@ -4,7 +4,7 @@ import {
     BoardNotesGridNotationValue,
     CursorMode, ForceToggleOperation,
     GameState,
-    GridPosition,
+    GridPosition, PeerCellMetadata,
     Puzzle
 } from "@/lib/shared-types";
 import { produce } from "immer";
@@ -15,6 +15,7 @@ type GameplayStoreState = {
     state: GameState,
     cursorMode: CursorMode,
     cursorGridPosition: GridPosition,
+    cursorPeerCells: PeerCellMetadata[],
     puzzle?: Puzzle
 }
 
@@ -22,6 +23,7 @@ type GameplayStoreActions = {
     updateGameState: (state: GameState) => void,
     toggleGameState: () => void,
     updateCursorGridPosition: (position: GridPosition) => void,
+    updateCursorPeerCells: (peerCells: PeerCellMetadata[]) => void,
     updateCursorMode: (mode: CursorMode) => void,
     updatePuzzle: (puzzle: Puzzle) => void,
     updatePlayerValueAt: (position: GridPosition, value: BoardGridNotationValue) => void,
@@ -39,6 +41,7 @@ const initialState: GameplayStoreState = {
     state: 'playing',
     cursorMode: 'number',
     cursorGridPosition: GridPositionHelper.zero(),
+    cursorPeerCells: [],
     puzzle: undefined
 }
 
@@ -63,6 +66,10 @@ export const useGameplayStore = create<GameplayStore>()(
 
             updateCursorGridPosition: (position) => {
                 set({cursorGridPosition: position})
+            },
+
+            updateCursorPeerCells: (peerCells) => {
+                set({cursorPeerCells: peerCells})
             },
 
             updateCursorMode: (mode) => {

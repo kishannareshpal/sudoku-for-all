@@ -1,13 +1,14 @@
 import { CELL_OUTLINE_WIDTH, CURSOR_CELL_OUTLINE_WIDTH, SUBGRID_OUTLINE_WIDTH } from "@/lib/constants/board";
 import { CellHelper } from "@/lib/helpers/cell-helper";
 import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
-import { Point } from "@/lib/shared-types";
+import { GridPosition, Point } from "@/lib/shared-types";
 import { boardDimensionsAtom } from "@/lib/store/atoms/board-dimensions-atom";
 import { fontsAtom } from "@/lib/store/atoms/fonts-atom";
 import { useGameplayStore } from "@/lib/store/gameplay-store";
 import { Group, Rect, Text } from "@shopify/react-native-skia";
 import { useAtomValue } from "jotai";
 import { BaseCell, CommonCellProps } from "./base-cell";
+import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 
 type CellProps = CommonCellProps & {};
 
@@ -36,6 +37,7 @@ export const Cell = ({ gridPosition }: CellProps) => {
                     return (
                         <NotesCellText
                             values={notes}
+                            gridPosition={gridPosition}
                             cellPointForGridPosition={cellPointForGridPosition}
                         />
                     )
@@ -86,13 +88,15 @@ const NumberCellText = (
 
 type NotesCellTextProps = {
     values: number[],
+    gridPosition: GridPosition,
     cellPointForGridPosition: Point
 }
 
 const NotesCellText = (
     {
-        cellPointForGridPosition,
         values,
+        gridPosition,
+        cellPointForGridPosition,
     }: NotesCellTextProps
 ) => {
     return (
@@ -101,6 +105,7 @@ const NotesCellText = (
                 <NoteText
                     key={noteValue}
                     value={noteValue}
+                    gridPosition={gridPosition}
                     cellPointForGridPosition={cellPointForGridPosition}
                 />
             ))}
@@ -110,15 +115,29 @@ const NotesCellText = (
 
 type NoteTextProps = {
     value: number,
+    gridPosition: GridPosition,
     cellPointForGridPosition: Point
 }
 
 const NoteText = (
     {
         value,
+        gridPosition,
         cellPointForGridPosition
     }: NoteTextProps
 ) => {
+    const isPeer = useGameplayStore(
+        (store) => store.cursorPeerCells.some(
+            (peerCellMetadata) => {
+                return GridPositionHelper.equals(
+                    gridPosition,
+                    peerCellMetadata.gridPosition,
+                ) && peerCellMetadata.type === 'note' &&
+                    (CellHelper.getNumberValueAt(store.cursorGridPosition, store.puzzle?.player, store.puzzle?.given) === value)
+            }
+        )
+    )
+
     const fonts = useAtomValue(fontsAtom);
     const boardDimensions = useAtomValue(boardDimensionsAtom);
 
@@ -128,30 +147,42 @@ const NoteText = (
     const fontWidth = fontMeasurement?.width || 0;
     const fontHeight = fontMeasurement?.height || 0;
 
-    const paddingX = CURSOR_CELL_OUTLINE_WIDTH;
-    const paddingY = CURSOR_CELL_OUTLINE_WIDTH;
+    const padding = CURSOR_CELL_OUTLINE_WIDTH;
 
     const subgridPosition = SubgridPositionHelper.createFromFlatIndex((value - 1) % 9);
     const point = {
-        x: cellPointForGridPosition.x + (SUBGRID_OUTLINE_WIDTH / 2) + paddingX
-            + (subgridPosition.col * (subgridCellLength - paddingX))
+        x: cellPointForGridPosition.x + (SUBGRID_OUTLINE_WIDTH / 2) + padding
+            + (subgridPosition.col * (subgridCellLength - padding))
             + (subgridCellLength / 2)
             - (fontWidth / 2),
 
-        y: cellPointForGridPosition.y - (SUBGRID_OUTLINE_WIDTH / 2) + paddingY
-            + (subgridPosition.row * (subgridCellLength - paddingY))
+        y: cellPointForGridPosition.y - (SUBGRID_OUTLINE_WIDTH / 2) + padding
+            + (subgridPosition.row * (subgridCellLength - padding))
             + (subgridCellLength / 2)
             + (fontHeight / 2),
     };
 
     return (
-        <Text
-            antiAlias
-            x={point.x}
-            y={point.y}
-            text={value.toString()}
-            font={fonts.notesFont}
-            color="white"
-        />
+        <Group>
+            {isPeer ? (
+                <Rect
+                    antiAlias
+                    x={point.x}
+                    y={point.y + (SUBGRID_OUTLINE_WIDTH / 2)}
+                    width={fontWidth - (SUBGRID_OUTLINE_WIDTH / 2)}
+                    height={-fontHeight}
+                    color="red"
+                />
+            ) : null}
+
+            <Text
+                antiAlias
+                x={point.x}
+                y={point.y}
+                text={value.toString()}
+                font={fonts.notesFont}
+                color="white"
+            />
+        </Group>
     )
 }
