@@ -30,20 +30,18 @@ export class CellHelper {
 
     static getNumberValueAtCursor(
         playerGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.player,
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given,
     ): BoardGridNotationValue {
         const cursorGridPosition = gameplayStoreState().cursorGridPosition;
-        return this.getNumberValueAt(cursorGridPosition, playerGridNotation);
+        return this.getNumberValueAt(cursorGridPosition, playerGridNotation, givenGridNotation);
     }
 
     static getNumberValueAt(
         gridPosition: GridPosition,
         playerGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.player,
-    ): BoardGridNotationValue {
-        if (!playerGridNotation) {
-            return 0;
-        }
-        
-        return playerGridNotation[gridPosition.row][gridPosition.col];
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given,
+    ): BoardGridNotationValue {        
+        return givenGridNotation?.[gridPosition.row][gridPosition.col] || playerGridNotation?.[gridPosition.row][gridPosition.col] || 0;
     }
 
     static moveCursorTo(
@@ -185,22 +183,23 @@ export class CellHelper {
         return this.isValueNotEmpty(givenGridNotation[gridPosition.row][gridPosition.col])
     }
 
-    static isPlayerValueEqualAt(
+    static isNumberValueEqualAt(
         gridPosition: GridPosition,
         value: number,
         playerGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.player,
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given,
         options?: { considerEmptyAsEqual: boolean }
     ): boolean {
         options ||= { considerEmptyAsEqual: false };
 
-        const valueAtGridPosition = playerGridNotation?.[gridPosition.row][gridPosition.col] || 0;
-        const areTheSame = valueAtGridPosition == value;
+        const valueAtGridPosition = playerGridNotation?.[gridPosition.row][gridPosition.col] || givenGridNotation?.[gridPosition.row][gridPosition.col] || 0;
+        const same = valueAtGridPosition === value;
 
         if (options.considerEmptyAsEqual) {
-            return areTheSame;
+            return same;
         }
 
-        return areTheSame && CellHelper.isValueNotEmpty(valueAtGridPosition);
+        return same && CellHelper.isValueNotEmpty(valueAtGridPosition);
     }
 
     static isValueEmptyAt(

@@ -5,7 +5,7 @@ import { useAtomValue } from "jotai";
 
 export const Dividers = () => {
 	const boardDimensions = useAtomValue(boardDimensionsAtom);
-	const halfOfStrokeWidth = CELL_OUTLINE_WIDTH / 8;
+	let halfOfStrokeWidth = CELL_OUTLINE_WIDTH / 8;
 	
 	const buildLines = () => {
 		const lines = [];

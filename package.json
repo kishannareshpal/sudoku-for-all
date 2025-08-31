@@ -32,6 +32,7 @@
     "expo:gen:typings": "npx expo customize tsconfig.json",
     "pretest": "npm run expo:gen:typings",
     "test": "jest --color",
+    "test:debug": "node --inspect-brk ./node_modules/bin/jest",
     "test:watch": "npm run test -- --watch",
     "test:ci": "npm run test --runInBand",
     "precompile": "npm run expo:gen:typings",

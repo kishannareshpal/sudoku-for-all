@@ -124,7 +124,6 @@ export const Board = () => {
 
         <Dividers />
 
-
         <CursorCell />
       </Canvas>
     </GestureDetector>

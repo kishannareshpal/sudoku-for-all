@@ -1,4 +1,4 @@
-import { CURSOR_CELL_OUTLINE_WIDTH } from "@/lib/constants/board";
+import { CELL_OUTLINE_WIDTH, CURSOR_CELL_OUTLINE_WIDTH } from "@/lib/constants/board";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { useStoreSubscription } from "@/lib/hooks/use-store-subscription";
 import { useGameplayStore } from "@/lib/store/gameplay-store";
@@ -31,10 +31,10 @@ export const CursorCell = () => {
             renderChildren={(boardDimensions, cellPointForGridPosition) => {
                 return (
                     <Rect
-                        x={cellPointForGridPosition.x}
-                        y={cellPointForGridPosition.y}
-                        width={boardDimensions.cellLength}
-                        height={boardDimensions.cellLength}
+                        x={cellPointForGridPosition.x + (CELL_OUTLINE_WIDTH / 2)}
+                        y={cellPointForGridPosition.y + (CELL_OUTLINE_WIDTH / 2)}
+                        width={boardDimensions.cellLength - CELL_OUTLINE_WIDTH}
+                        height={boardDimensions.cellLength - CELL_OUTLINE_WIDTH}
                         style="stroke"
                         strokeWidth={CURSOR_CELL_OUTLINE_WIDTH}
                         color="red"

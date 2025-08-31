@@ -14,30 +14,30 @@ type ProcessEachPeerAndNonPeerCellOptions = {
     /**
      * A boolean flag to allow the current cell to be considered as a peer (default is `true`).
      */
-    allowSelfAsPeer: boolean,
+    allowSelfAsPeer?: boolean,
     /**
      * A boolean flag to allow peers from the same row (default is `true`).
      */
-    allowRowPeers: boolean,
+    allowRowPeers?: boolean,
     /**
      * A boolean flag to allow peers from the same column (default is `true`).
      */
-    allowColumnPeers: boolean,
+    allowColumnPeers?: boolean,
     /**
      * A boolean flag to allow peers from the same subgrid (default is `true`).
      */
-    allowSubgridPeers: boolean,
+    allowSubgridPeers?: boolean,
     /**
      * A boolean flag to allow peers that have the same value as the current cell - ignoring row or column sameness (default is `true`).
      */
-    allowSameValueAnywherePeers: boolean,
+    allowSameValueAnywherePeers?: boolean,
 
     /**
      * A boolean flag to allow peers that have the same note value as the current cell?
      * 
      * @todo - Implement
      */
-    allowSameValueAsNoteAnywherePeers: boolean
+    allowSameValueAsNoteAnywherePeers?: boolean
 }
 
 export class BoardHelper {
@@ -57,7 +57,6 @@ export class BoardHelper {
         peerFoundCallback?: (peerGridPosition: GridPosition, peerType: PeerType) => void,
         nonPeerFoundCallback?: (nonPeerGridPosition: GridPosition) => void,
         options?: ProcessEachPeerAndNonPeerCellOptions,
-        abortSignal?: AbortSignal
     ): void {
         const puzzle = gameplayStoreState().puzzle;
 
@@ -72,9 +71,6 @@ export class BoardHelper {
 
         for (let rowIndex = 0; rowIndex < ROWS_COUNT; rowIndex++) {
             for (let colIndex = 0; colIndex < COLUMNS_COUNT; colIndex++) {
-                if (abortSignal?.aborted) {
-                    return;
-                }
 
                 const currentGridPosition = GridPositionHelper.createFromIndexes(rowIndex, colIndex);
 
@@ -88,7 +84,6 @@ export class BoardHelper {
                     : false;
 
                 const peerFoundType: PeerType = hasNotePeer ? 'both' : 'number';
-
 
                 // Handle if the current iterating self is itself
                 const isItself = GridPositionHelper.equals(currentGridPosition, cell.gridPosition);
@@ -126,10 +121,11 @@ export class BoardHelper {
                 }
 
                 // Check the same value anywhere peer condition
-                const isSameValueButNotEmpty = defaultedOptions.allowSameValueAnywherePeers && CellHelper.isPlayerValueEqualAt(
+                const isSameValueButNotEmpty = defaultedOptions.allowSameValueAnywherePeers && CellHelper.isNumberValueEqualAt(
                     currentGridPosition,
                     cell.value,
                     puzzle?.player,
+                    puzzle?.given,
                     { considerEmptyAsEqual: false }
                 );
                 if (isSameValueButNotEmpty) {
