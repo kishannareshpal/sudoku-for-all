@@ -1,5 +1,5 @@
 import { SUBGRID_COLUMNS_COUNT, SUBGRID_ROWS_COUNT } from "@/lib/constants/board";
-import { GridPosition, SubgridIndex, SubgridPosition } from "@/lib/shared-types";
+import { GridIndex, GridPosition, SubgridIndex, SubgridPosition } from "@/lib/shared-types";
 
 export class SubgridPositionHelper {
     static zero(): SubgridPosition {
@@ -20,13 +20,21 @@ export class SubgridPositionHelper {
     }
 
     static createFromGridPosition(gridPosition: GridPosition): SubgridPosition {
-        const subGridRow = Math.floor(gridPosition.row / 3) as SubgridIndex;
-        const subGridCol = Math.floor(gridPosition.col / 3) as SubgridIndex;
+        const subGridRow = this.rowFromGridPosition(gridPosition.row);
+        const subGridCol = this.colFromGridPosition(gridPosition.col);
 
         return {
             row: subGridRow,
             col: subGridCol
         }
+    }
+
+    static rowFromGridPosition(gridPositionRow: GridIndex): SubgridIndex {
+        return Math.floor(gridPositionRow / 3) as SubgridIndex;
+    }
+
+    static colFromGridPosition(gridPositionCol: GridIndex): SubgridIndex {
+        return Math.floor(gridPositionCol / 3) as SubgridIndex;
     }
 
     static equals(subGridPositionA: SubgridPosition, subGridPositionB: SubgridPosition): boolean {

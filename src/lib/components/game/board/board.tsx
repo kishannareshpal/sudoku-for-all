@@ -1,4 +1,5 @@
 import {
+    BOARD_OUTLINE_WIDTH,
     CELL_OUTLINE_WIDTH,
     COLUMNS_COUNT,
     CURSOR_CELL_OUTLINE_WIDTH,
@@ -39,7 +40,7 @@ export const Board = () => {
 
   useEffect(() => {
     const boardLength = Math.min(canvasSize.width, canvasSize.height);
-    const cellLength = boardLength / COLUMNS_COUNT;
+    const cellLength = (boardLength - (BOARD_OUTLINE_WIDTH * 2) - (SUBGRID_OUTLINE_WIDTH * 2) - (CELL_OUTLINE_WIDTH * 6)) / 9;
 
     const numberFontSize = cellLength * 0.8;
     const notesFontSize = (cellLength / 3) - CURSOR_CELL_OUTLINE_WIDTH;
@@ -124,13 +125,13 @@ export const Board = () => {
           This is like z-index: later children overlay earlier ones 
         */}
         
-        <PeerCells />
+        {/*<PeerCells />*/}
 
-        {renderCells()}
+        {/*{renderCells()}*/}
 
         <Dividers />
 
-        <CursorCell />
+        {/*<CursorCell />*/}
       </Canvas>
     </GestureDetector>
   );
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
     height: "auto",
     aspectRatio: 1,
     position: "relative",
-    backgroundColor: "transparent",
+    backgroundColor: "black",
   },
 
   overlayContainer: {
