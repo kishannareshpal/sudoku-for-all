@@ -42,6 +42,18 @@ export type SubgridPosition = {
     col: SubgridIndex
 };
 
+export type BoardDimensions = {
+    /**
+     * The full length of the board, including borders.
+     */
+    boardLength: number,
+
+    /**
+     * The length of each cell in the board, considering the borders (cell, subgrid) spacing it is subject to.
+     */
+    cellLength: number,
+}
+
 /**
  * The type of peer found during the processing via {@link CellHelper.processEachPeerAndNonPeerCell}
  */

@@ -1,4 +1,6 @@
 import { GridPosition, Point } from "@/lib/shared-types";
+import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
+import { BOARD_OUTLINE_WIDTH, CELL_OUTLINE_WIDTH, SUBGRID_OUTLINE_WIDTH } from "@/lib/constants/board";
 
 export class PointHelper {
     static zero(): Point {
@@ -12,10 +14,19 @@ export class PointHelper {
         gridPosition: GridPosition,
         cellLength: number,
     ): Point {
-        const x = gridPosition.col * cellLength;
-        const y = gridPosition.row * cellLength;
+        const subgridPosition = SubgridPositionHelper.createFromGridPosition(gridPosition);
 
-        return { x, y };
+        const compute = (
+            gridIndex: number,
+            subgridIndex: number,
+        ) => {
+            return (gridIndex * cellLength) + BOARD_OUTLINE_WIDTH + (CELL_OUTLINE_WIDTH * (gridIndex - subgridIndex)) + (SUBGRID_OUTLINE_WIDTH * subgridIndex);
+        }
+
+        return {
+            x: compute(gridPosition.col, subgridPosition.col),
+            y: compute(gridPosition.row, subgridPosition.row),
+        };
     }
 
     // static createFromSubgridPosition(

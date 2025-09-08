@@ -1,49 +1,51 @@
-import { CURSOR_CELL_OUTLINE_WIDTH, SUBGRID_OUTLINE_WIDTH } from "@/lib/constants/board";
+import { CURSOR_CELL_OUTLINE_WIDTH } from "@/lib/constants/board";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { useGameplayStore } from "@/lib/store/gameplay-store";
-import { Group, Rect, Text } from "@shopify/react-native-skia";
+import { Group, Rect } from "@shopify/react-native-skia";
 import { BaseCell, CommonCellProps } from "./base-cell";
 import { useAtomValue } from "jotai/index";
-import { fontsAtom } from "@/lib/store/atoms/fonts-atom";
-import { boardDimensionsAtom } from "@/lib/store/atoms/board-dimensions-atom";
 import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
 import { PointHelper } from "@/lib/helpers/point-helper";
 import { CellHelper } from "@/lib/helpers/cell-helper";
+import { fonts$ } from "@/lib/store/observables/fonts";
+import { use$ } from "@legendapp/state/react";
+import { boardDimensions$ } from "@/lib/store/observables/board-dimensions";
 
 export const PeerCells = () => {
-    const cursorValue = useGameplayStore((store) => CellHelper.getNumberValueAt(store.cursorGridPosition, store.puzzle?.player, store.puzzle?.given));
+    const cursorValue = useGameplayStore((store) =>
+        CellHelper.getNumberValueAt(
+            store.cursorGridPosition,
+            store.puzzle?.player,
+            store.puzzle?.given,
+        ),
+    );
     const cursorPeerCells = useGameplayStore((store) => store.cursorPeerCells);
 
     return (
         <Group>
-            {
-                cursorPeerCells.map((peerCellMetadata) => {
-                    const key = `rc-${GridPositionHelper.stringNotationOf(peerCellMetadata.gridPosition)}`;
-
-                    if (peerCellMetadata.type === 'note') {
-                        return (
-                            null
-                            // <PeerNote
-                            //     key={key}
-                            //     gridPosition={peerCellMetadata.gridPosition}
-                            //     value={cursorValue}
-                            // />
-                        )
-                    } else {
-                        return (
-                            <PeerCell
-                                key={key}
-                                gridPosition={peerCellMetadata.gridPosition}
-                            />
-                        )
-                    }
-                })
-            }
+            {cursorPeerCells.map((peerCellMetadata) => {
+                const key = `rc-${GridPositionHelper.stringNotationOf(peerCellMetadata.gridPosition)}`;
+                if (peerCellMetadata.type === "note") {
+                    return null;
+                    // <PeerNote
+                    //     key={key}
+                    //     gridPosition={peerCellMetadata.gridPosition}
+                    //     value={cursorValue}
+                    // />
+                } else {
+                    return (
+                        <PeerCell
+                            key={key}
+                            gridPosition={peerCellMetadata.gridPosition}
+                        />
+                    );
+                }
+            })}
         </Group>
     );
 };
 
-const PeerCell = ({gridPosition}: CommonCellProps) => {
+const PeerCell = ({ gridPosition }: CommonCellProps) => {
     return (
         <BaseCell
             gridPosition={gridPosition}
@@ -65,15 +67,18 @@ const PeerCell = ({gridPosition}: CommonCellProps) => {
 };
 
 type PeerNoteProps = CommonCellProps & {
-    value: number,
-}
+    value: number;
+};
 
 const PeerNote = ({ gridPosition, value }: PeerNoteProps) => {
-    const fonts = useAtomValue(fontsAtom);
-    const boardDimensions = useAtomValue(boardDimensionsAtom);
+    const fonts = use$(fonts$);
+    const cellLength = use$(() => boardDimensions$.cellLength);
 
-    const cellPointForGridPosition = PointHelper.createFromGridPosition(gridPosition, boardDimensions.cellLength);
-    const subgridCellLength = boardDimensions.cellLength / 3;
+    const cellPointForGridPosition = PointHelper.createFromGridPosition(
+        gridPosition,
+        cellLength,
+    );
+    const subgridCellLength = cellLength / 3;
 
     const fontMeasurement = fonts.notesFont?.measureText(value.toString());
     const fontWidth = fontMeasurement?.width || 0;
@@ -81,17 +86,25 @@ const PeerNote = ({ gridPosition, value }: PeerNoteProps) => {
 
     const padding = 2;
 
-    const subgridPosition = SubgridPositionHelper.createFromFlatIndex((value - 1) % 9);
+    const subgridPosition = SubgridPositionHelper.createFromFlatIndex(
+        (value - 1) % 9,
+    );
     const point = {
-        x: cellPointForGridPosition.x + (fontWidth / 2) - padding
-            + (subgridPosition.col * (subgridCellLength - padding))
-            + (subgridCellLength / 2)
-            - (fontWidth / 2),
+        x:
+            cellPointForGridPosition.x +
+            fontWidth / 2 -
+            padding +
+            subgridPosition.col * (subgridCellLength - padding) +
+            subgridCellLength / 2 -
+            fontWidth / 2,
 
-        y: cellPointForGridPosition.y + (fontHeight / 2) - padding
-            + (subgridPosition.row * (subgridCellLength - padding))
-            + (subgridCellLength / 2)
-            - (fontHeight / 2),
+        y:
+            cellPointForGridPosition.y +
+            fontHeight / 2 -
+            padding +
+            subgridPosition.row * (subgridCellLength - padding) +
+            subgridCellLength / 2 -
+            fontHeight / 2,
     };
 
     return (
@@ -104,5 +117,5 @@ const PeerNote = ({ gridPosition, value }: PeerNoteProps) => {
             style="fill"
             color="red"
         />
-    )
-}
+    );
+};

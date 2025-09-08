@@ -52,20 +52,22 @@ export const NewGameOptions = (
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'column',
-        gap: 6
+        gap: 6,
     },
 
     button: {
-        backgroundColor: 'white',
+        backgroundColor: '#3b3b3b',
         padding: 12,
         borderRadius: 12,
         paddingVertical: 18,
-        paddingHorizontal: 24,
-        minWidth: '100%',
-        maxWidth: 400
+        width: 400,
+        maxWidth: '100%',
+        cursor: 'pointer'
     },
 
     buttonText: {
+        color: 'white',
+        fontWeight: 'bold',
         fontSize: 16
     }
 });

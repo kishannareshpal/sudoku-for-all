@@ -18,13 +18,13 @@ export const NOTES_COLUMNS_COUNT: number = 3 as const;
 
 export const CELLS_COUNT: number = ROWS_COUNT * COLUMNS_COUNT;
 
-export const CELL_OUTLINE_WIDTH: number = 1 as const;
+export const CELL_OUTLINE_WIDTH: number = 3 as const;
 
-export const SUBGRID_OUTLINE_WIDTH: number = 4 as const;
+export const SUBGRID_OUTLINE_WIDTH: number = 5 as const;
 
-export const BOARD_OUTLINE_WIDTH: number = 4 as const;
+export const BOARD_OUTLINE_WIDTH: number = 5 as const;
 
-export const CURSOR_CELL_OUTLINE_WIDTH: number = SUBGRID_OUTLINE_WIDTH;
+export const CURSOR_CELL_OUTLINE_WIDTH: number = CELL_OUTLINE_WIDTH * 1.4;
 
 // /**
 //  * The outer border width of the board.

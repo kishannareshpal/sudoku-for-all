@@ -7,7 +7,13 @@ import {
     GridPosition, PeerCellMetadata, PeerType
 } from "@/lib/shared-types";
 import { gameplayStoreState } from "@/lib/store/gameplay-store";
-import { COLUMNS_COUNT, ROWS_COUNT } from "@/lib/constants/board";
+import {
+    BOARD_OUTLINE_WIDTH,
+    CELL_OUTLINE_WIDTH,
+    COLUMNS_COUNT,
+    ROWS_COUNT,
+    SUBGRID_OUTLINE_WIDTH
+} from "@/lib/constants/board";
 import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
 
 type ProcessEachPeerAndNonPeerCellOptions = {
@@ -41,6 +47,10 @@ type ProcessEachPeerAndNonPeerCellOptions = {
 }
 
 export class CellHelper {
+    static calculateCellLength(boardLength: number): number {
+        return (boardLength - (BOARD_OUTLINE_WIDTH * 2) - (SUBGRID_OUTLINE_WIDTH * 2) - (CELL_OUTLINE_WIDTH * 6)) / 9;
+    }
+
     static getToggledNotesAtCursor(
         notesGridNotation: BoardNotesGridNotation | undefined = gameplayStoreState().puzzle?.notes
     ): BoardNotesGridNotationValue {
@@ -342,7 +352,7 @@ export class CellHelper {
 
         for (let rowIndex = 0; rowIndex < ROWS_COUNT; rowIndex++) {
             for (let colIndex = 0; colIndex < COLUMNS_COUNT; colIndex++) {
-                const currentGridPosition = GridPositionHelper.createFromIndexes(rowIndex, colIndex);
+                const currentGridPosition = GridPositionHelper.createFromIndexes(colIndex, rowIndex);
 
                 // Check note peer condition
                 const hasNotePeer = CellHelper.containsToggledNoteAt(currentGridPosition, cellValue);

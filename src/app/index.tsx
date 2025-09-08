@@ -4,7 +4,7 @@ import { GameHelper } from "@/lib/helpers/game-helper";
 import { Difficulty } from "@/lib/shared-types";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -27,17 +27,15 @@ const HomeScreen = () => {
     return (
         <ScrollView
             style={styles.scrollViewContainer}
-            contentContainerStyle={
-                [
-                    styles.container,
-                    {
-                        paddingTop: safeAreaInsets.top + 12,
-                        paddingBottom: safeAreaInsets.bottom + 12,
-                        paddingLeft: safeAreaInsets.left + 12,
-                        paddingRight: safeAreaInsets.right + 12
-                    }
-                ]
-            }
+            contentContainerStyle={[
+                styles.scrollViewContentContainer,
+                {
+                    paddingTop: safeAreaInsets.top + 12,
+                    paddingBottom: safeAreaInsets.bottom + 12,
+                    paddingLeft: safeAreaInsets.left + 12,
+                    paddingRight: safeAreaInsets.right + 12
+                }
+            ]}
         >
             <Title />
 
@@ -50,9 +48,11 @@ const HomeScreen = () => {
 
 const styles = StyleSheet.create({
     scrollViewContainer: {
-        flex: 1,
+        backgroundColor: '#0D1013'
     },
-    container: {
+    scrollViewContentContainer: {
+        flex: 1,
+        justifyContent: 'center',
         alignItems: 'center',
         gap: 24
     },

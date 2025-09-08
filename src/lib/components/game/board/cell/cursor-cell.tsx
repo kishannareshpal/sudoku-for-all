@@ -22,6 +22,9 @@ export const CursorCell = () => {
         }
     );
 
+    const strokeWidth = CURSOR_CELL_OUTLINE_WIDTH;
+    const halfOfStrokeWidth = strokeWidth / 2;
+
     if (!cursorGridPosition) {
         return null;
     }
@@ -30,16 +33,16 @@ export const CursorCell = () => {
         <BaseCell
             gridPosition={cursorGridPosition}
             renderChildren={(boardDimensions, cellPointForGridPosition) => {
-                const halfOfStrokeWidth = CURSOR_CELL_OUTLINE_WIDTH / 2;
+                const cellLength = boardDimensions.cellLength - CURSOR_CELL_OUTLINE_WIDTH;
 
                 return (
                     <Rect
                         x={cellPointForGridPosition.x + halfOfStrokeWidth}
                         y={cellPointForGridPosition.y + halfOfStrokeWidth}
-                        width={boardDimensions.cellLength - CURSOR_CELL_OUTLINE_WIDTH}
-                        height={boardDimensions.cellLength - CURSOR_CELL_OUTLINE_WIDTH}
+                        width={cellLength}
+                        height={cellLength}
                         style="stroke"
-                        strokeWidth={CURSOR_CELL_OUTLINE_WIDTH}
+                        strokeWidth={strokeWidth}
                         color="red"
                     />
                 );

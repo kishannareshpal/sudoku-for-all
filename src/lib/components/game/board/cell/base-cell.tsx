@@ -1,8 +1,9 @@
 import { PointHelper } from "@/lib/helpers/point-helper";
-import { GridPosition, Point } from "@/lib/shared-types";
-import { BoardDimensions, boardDimensionsAtom } from "@/lib/store/atoms/board-dimensions-atom";
+import { BoardDimensions, GridPosition, Point } from "@/lib/shared-types";
 import { Group } from "@shopify/react-native-skia";
-import { useAtomValue } from "jotai";
+import { use$ } from "@legendapp/state/react";
+import { boardDimensions$ } from "@/lib/store/observables/board-dimensions";
+import React from "react";
 
 export type CommonCellProps = {
     gridPosition: GridPosition,
@@ -18,16 +19,16 @@ export const BaseCell = (
         renderChildren
     }: BaseCellProps,
 ) => {
-    const boardDimensions = useAtomValue(boardDimensionsAtom);
+    const dimensions = use$(boardDimensions$);
     
     const point = PointHelper.createFromGridPosition(
         gridPosition,
-        boardDimensions.cellLength,
+        dimensions.cellLength,
     )
 
     return (
         <Group>
-            {renderChildren?.(boardDimensions, point)}
+            {renderChildren?.(dimensions, point)}
         </Group>
     )
 }

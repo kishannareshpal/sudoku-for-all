@@ -1,6 +1,15 @@
-import { COLUMNS_COUNT, COL_INDEX_BOUNDS, ROWS_COUNT, ROW_INDEX_BOUNDS } from "@/lib/constants/board";
+import {
+    COLUMNS_COUNT,
+    COL_INDEX_BOUNDS,
+    ROWS_COUNT,
+    ROW_INDEX_BOUNDS,
+    BOARD_OUTLINE_WIDTH, CELL_OUTLINE_WIDTH, SUBGRID_OUTLINE_WIDTH
+} from "@/lib/constants/board";
 import { NumberHelper } from "@/lib/helpers/number-helper";
 import { GridIndex, GridPosition, Point } from "@/lib/shared-types";
+import { PointHelper } from "@/lib/helpers/point-helper";
+import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
+import { boardDimensions$ } from "@/lib/store/observables/board-dimensions";
 
 export class GridPositionHelper {
     static zero(): GridPosition {
@@ -10,18 +19,20 @@ export class GridPositionHelper {
         };
     }
 
-    static createFromIndexes(rowIndex: number, colIndex: number): GridPosition {
-        const row = NumberHelper.clamp(rowIndex, ROW_INDEX_BOUNDS) as GridIndex;
+    static createFromIndexes(colIndex: number, rowIndex: number): GridPosition {
         const col = NumberHelper.clamp(colIndex, COL_INDEX_BOUNDS) as GridIndex;
+        const row = NumberHelper.clamp(rowIndex, ROW_INDEX_BOUNDS) as GridIndex;
 
-        return {row, col};
+        return {col, row};
     }
 
-    static createFromPoint(point: Point, cellLength: number): GridPosition | undefined {
-        const colIndex = Math.floor(point.x / cellLength);
-        const rowIndex = Math.floor(point.y / cellLength);
+    static createFromPoint(point: Point): GridPosition | undefined {
+        const cellLengthIgnoringBorders = boardDimensions$.cellLengthIgnoringBordersSpacing.get();
 
-        const gridPosition = this.createFromIndexes(rowIndex, colIndex);
+        const colIndex = Math.floor(point.x / cellLengthIgnoringBorders);
+        const rowIndex = Math.floor(point.y / cellLengthIgnoringBorders);
+
+        const gridPosition = this.createFromIndexes(colIndex, rowIndex);
 
         if (this.isOutOfBounds(gridPosition)) {
             return undefined;
@@ -31,7 +42,7 @@ export class GridPositionHelper {
     }
 
     static stringNotationOf(gridPosition: GridPosition): string {
-        return `${gridPosition.row},${gridPosition.col}`;
+        return `${gridPosition.col},${gridPosition.row}`;
     }
 
     static changed(previousGridPosition: GridPosition | undefined, newGridPosition: GridPosition | undefined): boolean {

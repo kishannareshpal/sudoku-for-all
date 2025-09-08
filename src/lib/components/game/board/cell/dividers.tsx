@@ -1,12 +1,12 @@
 import { BOARD_OUTLINE_WIDTH, CELL_OUTLINE_WIDTH, ROWS_COUNT, SUBGRID_OUTLINE_WIDTH } from "@/lib/constants/board";
-import { boardDimensionsAtom } from "@/lib/store/atoms/board-dimensions-atom";
 import { Group, Points, Rect, vec } from "@shopify/react-native-skia";
-import { useAtomValue } from "jotai";
 import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
 import { GridIndex } from "@/lib/shared-types";
+import { use$ } from "@legendapp/state/react";
+import { boardDimensions$ } from "@/lib/store/observables/board-dimensions";
 
 export const Dividers = () => {
-	const boardDimensions = useAtomValue(boardDimensionsAtom);
+    const { cellLength, boardLength } = use$(boardDimensions$);
 	
 	const buildLines = () => {
 		const lines = [];
@@ -22,11 +22,11 @@ export const Dividers = () => {
             }
 
             const subgridPositionRow = SubgridPositionHelper.rowFromGridPosition(rowIndex as GridIndex);
-            const pointX = BOARD_OUTLINE_WIDTH + (rowIndex * boardDimensions.cellLength) + halfOfStrokeWidth + (CELL_OUTLINE_WIDTH * (rowIndex - subgridPositionRow - 1)) + (SUBGRID_OUTLINE_WIDTH * subgridPositionRow);
+            const pointX = BOARD_OUTLINE_WIDTH + (rowIndex * cellLength) + halfOfStrokeWidth + (CELL_OUTLINE_WIDTH * (rowIndex - subgridPositionRow - 1)) + (SUBGRID_OUTLINE_WIDTH * subgridPositionRow);
 
 			lines.push(
 				vec(pointX, 0),
-				vec(pointX, boardDimensions.boardLength)
+				vec(pointX, boardLength)
 			)
 		}
 		
@@ -39,11 +39,11 @@ export const Dividers = () => {
             }
 
             const subgridPositionRow = SubgridPositionHelper.rowFromGridPosition(colIndex as GridIndex);
-            const pointY = BOARD_OUTLINE_WIDTH + (colIndex * boardDimensions.cellLength) + halfOfStrokeWidth + (CELL_OUTLINE_WIDTH * (colIndex - subgridPositionRow - 1)) + (SUBGRID_OUTLINE_WIDTH * subgridPositionRow);
+            const pointY = BOARD_OUTLINE_WIDTH + (colIndex * cellLength) + halfOfStrokeWidth + (CELL_OUTLINE_WIDTH * (colIndex - subgridPositionRow - 1)) + (SUBGRID_OUTLINE_WIDTH * subgridPositionRow);
 
 			lines.push(
 				vec(0, pointY),
-				vec(boardDimensions.boardLength, pointY)
+				vec(boardLength, pointY)
 			)
 		}
 		
@@ -63,11 +63,11 @@ export const Dividers = () => {
             }
 
             const subgridPositionRow = SubgridPositionHelper.rowFromGridPosition(rowIndex as GridIndex);
-            const pointX = BOARD_OUTLINE_WIDTH + (rowIndex * boardDimensions.cellLength) + halfOfStrokeWidth + (CELL_OUTLINE_WIDTH * (rowIndex - 1)) + ((SUBGRID_OUTLINE_WIDTH - CELL_OUTLINE_WIDTH) * (subgridPositionRow - 1));
+            const pointX = BOARD_OUTLINE_WIDTH + (rowIndex * cellLength) + halfOfStrokeWidth + (CELL_OUTLINE_WIDTH * (rowIndex - 1)) + ((SUBGRID_OUTLINE_WIDTH - CELL_OUTLINE_WIDTH) * (subgridPositionRow - 1));
 
             lines.push(
                 vec(pointX, 0),
-                vec(pointX, boardDimensions.boardLength)
+                vec(pointX, boardLength)
             )
 		}
 		
@@ -79,138 +79,47 @@ export const Dividers = () => {
             }
 
             const subgridPositionRow = SubgridPositionHelper.rowFromGridPosition(colIndex as GridIndex);
-            const pointY = BOARD_OUTLINE_WIDTH + (colIndex * boardDimensions.cellLength) + halfOfStrokeWidth + (CELL_OUTLINE_WIDTH * (colIndex - 1)) + ((SUBGRID_OUTLINE_WIDTH - CELL_OUTLINE_WIDTH) * (subgridPositionRow - 1));
+            const pointY = BOARD_OUTLINE_WIDTH + (colIndex * cellLength) + halfOfStrokeWidth + (CELL_OUTLINE_WIDTH * (colIndex - 1)) + ((SUBGRID_OUTLINE_WIDTH - CELL_OUTLINE_WIDTH) * (subgridPositionRow - 1));
 
             lines.push(
                 vec(0, pointY),
-                vec(boardDimensions.boardLength, pointY)
+                vec(boardLength, pointY)
             )
 		}
 		
 		return lines;
 	}
-	
+
 	return (
 		<Group>
-			<Rect
-				x={BOARD_OUTLINE_WIDTH / 2}
-				y={BOARD_OUTLINE_WIDTH / 2}
+            <Points
                 antiAlias
-				width={boardDimensions.boardLength - BOARD_OUTLINE_WIDTH}
-				height={boardDimensions.boardLength - BOARD_OUTLINE_WIDTH}
-				color="blue"
-				style="stroke"
-				strokeWidth={BOARD_OUTLINE_WIDTH}
-			/>
+                points={buildLines()}
+                mode="lines"
+                color="#183609"
+                style="stroke"
+                strokeWidth={CELL_OUTLINE_WIDTH}
+            />
 
             <Points
                 antiAlias
                 points={buildSubgridDividingLines()}
                 mode="lines"
-                color="cyan"
+                color="#1F440E"
                 strokeJoin="bevel"
                 style="stroke"
                 strokeWidth={SUBGRID_OUTLINE_WIDTH}
             />
 
-            <Points
+            <Rect
+                x={BOARD_OUTLINE_WIDTH / 2}
+                y={BOARD_OUTLINE_WIDTH / 2}
                 antiAlias
-                points={buildLines()}
-                mode="lines"
-                color="orange"
+                width={boardLength - BOARD_OUTLINE_WIDTH}
+                height={boardLength - BOARD_OUTLINE_WIDTH}
+                color="#1F440E"
                 style="stroke"
-                strokeWidth={CELL_OUTLINE_WIDTH}
-            />
-
-            {/* Debug cells */}
-            <Rect
-                antiAlias
-                x={BOARD_OUTLINE_WIDTH}
-                y={BOARD_OUTLINE_WIDTH}
-                width={boardDimensions.cellLength}
-                height={boardDimensions.cellLength}
-                color="green"
-                style="fill"
-            />
-
-            <Rect
-                antiAlias
-                x={BOARD_OUTLINE_WIDTH + boardDimensions.cellLength + CELL_OUTLINE_WIDTH}
-                y={BOARD_OUTLINE_WIDTH}
-                width={boardDimensions.cellLength}
-                height={boardDimensions.cellLength}
-                color="red"
-                style="fill"
-            />
-
-            <Rect
-                antiAlias
-                x={BOARD_OUTLINE_WIDTH + (boardDimensions.cellLength * 2) + (CELL_OUTLINE_WIDTH * 2)}
-                y={BOARD_OUTLINE_WIDTH}
-                width={boardDimensions.cellLength}
-                height={boardDimensions.cellLength}
-                color="purple"
-                style="fill"
-            />
-
-            <Rect
-                antiAlias
-                x={BOARD_OUTLINE_WIDTH + (boardDimensions.cellLength * 3) + (CELL_OUTLINE_WIDTH * 2) + SUBGRID_OUTLINE_WIDTH}
-                y={BOARD_OUTLINE_WIDTH}
-                width={boardDimensions.cellLength}
-                height={boardDimensions.cellLength}
-                color="yellow"
-                style="fill"
-            />
-
-            <Rect
-                antiAlias
-                x={BOARD_OUTLINE_WIDTH + (boardDimensions.cellLength * 4) + (CELL_OUTLINE_WIDTH * 3) + SUBGRID_OUTLINE_WIDTH}
-                y={BOARD_OUTLINE_WIDTH}
-                width={boardDimensions.cellLength}
-                height={boardDimensions.cellLength}
-                color="purple"
-                style="fill"
-            />
-
-            <Rect
-                antiAlias
-                x={BOARD_OUTLINE_WIDTH + (boardDimensions.cellLength * 5) + (CELL_OUTLINE_WIDTH * 4) + SUBGRID_OUTLINE_WIDTH}
-                y={BOARD_OUTLINE_WIDTH}
-                width={boardDimensions.cellLength}
-                height={boardDimensions.cellLength}
-                color="purple"
-                style="fill"
-            />
-
-            <Rect
-                antiAlias
-                x={BOARD_OUTLINE_WIDTH + (boardDimensions.cellLength * 6) + (CELL_OUTLINE_WIDTH * 4) + (SUBGRID_OUTLINE_WIDTH * 2)}
-                y={BOARD_OUTLINE_WIDTH}
-                width={boardDimensions.cellLength}
-                height={boardDimensions.cellLength}
-                color="purple"
-                style="fill"
-            />
-
-            <Rect
-                antiAlias
-                x={BOARD_OUTLINE_WIDTH + (boardDimensions.cellLength * 7) + (CELL_OUTLINE_WIDTH * 5) + (SUBGRID_OUTLINE_WIDTH * 2)}
-                y={BOARD_OUTLINE_WIDTH}
-                width={boardDimensions.cellLength}
-                height={boardDimensions.cellLength}
-                color="purple"
-                style="fill"
-            />
-
-            <Rect
-                antiAlias
-                x={BOARD_OUTLINE_WIDTH + (boardDimensions.cellLength * 8) + (CELL_OUTLINE_WIDTH * 6) + (SUBGRID_OUTLINE_WIDTH * 2)}
-                y={BOARD_OUTLINE_WIDTH}
-                width={boardDimensions.cellLength}
-                height={boardDimensions.cellLength}
-                color="purple"
-                style="fill"
+                strokeWidth={BOARD_OUTLINE_WIDTH}
             />
 		</Group>
 	)
