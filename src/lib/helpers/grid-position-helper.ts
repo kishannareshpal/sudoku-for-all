@@ -2,13 +2,10 @@ import {
     COLUMNS_COUNT,
     COL_INDEX_BOUNDS,
     ROWS_COUNT,
-    ROW_INDEX_BOUNDS,
-    BOARD_OUTLINE_WIDTH, CELL_OUTLINE_WIDTH, SUBGRID_OUTLINE_WIDTH
+    ROW_INDEX_BOUNDS
 } from "@/lib/constants/board";
 import { NumberHelper } from "@/lib/helpers/number-helper";
 import { GridIndex, GridPosition, Point } from "@/lib/shared-types";
-import { PointHelper } from "@/lib/helpers/point-helper";
-import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
 import { boardDimensions$ } from "@/lib/store/observables/board-dimensions";
 
 export class GridPositionHelper {
@@ -23,7 +20,7 @@ export class GridPositionHelper {
         const col = NumberHelper.clamp(colIndex, COL_INDEX_BOUNDS) as GridIndex;
         const row = NumberHelper.clamp(rowIndex, ROW_INDEX_BOUNDS) as GridIndex;
 
-        return {col, row};
+        return { col, row };
     }
 
     static createFromPoint(point: Point): GridPosition | undefined {

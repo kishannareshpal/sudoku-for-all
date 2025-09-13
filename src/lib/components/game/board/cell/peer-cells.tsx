@@ -1,37 +1,39 @@
 import { CURSOR_CELL_OUTLINE_WIDTH } from "@/lib/constants/board";
-import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
-import { useGameplayStore } from "@/lib/store/gameplay-store";
-import { Group, Rect } from "@shopify/react-native-skia";
-import { BaseCell, CommonCellProps } from "./base-cell";
-import { useAtomValue } from "jotai/index";
-import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
-import { PointHelper } from "@/lib/helpers/point-helper";
 import { CellHelper } from "@/lib/helpers/cell-helper";
+import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
+import { PointHelper } from "@/lib/helpers/point-helper";
+import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
+import { useGameplayStore } from "@/lib/store/gameplay-store";
+import { boardDimensions$ } from "@/lib/store/observables/board-dimensions";
 import { fonts$ } from "@/lib/store/observables/fonts";
 import { use$ } from "@legendapp/state/react";
-import { boardDimensions$ } from "@/lib/store/observables/board-dimensions";
+import { Group, Rect } from "@shopify/react-native-skia";
+import { BaseCell, CommonCellProps } from "./base-cell";
 
 export const PeerCells = () => {
     const cursorValue = useGameplayStore((store) =>
         CellHelper.getNumberValueAt(
             store.cursorGridPosition,
             store.puzzle?.player,
-            store.puzzle?.given,
-        ),
+            store.puzzle?.given
+        )
     );
     const cursorPeerCells = useGameplayStore((store) => store.cursorPeerCells);
 
     return (
         <Group>
             {cursorPeerCells.map((peerCellMetadata) => {
-                const key = `rc-${GridPositionHelper.stringNotationOf(peerCellMetadata.gridPosition)}`;
+                const key = `rc-${GridPositionHelper.stringNotationOf(
+                    peerCellMetadata.gridPosition
+                )}`;
                 if (peerCellMetadata.type === "note") {
-                    return null;
-                    // <PeerNote
-                    //     key={key}
-                    //     gridPosition={peerCellMetadata.gridPosition}
-                    //     value={cursorValue}
-                    // />
+                    return (
+                        <PeerNote
+                            key={key}
+                            gridPosition={peerCellMetadata.gridPosition}
+                            value={cursorValue}
+                        />
+                    );
                 } else {
                     return (
                         <PeerCell
@@ -76,7 +78,7 @@ const PeerNote = ({ gridPosition, value }: PeerNoteProps) => {
 
     const cellPointForGridPosition = PointHelper.createFromGridPosition(
         gridPosition,
-        cellLength,
+        cellLength
     );
     const subgridCellLength = cellLength / 3;
 
@@ -87,7 +89,7 @@ const PeerNote = ({ gridPosition, value }: PeerNoteProps) => {
     const padding = 2;
 
     const subgridPosition = SubgridPositionHelper.createFromFlatIndex(
-        (value - 1) % 9,
+        (value - 1) % 9
     );
     const point = {
         x:
