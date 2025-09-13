@@ -1,102 +1,101 @@
 name: Build for development
-run-name: 'Build using the development client profile (platform: ${{ github.event.inputs.platform }})'
+run-name: "Build using the development client profile (platform: ${{ github.event.inputs.platform }})"
 
 on:
-  workflow_dispatch:
-    inputs:
-      platform:
-        description: Choose a platform
-        type: choice
-        required: true
-        options:
-          - All
-          - Android (physical device or emulator)
-          - iOS (physical device only)
-          - iOS (simulator only)
+    workflow_dispatch:
+        inputs:
+            platform:
+                description: Choose a platform
+                type: choice
+                required: true
+                options:
+                    - All
+                    - Android (physical device or emulator)
+                    - iOS (physical device only)
+                    - iOS (simulator only)
 jobs:
-  build:
-    name: 🧱 Build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-    steps:
-      - name: 🔍 Check for required repo secrets
-        run: |
-          echo "Verifying required secrets for platform: ${{ github.event.inputs.platform }}..."
-          missing=false
+    build:
+        name: 🧱 Build
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: write
+        steps:
+            - name: 🔍 Check for required repo secrets
+              run: |
+                  echo "Verifying required secrets for platform: ${{ github.event.inputs.platform }}..."
+                  missing=false
 
-          # Always required
-          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
-            echo "[error] Missing EXPO_TOKEN in your repository secrets."
-            exit 1
-          fi
+                  # Always required
+                  if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+                    echo "[error] Missing EXPO_TOKEN in your repository secrets."
+                    exit 1
+                  fi
 
-          # Check for iOS/iPadOS-specific secrets only if iOS or All is selected
-          if [[ ("${{ github.event.inputs.platform }}" == "iOS (physical device only)" || "${{ github.event.inputs.platform }}" == "All") ]]; then
-            if [ -z "${{ secrets.EXPO_ASC_API_KEY }}" ]; then
-              echo "[error] Missing EXPO_ASC_API_KEY in your repository secrets."
-              missing=true
-            fi
+                  # Check for iOS/iPadOS-specific secrets only if iOS or All is selected
+                  if [[ ("${{ github.event.inputs.platform }}" == "iOS (physical device only)" || "${{ github.event.inputs.platform }}" == "All") ]]; then
+                    if [ -z "${{ secrets.EXPO_ASC_API_KEY }}" ]; then
+                      echo "[error] Missing EXPO_ASC_API_KEY in your repository secrets."
+                      missing=true
+                    fi
 
-            if [ -z "${{ secrets.EXPO_ASC_KEY_ID }}" ]; then
-              echo "[error] Missing EXPO_ASC_KEY_ID in your repository secrets."
-              missing=true
-            fi
+                    if [ -z "${{ secrets.EXPO_ASC_KEY_ID }}" ]; then
+                      echo "[error] Missing EXPO_ASC_KEY_ID in your repository secrets."
+                      missing=true
+                    fi
 
-            if [ -z "${{ secrets.EXPO_ASC_ISSUER_ID }}" ]; then
-              echo "[error] Missing EXPO_ASC_ISSUER_ID in your repository secrets."
-              missing=true
-            fi
+                    if [ -z "${{ secrets.EXPO_ASC_ISSUER_ID }}" ]; then
+                      echo "[error] Missing EXPO_ASC_ISSUER_ID in your repository secrets."
+                      missing=true
+                    fi
 
-            if [ -z "${{ secrets.EXPO_APPLE_TEAM_ID }}" ]; then
-              echo "[error] Missing EXPO_APPLE_TEAM_ID in your repository secrets."
-              missing=true
-            fi
+                    if [ -z "${{ secrets.EXPO_APPLE_TEAM_ID }}" ]; then
+                      echo "[error] Missing EXPO_APPLE_TEAM_ID in your repository secrets."
+                      missing=true
+                    fi
 
-            if [ -z "${{ secrets.EXPO_APPLE_TEAM_TYPE }}" ]; then
-              echo "[error] Missing EXPO_APPLE_TEAM_TYPE in your repository secrets."
-              missing=true
-            fi
+                    if [ -z "${{ secrets.EXPO_APPLE_TEAM_TYPE }}" ]; then
+                      echo "[error] Missing EXPO_APPLE_TEAM_TYPE in your repository secrets."
+                      missing=true
+                    fi
 
-            if [ "$missing" = true ]; then
-              echo "🚫 One or more secrets (listed above) are required for this workflow to run!"
-              echo "   - Please follow our setup checklist here https://thecurveconsulting.atlassian.net/wiki/x/QAAwfQ and try again."
-              exit 1
-            fi
-          fi
+                    if [ "$missing" = true ]; then
+                      echo "🚫 One or more secrets (listed above) are required for this workflow to run!"
+                      echo "   - Please follow our setup checklist here https://thecurveconsulting.atlassian.net/wiki/x/QAAwfQ and try again."
+                      exit 1
+                    fi
+                  fi
 
-          echo "✅ All required EXPO_* secrets are present."
+                  echo "✅ All required EXPO_* secrets are present."
 
-      - name: 🏗 Checkout repository
-        uses: actions/checkout@v5
+            - name: 🏗 Checkout repository
+              uses: actions/checkout@v5
 
-      - name: 🏗 Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22.x
-          cache: npm
+            - name: 🏗 Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: latest
 
-      - name: 🏗 Setup EAS
-        uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+            - name: 🏗 Setup EAS
+              uses: expo/expo-github-action@v8
+              with:
+                  eas-version: latest
+                  token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 📦 Install dependencies
-        run: npm ci
+            - name: 📦 Install dependencies
+              run: bun install --frozen-lockfile
 
-      - name: 🛠️ Compile
-        run: npm run compile
+            - name: 🛠️ Compile
+              run: bun compile
 
-      - name: 🚀 Triggered a dev client build for Android (.apk) on Expo (expand to see status link)
-        if: contains(github.event.inputs.platform, 'Android') || contains(github.event.inputs.platform, 'All')
-        run: npm run build:development:android -- --non-interactive --no-wait
+            - name: 🚀 Triggered a dev client build for Android (.apk) on Expo (expand to see status link)
+              if: contains(github.event.inputs.platform, 'Android') || contains(github.event.inputs.platform, 'All')
+              run: bun build:development:android -- --non-interactive --no-wait
 
-      - name: 🚀 Triggered a dev client build for iOS on Expo (expand to see status link)
-        if: contains(github.event.inputs.platform, 'iOS (physical device only)') || contains(github.event.inputs.platform, 'All')
-        run: npm run build:development:ios -- --non-interactive --no-wait
+            - name: 🚀 Triggered a dev client build for iOS on Expo (expand to see status link)
+              if: contains(github.event.inputs.platform, 'iOS (physical device only)') || contains(github.event.inputs.platform, 'All')
+              run: bun build:development:ios -- --non-interactive --no-wait
 
-      - name: 🚀 Triggered a dev client build for iOS Simulator on Expo (expand to see status link)
-        if: contains(github.event.inputs.platform, 'iOS (simulator only)')
-        run: npm run build:development:ios:simulator -- --non-interactive --no-wait
+            - name: 🚀 Triggered a dev client build for iOS Simulator on Expo (expand to see status link)
+              if: contains(github.event.inputs.platform, 'iOS (simulator only)')
+              run: bun build:development:ios:simulator -- --non-interactive --no-wait

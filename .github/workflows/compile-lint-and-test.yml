@@ -1,41 +1,40 @@
 name: Compile, lint and test
 on:
-  pull_request:
-  push:
-    branches:
-      - main
+    pull_request:
+    push:
+        branches:
+            - main
 
 jobs:
-  CI:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
+    CI:
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
 
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+        concurrency:
+            group: ${{ github.workflow }}-${{ github.ref }}
+            cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
-    steps:
-      - name: 🏗 Checkout repository
-        uses: actions/checkout@v5
+        steps:
+            - name: 🏗 Checkout repository
+              uses: actions/checkout@v5
 
-      - name: 🏗 Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22.x
-          cache: npm
+            - name: 🏗 Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: latest
 
-      - name: 📦 Install dependencies
-        run: npm ci
+            - name: 📦 Install dependencies
+              run: bun install --frozen-lockfile
 
-      - name: 💊 Check dependencies with expo doctor
-        continue-on-error: true
-        run: npm run doctor
+            - name: 💊 Check dependencies with expo doctor
+              continue-on-error: true
+              run: bun doctor
 
-      - name: 🛠️ Compile
-        run: npm run compile
+            - name: 🛠️ Compile
+              run: bun compile
 
-      - name: 🔬 Lint
-        run: npm run lint
+            - name: 🔬 Lint
+              run: bun lint
 
-      - name: 🧪 Test
-        run: npm run test:ci
+            - name: 🧪 Test
+              run: bun test:ci

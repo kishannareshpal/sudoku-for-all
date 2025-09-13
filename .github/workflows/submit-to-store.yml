@@ -97,11 +97,10 @@ jobs:
             - name: 🏗 Checkout repository
               uses: actions/checkout@v5
 
-            - name: 🏗 Setup Node
-              uses: actions/setup-node@v5
+            - name: 🏗 Setup Bun
+              uses: oven-sh/setup-bun@v2
               with:
-                  node-version: 22.x
-                  cache: npm
+                  bun-version: latest
 
             - name: 🏗 Setup EAS
               uses: expo/expo-github-action@v8
@@ -111,8 +110,8 @@ jobs:
 
             - name: 🏁 Triggering a Google Play Store submission via Expo (expand to see status link)
               if: (steps.detect.outputs.platform == 'Android' || steps.detect.outputs.platform == 'All') || (contains(github.event.inputs.platform, 'Android') || contains(github.event.inputs.platform, 'All'))
-              run: npm run submit:android -- --latest --non-interactive --no-wait
+              run: bun submit:android -- --latest --non-interactive --no-wait
 
             - name: 🏁 Triggering an App Store submission via Expo (expand to see status link)
               if: (steps.detect.outputs.platform == 'iOS' || steps.detect.outputs.platform == 'All') || (contains(github.event.inputs.platform, 'iOS') || contains(github.event.inputs.platform, 'All'))
-              run: npm run submit:ios -- --latest --non-interactive --no-wait
+              run: bun submit:ios -- --latest --non-interactive --no-wait
