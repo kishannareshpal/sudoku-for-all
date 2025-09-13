@@ -43,3 +43,6 @@ app-example
 *.apk
 *.app
 *.aab
+
+.env
+!.env.example

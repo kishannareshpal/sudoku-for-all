@@ -3,7 +3,6 @@ import { ControlButton } from "@/lib/components/game/control-button";
 import { CursorModeToggle } from "@/lib/components/game/cursor-mode-toggle";
 import { NumberPad } from "@/lib/components/game/number-pad/number-pad";
 import { CellHelper } from "@/lib/helpers/cell-helper";
-import { useGameplayStore } from "@/lib/store/gameplay-store";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -19,49 +18,50 @@ const GameScreen = () => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={styles.page}>
             {/*<Header /> */}
 
             <Board />
 
             {/*<View style={{ flexShrink: 1 }}>*/}
-            {/*    <View style={styles.controlsRow}>*/}
-            {/*        /!* <ControlButton*/}
-            {/*            iconProps={{*/}
-            {/*                type: 'material',*/}
-            {/*                name: 'undo-variant'*/}
-            {/*            }}*/}
-            {/*            onPress={handleUndo}*/}
-            {/*        />*/}
+            <View style={styles.controlsRow}>
+                <ControlButton
+                    iconProps={{
+                        type: "material",
+                        name: "undo-variant",
+                    }}
+                    onPress={handleUndo}
+                />
+                <ControlButton
+                    iconProps={{
+                        type: "material",
+                        name: "redo-variant",
+                    }}
+                    onPress={handleRedo}
+                />
 
-            {/*        <ControlButton*/}
-            {/*            iconProps={{*/}
-            {/*                type: 'material',*/}
-            {/*                name: 'redo-variant'*/}
-            {/*            }}*/}
-            {/*            onPress={handleRedo}*/}
-            {/*        />*/}
+                <ControlButton
+                    iconProps={{
+                        type: "material",
+                        name: "lightbulb",
+                    }}
+                    onPress={handleHint}
+                />
 
-            {/*        <ControlButton*/}
-            {/*            iconProps={{*/}
-            {/*                type: 'material',*/}
-            {/*                name: 'lightbulb'*/}
-            {/*            }}*/}
-            {/*            onPress={handleHint}*/}
-            {/*        /> *!/*/}
+                <ControlButton
+                    iconProps={{
+                        type: "material",
+                        name: "eraser",
+                    }}
+                    onPress={handleEraser}
+                />
+            </View>
 
-            {/*        <ControlButton*/}
-            {/*            iconProps={{*/}
-            {/*                type: 'material',*/}
-            {/*                name: 'eraser'*/}
-            {/*            }}*/}
-            {/*            onPress={handleEraser}*/}
-            {/*        />*/}
-            {/*    </View>*/}
+            <View style={styles.controlsContainer}>
+                <NumberPad />
+                <CursorModeToggle />
+            </View>
 
-            <NumberPad />
-
-            <CursorModeToggle />
             {/*</View>*/}
         </SafeAreaView>
     );
@@ -86,14 +86,16 @@ const GameScreen = () => {
 // }
 
 const styles = StyleSheet.create({
-    container: {
+    page: {
         flex: 1,
+        flexDirection: "column",
         padding: 12,
-        backgroundColor: "#06190B",
+        backgroundColor: "#000",
         gap: 24,
     },
 
     controlsContainer: {
+        flexShrink: 0,
         flexDirection: "column",
         gap: 8,
     },
@@ -106,7 +108,7 @@ const styles = StyleSheet.create({
     },
 
     boardContainer: {
-        flex: 1,
+        flexShrink: 1,
         alignSelf: "center",
     },
 });

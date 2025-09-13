@@ -1,8 +1,4 @@
-import {
-    COLUMNS_COUNT,
-    CURSOR_CELL_OUTLINE_WIDTH,
-    ROWS_COUNT,
-} from "@/lib/constants/board";
+import { COLUMNS_COUNT, ROWS_COUNT } from "@/lib/constants/board";
 import { CellHelper } from "@/lib/helpers/cell-helper";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { Point } from "@/lib/shared-types";
@@ -86,69 +82,6 @@ export const Board = () => {
         });
     };
 
-    // const setFontsAtom = useSetAtom(fontsAtom);
-
-    // useAnimatedReaction(
-    //     () => canvasSize.value,
-    //     (value) => {
-    //         console.log("Canvas size changed")
-    //         // runOnJS(updateDimensions)();
-    //
-    //         // runOnJS(() => {
-    //         //     dimensionsObservableStore$.updateDimensions({
-    //         //         boardLength: boardLength,
-    //         //         cellLength: cellLength,
-    //         //     });
-    //         // })
-    //
-    //         // runOnJS(dimensionsObservableStore$.updateDimensions)({
-    //         //     boardLength: boardLength,
-    //         //     cellLength: cellLength,
-    //         // })
-    //     },
-    // );
-
-    // useEffect(() => {
-    // const boardLength = Math.min(canvasSize.width, canvasSize.height);
-    // const cellLength = (boardLength - (BOARD_OUTLINE_WIDTH * 2) - (SUBGRID_OUTLINE_WIDTH * 2) - (CELL_OUTLINE_WIDTH * 6)) / 9;
-    //
-    // dimensionsObservableStore$.updateDimensions({
-    //     boardLength: boardLength,
-    //     cellLength: cellLength,
-    // });
-
-    // const boardLength = Math.min(canvasSize.width, canvasSize.height);
-    // const cellLength = (boardLength - (BOARD_OUTLINE_WIDTH * 2) - (SUBGRID_OUTLINE_WIDTH * 2) - (CELL_OUTLINE_WIDTH * 6)) / 9;
-    //
-    // setBoardDimensionsAtom({
-    //     boardLength,
-    //     cellLength,
-    // });
-
-    // console.log({ s: Math.min(size.value.width, size.value.height), b: boardLength});
-
-    // const numberFontSize = cellLength * 0.8;
-    // const notesFontSize = (cellLength / 3) - CURSOR_CELL_OUTLINE_WIDTH;
-    //
-    // if (fontManager) {
-    //   const numberFont = matchFont(
-    //     { fontSize: numberFontSize, fontFamily: "SplineSansMonoRegular" },
-    //     fontManager
-    //   );
-    //   const noteFont = matchFont(
-    //     { fontSize: notesFontSize, fontFamily: "SplineSansMonoRegular" },
-    //     fontManager
-    //   );
-    //
-    //   setFontsAtom({
-    //     numberFont: numberFont,
-    //     notesFont: noteFont,
-    //     numberFontSize: numberFontSize,
-    //     notesFontSize: notesFontSize,
-    //   });
-    // }
-    // }, [canvasSize, fontManager, setFontsAtom]);
-
     const panGesture = Gesture.Pan()
         .averageTouches(true)
         .onBegin((event) => {
@@ -222,19 +155,6 @@ export const Board = () => {
                         <PeerCells />
 
                         {renderCells()}
-
-                        {/*<Cell
-                            gridPosition={GridPositionHelper.createFromIndexes(
-                                4,
-                                1,
-                            )}
-                        />
-                        <Cell
-                            gridPosition={GridPositionHelper.createFromIndexes(
-                                2,
-                                0,
-                            )}
-                        />*/}
 
                         <Dividers />
 

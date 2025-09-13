@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# ==============================================================
+# This script safely stops all running Expo processes on the system.
+# - Shows the list of process IDs that expo is running on.
+# - Useful at times when you start a server and close the terminal maintaining the process running in the background.
+#
+# Usage:
+#   bun stop
+#   or directly: ./stop
+#
+# Remarks:
+#   - User confirmation defaults to 'No'.
+# ==============================================================
+
+
+set -e # stop on error
+
+if ! pids=$(pgrep -f expo); then
+  echo "[i] No Expo process(es) found to stop."
+  exit 0
+fi
+
+echo "[i] Expo server running with PID(s): $pids"
+
+kill_cmd="kill $pids"
+read -p "[?] Are you sure you want to stop all running Expo processes (will run: \`$kill_cmd\`)? (y/N)" -n 1 -r
+echo
+
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  echo "[i] Stopping Expo server (PID: $pids)..."
+  eval $kill_cmd
+  echo "[i] Expo server stopped."
+else
+  echo "[❌] Stop request canceled - Expo is still running."
+fi

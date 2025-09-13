@@ -1,0 +1,118 @@
+name: Submit to store
+run-name: >-
+    Submit latest build to store
+    (platform: ${
+      {
+        github.event_name == 'workflow_dispatch' && github.event.inputs.platform ||
+        startsWith(github.event.release.tag_name, 'android.') && 'Android' ||
+        startsWith(github.event.release.tag_name, 'ios.') && 'iOS' ||
+        'All'
+      }
+    })
+on:
+    release:
+        types: [published]
+    workflow_dispatch:
+        inputs:
+            platform:
+                description: Choose a platform
+                type: choice
+                required: true
+                options:
+                    - All
+                    - Android (Google Play Store incl. for beta testing)
+                    - iOS (App Store / TestFlight)
+jobs:
+    submit:
+        name: 🏁 Submit
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: write
+        steps:
+            - name: 🔍 Check for required repo secrets
+              run: |
+                  echo "Verifying required secrets for platform: ${{ github.event.inputs.platform }}..."
+                  missing=false
+
+                  # Always required
+                  if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+                    echo "[error] Missing EXPO_TOKEN in your repository secrets."
+                    exit 1
+                  fi
+
+                  # Check for iOS/iPadOS-specific secrets only if iOS or All is selected
+                  if [[ ("${{ github.event.inputs.platform }}" == "iOS (physical device only)" || "${{ github.event.inputs.platform }}" == "All") ]]; then
+                    if [ -z "${{ secrets.EXPO_ASC_API_KEY }}" ]; then
+                      echo "[error] Missing EXPO_ASC_API_KEY in your repository secrets."
+                      missing=true
+                    fi
+
+                    if [ -z "${{ secrets.EXPO_ASC_KEY_ID }}" ]; then
+                      echo "[error] Missing EXPO_ASC_KEY_ID in your repository secrets."
+                      missing=true
+                    fi
+
+                    if [ -z "${{ secrets.EXPO_ASC_ISSUER_ID }}" ]; then
+                      echo "[error] Missing EXPO_ASC_ISSUER_ID in your repository secrets."
+                      missing=true
+                    fi
+
+                    if [ -z "${{ secrets.EXPO_APPLE_TEAM_ID }}" ]; then
+                      echo "[error] Missing EXPO_APPLE_TEAM_ID in your repository secrets."
+                      missing=true
+                    fi
+
+                    if [ -z "${{ secrets.EXPO_APPLE_TEAM_TYPE }}" ]; then
+                      echo "[error] Missing EXPO_APPLE_TEAM_TYPE in your repository secrets."
+                      missing=true
+                    fi
+
+                    if [ "$missing" = true ]; then
+                      echo "🚫 One or more secrets (listed above) are required for this workflow to run!"
+                      echo "   - Please follow our setup checklist here https://thecurveconsulting.atlassian.net/wiki/x/QAAwfQ and try again."
+                      exit 1
+                    fi
+                  fi
+
+                  echo "✅ All required EXPO_* secrets are present."
+
+            - name: 🔍 (For GH Release only) Detect the platform we're submitting for
+              if: github.event_name == 'release'
+              id: detect
+              run: |
+                  TAG="${{ github.event.release.tag_name }}"
+                  echo "A release has been published with the following tag: $TAG"
+
+                  if [[ "$TAG" == android.* ]]; then
+                    echo "platform=Android" >> $GITHUB_OUTPUT
+                  elif [[ "$TAG" == ios.* ]]; then
+                    echo "platform=iOS" >> $GITHUB_OUTPUT
+                  else
+                    echo "platform=All" >> $GITHUB_OUTPUT
+                  fi
+
+                  echo "✅ Detected the platform we're submitting for: $(cat $GITHUB_OUTPUT)"
+
+            - name: 🏗 Checkout repository
+              uses: actions/checkout@v5
+
+            - name: 🏗 Setup Node
+              uses: actions/setup-node@v5
+              with:
+                  node-version: 22.x
+                  cache: npm
+
+            - name: 🏗 Setup EAS
+              uses: expo/expo-github-action@v8
+              with:
+                  eas-version: latest
+                  token: ${{ secrets.EXPO_TOKEN }}
+
+            - name: 🏁 Triggering a Google Play Store submission via Expo (expand to see status link)
+              if: (steps.detect.outputs.platform == 'Android' || steps.detect.outputs.platform == 'All') || (contains(github.event.inputs.platform, 'Android') || contains(github.event.inputs.platform, 'All'))
+              run: npm run submit:android -- --latest --non-interactive --no-wait
+
+            - name: 🏁 Triggering an App Store submission via Expo (expand to see status link)
+              if: (steps.detect.outputs.platform == 'iOS' || steps.detect.outputs.platform == 'All') || (contains(github.event.inputs.platform, 'iOS') || contains(github.event.inputs.platform, 'All'))
+              run: npm run submit:ios -- --latest --non-interactive --no-wait
