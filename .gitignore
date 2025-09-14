@@ -43,6 +43,7 @@ app-example
 *.apk
 *.app
 *.aab
+build*.tar.gz
 
 .env
 !.env.example

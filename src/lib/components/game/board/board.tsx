@@ -18,6 +18,13 @@ import { CursorCell } from "@/lib/components/game/board/cell/cursor-cell";
 import { PeerCells } from "@/lib/components/game/board/cell/peer-cells";
 import { fonts$ } from "@/lib/store/observables/fonts";
 import { TextHelper } from "@/lib/helpers/text-helper";
+import {
+    runOnJS,
+    runOnUI,
+    scheduleOnRN,
+    scheduleOnUI,
+} from "react-native-worklets";
+import { PointHelper } from "@/lib/helpers/point-helper";
 
 export const Board = () => {
     const boardDimensions = use$(boardDimensions$);
@@ -83,24 +90,12 @@ export const Board = () => {
     const panGesture = Gesture.Pan()
         .averageTouches(true)
         .onBegin((event) => {
-            handleCursorMovementOnTouch({ x: event.x, y: event.y });
+            CellHelper.moveCursorToPoint(event);
         })
         .onChange((event) => {
-            handleCursorMovementOnTouch({ x: event.x, y: event.y });
+            CellHelper.moveCursorToPoint(event);
         })
         .runOnJS(true);
-
-    const handleCursorMovementOnTouch = (touchedPoint: Point) => {
-        const newGridPosition =
-            GridPositionHelper.createFromPoint(touchedPoint);
-
-        if (!newGridPosition) {
-            // Out of bounds, do nothing
-            return;
-        }
-
-        CellHelper.moveCursorTo(newGridPosition);
-    };
 
     const renderCells = () => {
         const cells = [];
