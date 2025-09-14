@@ -9,78 +9,90 @@ export type SubgridIndex = 0 | 1 | 2;
  * -------------
  */
 
-export type GameState = 'paused' | 'playing' | 'over'
+export type GameState = "paused" | "playing" | "over";
 
-export type Difficulty = 'easy' | 'medium' | 'hard' | 'very-hard' | 'extreme';
+export type Difficulty = "easy" | "medium" | "hard" | "very-hard" | "extreme";
 
-export type ForceToggleOperation = 'add' | 'remove'
+export type ForceToggleOperation = "add" | "remove";
 
-export type CursorMode = 'number' | 'note';
+export type CursorMode = "number" | "note";
 
 export type Bounds = {
-    min: number,
-    max: number,
-}
+    min: number;
+    max: number;
+};
 
 export type Size = {
-    width: number,
-    height: number,
-}
+    width: number;
+    height: number;
+};
 
 export type Point = {
-    x: number,
-    y: number,
-}
+    x: number;
+    y: number;
+};
 
 export type GridPosition = {
-    row: GridIndex,
-    col: GridIndex
+    row: GridIndex;
+    col: GridIndex;
 };
 
 export type SubgridPosition = {
-    row: SubgridIndex,
-    col: SubgridIndex
+    row: SubgridIndex;
+    col: SubgridIndex;
 };
 
 export type BoardDimensions = {
     /**
      * The full length of the board, including borders.
      */
-    boardLength: number,
+    boardLength: number;
 
     /**
      * The length of each cell in the board, considering the borders (cell, subgrid) spacing it is subject to.
      */
-    cellLength: number,
-}
+    cellLength: number;
+};
+
+export type NumberCharacter =
+    | "1"
+    | "2"
+    | "3"
+    | "4"
+    | "5"
+    | "6"
+    | "7"
+    | "8"
+    | "9";
+export type CharSizeMap = Record<NumberCharacter, Size>;
 
 /**
  * The type of peer found during the processing via {@link CellHelper.processEachPeerAndNonPeerCell}
  */
-export type PeerType = 'note' | 'number' | 'both';
+export type PeerType = "note" | "number" | "both";
 
 export type PeerCellMetadata = {
-    gridPosition: GridPosition,
-    type: PeerType
-}
+    gridPosition: GridPosition;
+    type: PeerType;
+};
 
 export type Puzzle = {
-    difficulty: Difficulty,
-    solution: BoardGridNotation,
-    notes: BoardNotesGridNotation,
-    given: BoardGridNotation,
-    player: BoardGridNotation,
-    timeElapsedInSeconds: number,
+    difficulty: Difficulty;
+    solution: BoardGridNotation;
+    notes: BoardNotesGridNotation;
+    given: BoardGridNotation;
+    player: BoardGridNotation;
+    timeElapsedInSeconds: number;
 };
 
 /**
  * Represents a valid move type on the board.
  */
 export type BoardMoveType =
-    | 'set-number'
-    | 'set-note'
-    | 'remove-number'
-    | 'remove-notes';
+    | "set-number"
+    | "set-note"
+    | "remove-number"
+    | "remove-notes";
 
 /**
  * Represents a plain string notation for moves on the board.
@@ -93,16 +105,16 @@ export type BoardMovePlainStringNotation = string;
  * Represents each move performed on the board.
  */
 export type BoardMove = {
-    type: BoardMoveType,
-    index: number,
-    locationNotation: LocationNotation,
-    value: number,
-}
+    type: BoardMoveType;
+    index: number;
+    locationNotation: LocationNotation;
+    value: number;
+};
 
 /**
  * Represents the final board move grid notation.
  */
-export type BoardMoveGridNotation = BoardMove[]
+export type BoardMoveGridNotation = BoardMove[];
 
 /**
  * -------------------
@@ -139,7 +151,6 @@ export type BoardPlainStringNotation = string;
  */
 export type BoardPlainNumberNotation = number[];
 
-
 /**
  * --------------------
  * Board Notes Notation
@@ -154,7 +165,7 @@ export type BoardNotesGridNotationValue = number[];
 /**
  * Represents each row in the grid notation for notes on the board.
  */
-export type BoardNotesGridNotationRow = BoardNotesGridNotationValue[]
+export type BoardNotesGridNotationRow = BoardNotesGridNotationValue[];
 
 /**
  * Represents the final / parsed grid notation for notes on the board.

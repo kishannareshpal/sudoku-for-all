@@ -8,7 +8,7 @@ import { BaseCell } from "./base-cell";
 
 export const CursorCell = () => {
     const cursorGridPosition = useGameplayStore(
-        (state) => state.cursorGridPosition
+        (state) => state.cursorGridPosition,
     );
 
     useStoreSubscription(
@@ -19,7 +19,7 @@ export const CursorCell = () => {
         },
         {
             equalityFn: GridPositionHelper.notChanged,
-        }
+        },
     );
 
     const strokeWidth = CURSOR_CELL_OUTLINE_WIDTH;
@@ -33,7 +33,8 @@ export const CursorCell = () => {
         <BaseCell
             gridPosition={cursorGridPosition}
             renderChildren={(boardDimensions, cellPointForGridPosition) => {
-                const cellLength = boardDimensions.cellLength - CURSOR_CELL_OUTLINE_WIDTH;
+                const cellLength =
+                    boardDimensions.cellLength - CURSOR_CELL_OUTLINE_WIDTH;
 
                 return (
                     <Rect

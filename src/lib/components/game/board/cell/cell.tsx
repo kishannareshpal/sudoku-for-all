@@ -1,8 +1,8 @@
 import { CellHelper } from "@/lib/helpers/cell-helper";
 import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
-import { GridPosition, Point } from "@/lib/shared-types";
+import { GridPosition, NumberCharacter, Point } from "@/lib/shared-types";
 import { useGameplayStore } from "@/lib/store/gameplay-store";
-import { Group, Rect, Text } from "@shopify/react-native-skia";
+import { Group, Rect, SkFont, Text } from "@shopify/react-native-skia";
 import { BaseCell, CommonCellProps } from "./base-cell";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { use$ } from "@legendapp/state/react";
@@ -69,15 +69,15 @@ const NumberCellText = ({
     isStatic = true,
 }: NumberCellTextProps) => {
     const fonts = use$(fonts$);
-    const cellLength = use$(() => boardDimensions$.cellLength);
-
-    const fontMeasurement = fonts.numberFont?.measureText(value.toString());
-    const fontWidth = fontMeasurement?.width || 0;
-    const fontHeight = fontMeasurement?.height || 0;
+    const cellLength = use$(boardDimensions$.cellLength);
+    const charSize = fonts.charSizeFor(
+        "number",
+        value.toString() as NumberCharacter,
+    );
 
     const textPoint = {
-        x: cellPointForGridPosition.x + cellLength / 2 - fontWidth / 2,
-        y: cellPointForGridPosition.y + cellLength / 2 + fontHeight / 2,
+        x: cellPointForGridPosition.x + cellLength / 2 - charSize.width / 2,
+        y: cellPointForGridPosition.y + cellLength / 2 + charSize.height / 2,
     };
 
     return (
@@ -87,8 +87,7 @@ const NumberCellText = ({
             y={textPoint.y}
             text={value.toString()}
             font={fonts.numberFont}
-            // color={isStatic ? 'white' : 'orange'}
-            color="lime"
+            color={isStatic ? "white" : "orange"}
         />
     );
 };
@@ -147,11 +146,11 @@ const NoteText = ({
     );
 
     const fonts = use$(fonts$);
-    const cellLength = use$(() => boardDimensions$.cellLength);
-
-    const fontMeasurement = fonts.notesFont?.measureText(value.toString());
-    const fontWidth = fontMeasurement?.width || 0;
-    const fontHeight = fontMeasurement?.height || 0;
+    const cellLength = use$(boardDimensions$.cellLength);
+    const charSize = fonts.charSizeFor(
+        "note",
+        value.toString() as NumberCharacter,
+    );
 
     const subgridPosition = SubgridPositionHelper.createFromFlatIndex(
         (value - 1) % 9,
@@ -165,13 +164,13 @@ const NoteText = ({
             cellPointForGridPosition.x +
             subgridPosition.col * (subgridCellLength - padding) +
             subgridCellLength / 2 -
-            fontWidth / 2 +
+            charSize.width / 2 +
             padding,
         y:
             cellPointForGridPosition.y +
             subgridPosition.row * (subgridCellLength - padding) +
             subgridCellLength / 2 +
-            fontHeight / 2 +
+            charSize.height / 2 +
             padding,
     };
 

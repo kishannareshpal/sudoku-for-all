@@ -3,8 +3,13 @@ import {
     BoardGridNotation,
     BoardGridNotationValue,
     BoardNotesGridNotation,
-    BoardNotesGridNotationValue, CursorMode, ForceToggleOperation,
-    GridPosition, PeerCellMetadata, PeerType
+    BoardNotesGridNotationValue,
+    CursorMode,
+    ForceToggleOperation,
+    GridPosition,
+    PeerCellMetadata,
+    PeerType,
+    Point,
 } from "@/lib/shared-types";
 import { gameplayStoreState } from "@/lib/store/gameplay-store";
 import {
@@ -12,7 +17,7 @@ import {
     CELL_OUTLINE_WIDTH,
     COLUMNS_COUNT,
     ROWS_COUNT,
-    SUBGRID_OUTLINE_WIDTH
+    SUBGRID_OUTLINE_WIDTH,
 } from "@/lib/constants/board";
 import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
 
@@ -20,23 +25,23 @@ type ProcessEachPeerAndNonPeerCellOptions = {
     /**
      * A boolean flag to allow the current cell to be considered as a peer (default is `true`).
      */
-    allowSelfAsPeer?: boolean,
+    allowSelfAsPeer?: boolean;
     /**
      * A boolean flag to allow peers from the same row (default is `true`).
      */
-    allowRowPeers?: boolean,
+    allowRowPeers?: boolean;
     /**
      * A boolean flag to allow peers from the same column (default is `true`).
      */
-    allowColumnPeers?: boolean,
+    allowColumnPeers?: boolean;
     /**
      * A boolean flag to allow peers from the same subgrid (default is `true`).
      */
-    allowSubgridPeers?: boolean,
+    allowSubgridPeers?: boolean;
     /**
      * A boolean flag to allow peers that have the same value as the current cell - ignoring row or column sameness (default is `true`).
      */
-    allowSameValueAnywherePeers?: boolean,
+    allowSameValueAnywherePeers?: boolean;
 
     // /**
     //  * A boolean flag to allow peers that have the same note value as the current cell?
@@ -44,15 +49,23 @@ type ProcessEachPeerAndNonPeerCellOptions = {
     //  * @todo - Implement
     //  */
     // allowSameValueAsNoteAnywherePeers?: boolean
-}
+};
 
 export class CellHelper {
     static calculateCellLength(boardLength: number): number {
-        return (boardLength - (BOARD_OUTLINE_WIDTH * 2) - (SUBGRID_OUTLINE_WIDTH * 2) - (CELL_OUTLINE_WIDTH * 6)) / 9;
+        return (
+            (boardLength -
+                BOARD_OUTLINE_WIDTH * 2 -
+                SUBGRID_OUTLINE_WIDTH * 2 -
+                CELL_OUTLINE_WIDTH * 6) /
+            9
+        );
     }
 
     static getToggledNotesAtCursor(
-        notesGridNotation: BoardNotesGridNotation | undefined = gameplayStoreState().puzzle?.notes
+        notesGridNotation:
+            | BoardNotesGridNotation
+            | undefined = gameplayStoreState().puzzle?.notes,
     ): BoardNotesGridNotationValue {
         const cursorGridPosition = gameplayStoreState().cursorGridPosition;
         return this.getToggledNotesAt(cursorGridPosition, notesGridNotation);
@@ -60,7 +73,9 @@ export class CellHelper {
 
     static getToggledNotesAt(
         gridPosition: GridPosition,
-        notesGridNotation: BoardNotesGridNotation | undefined = gameplayStoreState().puzzle?.notes
+        notesGridNotation:
+            | BoardNotesGridNotation
+            | undefined = gameplayStoreState().puzzle?.notes,
     ): BoardNotesGridNotationValue {
         if (!notesGridNotation) {
             return [];
@@ -70,24 +85,34 @@ export class CellHelper {
     }
 
     static getNumberValueAtCursor(
-        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.player,
-        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given,
+        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState()
+            .puzzle?.player,
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState()
+            .puzzle?.given,
     ): BoardGridNotationValue {
         const cursorGridPosition = gameplayStoreState().cursorGridPosition;
-        return this.getNumberValueAt(cursorGridPosition, playerGridNotation, givenGridNotation);
+        return this.getNumberValueAt(
+            cursorGridPosition,
+            playerGridNotation,
+            givenGridNotation,
+        );
     }
 
     static getNumberValueAt(
         gridPosition: GridPosition,
-        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.player,
-        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given,
+        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState()
+            .puzzle?.player,
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState()
+            .puzzle?.given,
     ): BoardGridNotationValue {
-        return givenGridNotation?.[gridPosition.row][gridPosition.col] || playerGridNotation?.[gridPosition.row][gridPosition.col] || 0;
+        return (
+            givenGridNotation?.[gridPosition.row][gridPosition.col] ||
+            playerGridNotation?.[gridPosition.row][gridPosition.col] ||
+            0
+        );
     }
 
-    static moveCursorTo(
-        gridPosition: GridPosition
-    ): void {
+    static moveCursorTo(gridPosition: GridPosition): void {
         const store = gameplayStoreState();
 
         if (GridPositionHelper.isOutOfBounds(gridPosition)) {
@@ -95,26 +120,27 @@ export class CellHelper {
         }
 
         const relatedCellsGridPositions: PeerCellMetadata[] = [];
-        this.processEachPeerAndNonPeerCell(
-            gridPosition,
-            (peerCellMetadata) => {
-                relatedCellsGridPositions.push(peerCellMetadata);
-            },
-        );
+        this.processEachPeerAndNonPeerCell(gridPosition, (peerCellMetadata) => {
+            relatedCellsGridPositions.push(peerCellMetadata);
+        });
 
         store.updateCursorPeerCells(relatedCellsGridPositions);
         store.updateCursorGridPosition(gridPosition);
     }
 
-    static applyHintAt(
-        gridPosition: GridPosition
-    ): void {
+    static moveCursorToPoint(point: Point): void {
+        const newGridPosition = GridPositionHelper.createFromPoint(point);
+        if (!newGridPosition) {
+            // Out of bounds, do nothing
+            return;
+        }
 
+        CellHelper.moveCursorTo(newGridPosition);
     }
 
-    static eraseAt(
-        gridPosition: GridPosition
-    ): void {
+    static applyHintAt(gridPosition: GridPosition): void {}
+
+    static eraseAt(gridPosition: GridPosition): void {
         const store = gameplayStoreState();
 
         if (!store.puzzle) {
@@ -134,26 +160,23 @@ export class CellHelper {
         this.eraseAt(cursorGridPosition);
     }
 
-    static changePlayerValueAtCursorTo(
-        value: BoardGridNotationValue
-    ): void {
+    static changePlayerValueAtCursorTo(value: BoardGridNotationValue): void {
         const cursorGridPosition = gameplayStoreState().cursorGridPosition;
 
         this.changePlayerValueAt(cursorGridPosition, value);
     }
 
-    static toggleCursorMode(
-        mode?: CursorMode
-    ): void {
+    static toggleCursorMode(mode?: CursorMode): void {
         const store = gameplayStoreState();
 
-        const nextCursorMode = mode ?? (store.cursorMode === 'number') ? 'note' : 'number'
+        const nextCursorMode =
+            (mode ?? store.cursorMode === "number") ? "note" : "number";
         gameplayStoreState().updateCursorMode(nextCursorMode);
     }
 
     static changePlayerValueAt(
         gridPosition: GridPosition,
-        value: BoardGridNotationValue
+        value: BoardGridNotationValue,
     ): void {
         const store = gameplayStoreState();
 
@@ -170,17 +193,17 @@ export class CellHelper {
 
     static toggleNotesValueAtCursor(
         notes: BoardNotesGridNotationValue,
-        forceOperation?: ForceToggleOperation
+        forceOperation?: ForceToggleOperation,
     ): void {
         const cursorGridPosition = gameplayStoreState().cursorGridPosition;
 
-        this.toggleNotesValueAt(cursorGridPosition, notes, forceOperation)
+        this.toggleNotesValueAt(cursorGridPosition, notes, forceOperation);
     }
 
     static toggleNotesValueAt(
         gridPosition: GridPosition,
         notes: BoardNotesGridNotationValue,
-        forceOperation?: ForceToggleOperation
+        forceOperation?: ForceToggleOperation,
     ): void {
         const store = gameplayStoreState();
 
@@ -188,7 +211,13 @@ export class CellHelper {
             return;
         }
 
-        if (!this.isAnnotatableAt(gridPosition, store.puzzle.given, store.puzzle.player)) {
+        if (
+            !this.isAnnotatableAt(
+                gridPosition,
+                store.puzzle.given,
+                store.puzzle.player,
+            )
+        ) {
             return;
         }
 
@@ -197,8 +226,10 @@ export class CellHelper {
 
     static isAnnotatableAt(
         gridPosition: GridPosition,
-        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given,
-        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.player,
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState()
+            .puzzle?.given,
+        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState()
+            .puzzle?.player,
     ): boolean {
         if (!givenGridNotation || !playerGridNotation) {
             return false;
@@ -209,12 +240,15 @@ export class CellHelper {
         }
 
         // Is only annotatable if a final number has not been placed at this position yet
-        return this.isValueEmpty(playerGridNotation[gridPosition.row][gridPosition.col]);
+        return this.isValueEmpty(
+            playerGridNotation[gridPosition.row][gridPosition.col],
+        );
     }
 
     static isEraseableAt(
         gridPosition: GridPosition,
-        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given,
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState()
+            .puzzle?.given,
     ): boolean {
         if (!givenGridNotation) {
             return false;
@@ -225,36 +259,47 @@ export class CellHelper {
 
     static isEditableAt(
         gridPosition: GridPosition,
-        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState()
+            .puzzle?.given,
     ): boolean {
         if (!givenGridNotation) {
             return false;
         }
 
-        return this.isValueEmpty(givenGridNotation[gridPosition.row][gridPosition.col])
+        return this.isValueEmpty(
+            givenGridNotation[gridPosition.row][gridPosition.col],
+        );
     }
 
     static isStaticAt(
         gridPosition: GridPosition,
-        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState()
+            .puzzle?.given,
     ): boolean {
         if (!givenGridNotation) {
             return true;
         }
 
-        return this.isValueNotEmpty(givenGridNotation[gridPosition.row][gridPosition.col])
+        return this.isValueNotEmpty(
+            givenGridNotation[gridPosition.row][gridPosition.col],
+        );
     }
 
     static isNumberValueEqualAt(
         gridPosition: GridPosition,
         value: number,
-        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.player,
-        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given,
-        options?: { considerEmptyAsEqual: boolean }
+        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState()
+            .puzzle?.player,
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState()
+            .puzzle?.given,
+        options?: { considerEmptyAsEqual: boolean },
     ): boolean {
-        options ||= {considerEmptyAsEqual: false};
+        options ||= { considerEmptyAsEqual: false };
 
-        const valueAtGridPosition = playerGridNotation?.[gridPosition.row][gridPosition.col] || givenGridNotation?.[gridPosition.row][gridPosition.col] || 0;
+        const valueAtGridPosition =
+            playerGridNotation?.[gridPosition.row][gridPosition.col] ||
+            givenGridNotation?.[gridPosition.row][gridPosition.col] ||
+            0;
         const same = valueAtGridPosition === value;
 
         if (options.considerEmptyAsEqual) {
@@ -266,20 +311,33 @@ export class CellHelper {
 
     static isValueEmptyAt(
         gridPosition: GridPosition,
-        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given,
-        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.player,
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState()
+            .puzzle?.given,
+        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState()
+            .puzzle?.player,
     ): boolean {
-        return this.isValueNotEmpty(givenGridNotation?.[gridPosition.row][gridPosition.col])
-            || this.isValueNotEmpty(playerGridNotation?.[gridPosition.row][gridPosition.col]);
-
+        return (
+            this.isValueNotEmpty(
+                givenGridNotation?.[gridPosition.row][gridPosition.col],
+            ) ||
+            this.isValueNotEmpty(
+                playerGridNotation?.[gridPosition.row][gridPosition.col],
+            )
+        );
     }
 
     static isValueNotEmptyAt(
         gridPosition: GridPosition,
-        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.given,
-        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState().puzzle?.player,
+        givenGridNotation: BoardGridNotation | undefined = gameplayStoreState()
+            .puzzle?.given,
+        playerGridNotation: BoardGridNotation | undefined = gameplayStoreState()
+            .puzzle?.player,
     ): boolean {
-        return !this.isValueEmptyAt(gridPosition, givenGridNotation, playerGridNotation);
+        return !this.isValueEmptyAt(
+            gridPosition,
+            givenGridNotation,
+            playerGridNotation,
+        );
     }
 
     static isValueEmpty(value: number | undefined | null): boolean {
@@ -292,7 +350,9 @@ export class CellHelper {
 
     static areNotesEmptyAt(
         gridPosition: GridPosition,
-        notesGridNotation: BoardNotesGridNotation | undefined = gameplayStoreState().puzzle?.notes
+        notesGridNotation:
+            | BoardNotesGridNotation
+            | undefined = gameplayStoreState().puzzle?.notes,
     ): boolean {
         if (!notesGridNotation) {
             return true;
@@ -303,21 +363,27 @@ export class CellHelper {
 
     static areNotesNotEmptyAt(
         gridPosition: GridPosition,
-        notesGridNotation: BoardNotesGridNotation | undefined = gameplayStoreState().puzzle?.notes
+        notesGridNotation:
+            | BoardNotesGridNotation
+            | undefined = gameplayStoreState().puzzle?.notes,
     ): boolean {
-        return this.areNotesEmptyAt(gridPosition, notesGridNotation)
+        return this.areNotesEmptyAt(gridPosition, notesGridNotation);
     }
 
     static containsToggledNoteAt(
         gridPosition: GridPosition,
         noteValue: number,
-        notesGridNotation: BoardNotesGridNotation | undefined = gameplayStoreState().puzzle?.notes
+        notesGridNotation:
+            | BoardNotesGridNotation
+            | undefined = gameplayStoreState().puzzle?.notes,
     ): boolean {
         if (!notesGridNotation) {
             return false;
         }
 
-        return notesGridNotation[gridPosition.row][gridPosition.col].includes(noteValue);
+        return notesGridNotation[gridPosition.row][gridPosition.col].includes(
+            noteValue,
+        );
     }
 
     /**
@@ -344,30 +410,38 @@ export class CellHelper {
             allowRowPeers: options?.allowRowPeers ?? true,
             allowColumnPeers: options?.allowColumnPeers ?? true,
             allowSubgridPeers: options?.allowSubgridPeers ?? true,
-            allowSameValueAnywherePeers: options?.allowSameValueAnywherePeers ?? true,
+            allowSameValueAnywherePeers:
+                options?.allowSameValueAnywherePeers ?? true,
             // allowSameValueAsNoteAnywherePeers: options?.allowSameValueAsNoteAnywherePeers ?? true
-        }
+        };
 
         const cellValue = CellHelper.getNumberValueAt(cellGridPosition);
 
         for (let rowIndex = 0; rowIndex < ROWS_COUNT; rowIndex++) {
             for (let colIndex = 0; colIndex < COLUMNS_COUNT; colIndex++) {
-                const currentGridPosition = GridPositionHelper.createFromIndexes(colIndex, rowIndex);
+                const currentGridPosition =
+                    GridPositionHelper.createFromIndexes(colIndex, rowIndex);
 
                 // Check note peer condition
-                const hasNotePeer = CellHelper.containsToggledNoteAt(currentGridPosition, cellValue);
+                const hasNotePeer = CellHelper.containsToggledNoteAt(
+                    currentGridPosition,
+                    cellValue,
+                );
 
-                const peerFoundType: PeerType = hasNotePeer ? 'both' : 'number';
+                const peerFoundType: PeerType = hasNotePeer ? "both" : "number";
 
                 // Handle if the current iterating self is itself
-                const isItself = GridPositionHelper.equals(currentGridPosition, cellGridPosition);
+                const isItself = GridPositionHelper.equals(
+                    currentGridPosition,
+                    cellGridPosition,
+                );
                 if (isItself) {
                     // If it's itself, and it's allowed to be considered as a peer, behave as such, otherwise
                     // return as not being one.
                     if (defaultedOptions.allowSelfAsPeer) {
                         peerFoundCallback?.({
                             gridPosition: currentGridPosition,
-                            type: peerFoundType
+                            type: peerFoundType,
                         });
                     } else {
                         nonPeerFoundCallback?.(currentGridPosition);
@@ -377,56 +451,74 @@ export class CellHelper {
                 }
 
                 // Check row, column and sub-grid peer conditions
-                const isSameRow = defaultedOptions.allowRowPeers && GridPositionHelper.equalRow(currentGridPosition, cellGridPosition);
+                const isSameRow =
+                    defaultedOptions.allowRowPeers &&
+                    GridPositionHelper.equalRow(
+                        currentGridPosition,
+                        cellGridPosition,
+                    );
                 if (isSameRow) {
                     peerFoundCallback?.({
                         gridPosition: currentGridPosition,
-                        type: peerFoundType
+                        type: peerFoundType,
                     });
                     continue;
                 }
 
-                const isSameCol = defaultedOptions.allowColumnPeers && GridPositionHelper.equalColumn(currentGridPosition, cellGridPosition);
+                const isSameCol =
+                    defaultedOptions.allowColumnPeers &&
+                    GridPositionHelper.equalColumn(
+                        currentGridPosition,
+                        cellGridPosition,
+                    );
                 if (isSameCol) {
                     peerFoundCallback?.({
                         gridPosition: currentGridPosition,
-                        type: peerFoundType
+                        type: peerFoundType,
                     });
                     continue;
                 }
 
-                const isSameSubgrid = defaultedOptions.allowSubgridPeers && SubgridPositionHelper.equalsFromGridPositions(
-                    currentGridPosition, cellGridPosition
-                )
+                const isSameSubgrid =
+                    defaultedOptions.allowSubgridPeers &&
+                    SubgridPositionHelper.equalsFromGridPositions(
+                        currentGridPosition,
+                        cellGridPosition,
+                    );
                 if (isSameSubgrid) {
                     peerFoundCallback?.({
                         gridPosition: currentGridPosition,
-                        type: peerFoundType
+                        type: peerFoundType,
                     });
                     continue;
                 }
 
                 // Check the same value anywhere peer condition
-                const isSameValueButNotEmpty = defaultedOptions.allowSameValueAnywherePeers && CellHelper.isNumberValueEqualAt(
-                    currentGridPosition,
-                    cellValue,
-                    puzzle?.player,
-                    puzzle?.given,
-                    {considerEmptyAsEqual: false}
-                );
+                const isSameValueButNotEmpty =
+                    defaultedOptions.allowSameValueAnywherePeers &&
+                    CellHelper.isNumberValueEqualAt(
+                        currentGridPosition,
+                        cellValue,
+                        puzzle?.player,
+                        puzzle?.given,
+                        { considerEmptyAsEqual: false },
+                    );
                 if (isSameValueButNotEmpty) {
                     peerFoundCallback?.({
                         gridPosition: currentGridPosition,
-                        type: peerFoundType
+                        type: peerFoundType,
                     });
                     continue;
                 }
 
                 // Only has a peer note
-                if (hasNotePeer && defaultedOptions.allowSameValueAnywherePeers) {
+                if (
+                    hasNotePeer &&
+                    defaultedOptions.allowSameValueAnywherePeers
+                ) {
                     peerFoundCallback?.({
                         gridPosition: currentGridPosition,
-                        type: 'note'
+                        type: "note",
                     });
                     continue;
                 }

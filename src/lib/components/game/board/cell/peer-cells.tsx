@@ -15,8 +15,8 @@ export const PeerCells = () => {
         CellHelper.getNumberValueAt(
             store.cursorGridPosition,
             store.puzzle?.player,
-            store.puzzle?.given
-        )
+            store.puzzle?.given,
+        ),
     );
     const cursorPeerCells = useGameplayStore((store) => store.cursorPeerCells);
 
@@ -24,7 +24,7 @@ export const PeerCells = () => {
         <Group>
             {cursorPeerCells.map((peerCellMetadata) => {
                 const key = `rc-${GridPositionHelper.stringNotationOf(
-                    peerCellMetadata.gridPosition
+                    peerCellMetadata.gridPosition,
                 )}`;
                 if (peerCellMetadata.type === "note") {
                     return (
@@ -74,11 +74,11 @@ type PeerNoteProps = CommonCellProps & {
 
 const PeerNote = ({ gridPosition, value }: PeerNoteProps) => {
     const fonts = use$(fonts$);
-    const cellLength = use$(() => boardDimensions$.cellLength);
+    const cellLength = use$(boardDimensions$.cellLength);
 
     const cellPointForGridPosition = PointHelper.createFromGridPosition(
         gridPosition,
-        cellLength
+        cellLength,
     );
     const subgridCellLength = cellLength / 3;
 
@@ -89,7 +89,7 @@ const PeerNote = ({ gridPosition, value }: PeerNoteProps) => {
     const padding = 2;
 
     const subgridPosition = SubgridPositionHelper.createFromFlatIndex(
-        (value - 1) % 9
+        (value - 1) % 9,
     );
     const point = {
         x:
