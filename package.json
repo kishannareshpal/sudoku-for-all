@@ -17,6 +17,8 @@
         "version:bump": "node ./scripts/version-bump",
         "//build:comment": "Learn more about builds in this project by reading the Builds section of our README document.",
         "eas": "npx eas-cli@latest",
+        "prebuild": "npx expo prebuild --clean",
+        "prebuild:ios": "npx expo run:ios",
         "build:with-eas": "npm run eas -- build",
         "build:with-eas:ios": "npm run build:with-eas -- -p ios",
         "build:with-eas:android": "npm run build:with-eas -- -p android",
