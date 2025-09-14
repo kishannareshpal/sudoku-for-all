@@ -17,6 +17,7 @@ import { use$ } from "@legendapp/state/react";
 import { CursorCell } from "@/lib/components/game/board/cell/cursor-cell";
 import { PeerCells } from "@/lib/components/game/board/cell/peer-cells";
 import { fonts$ } from "@/lib/store/observables/fonts";
+import { TextHelper } from "@/lib/helpers/text-helper";
 
 export const Board = () => {
     const boardDimensions = use$(boardDimensions$);
@@ -57,18 +58,15 @@ export const Board = () => {
             fontManager,
         );
 
-        // Cache measurement
-        // Math.max(
-        //     ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].map(
-        //         (value) => noteFont.measureText("1").width,
-        //     ),
-        // );
-
         fonts$.setFonts({
             numberFont: numberFont,
             notesFont: noteFont,
             numberFontSize: numberFontSize,
             notesFontSize: notesFontSize,
+            charSizeMapForNoteFont:
+                TextHelper.measureAllNumbersForFont(noteFont),
+            charSizeMapForNumberFont:
+                TextHelper.measureAllNumbersForFont(numberFont),
         });
     }, [fontManager, boardDimensions]);
 
@@ -93,8 +91,6 @@ export const Board = () => {
         .runOnJS(true);
 
     const handleCursorMovementOnTouch = (touchedPoint: Point) => {
-        console.log(touchedPoint, boardDimensions.cellLength);
-
         const newGridPosition =
             GridPositionHelper.createFromPoint(touchedPoint);
 
