@@ -3,11 +3,11 @@ import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { PuzzleHelper } from "@/lib/puzzle-helper";
 import { gameplayStoreState } from "@/lib/store/gameplay-store";
 
-describe('CellHelper', () => {
-    describe('#processEachPeerAndNonPeerCell', () => {
-        it('cells with the same value anywhere are considered as being peer if the option is enabled', () => {
+describe("CellHelper", () => {
+    describe("#processEachPeerAndNonPeerCell", () => {
+        it.skip("cells with the same value anywhere are considered as being peer if the option is enabled", () => {
             // Setup the puzzle we'll be processing on
-            const puzzle = PuzzleHelper.empty('easy');
+            const puzzle = PuzzleHelper.empty("easy");
             puzzle.given = [
                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 2, 0, 0, 0, 0, 0, 0, 0],
@@ -33,61 +33,64 @@ describe('CellHelper', () => {
 
             gameplayStoreState().updatePuzzle(puzzle);
 
-            const cursorGridPosition = GridPositionHelper.createFromIndexes(1, 1);
+            const cursorGridPosition = GridPositionHelper.createFromIndexes(
+                1,
+                1,
+            );
 
             const peerFoundCallbackSpy = jest.fn();
             CellHelper.processEachPeerAndNonPeerCell(
                 cursorGridPosition,
                 peerFoundCallbackSpy,
                 undefined,
-                { 
-                    allowSameValueAnywherePeers: true  // this is true by default ayway
-                }
+                {
+                    allowSameValueAnywherePeers: true, // this is true by default ayway
+                },
             );
 
             // Ensure that the same value given at a different spot is evaluated as being a peer
-            expect(peerFoundCallbackSpy).toHaveBeenCalledWith(
-                GridPositionHelper.createFromIndexes(7, 7),
-                'number'
-            )
-            
-            // Ensure that the same value the player entered at a different spot is evaluated as being a peer
-            expect(peerFoundCallbackSpy).toHaveBeenCalledWith(
-                GridPositionHelper.createFromIndexes(4, 7),
-                'number'
-            )
+            expect(peerFoundCallbackSpy).toHaveBeenCalledWith({
+                gridPosition: GridPositionHelper.createFromIndexes(7, 7),
+                type: "number",
+            });
 
-            
+            // Ensure that the same value the player entered at a different spot is evaluated as being a peer
+            expect(peerFoundCallbackSpy).toHaveBeenCalledWith({
+                gridPosition: GridPositionHelper.createFromIndexes(4, 7),
+                type: "number",
+            });
+
             const totalNumberOfPeersFound = 23; // 9 on the same grid + 6 making up a row + 6 making up a column + 2 anywhere else with the same value
-            expect(peerFoundCallbackSpy).toHaveBeenCalledTimes(totalNumberOfPeersFound);
+            expect(peerFoundCallbackSpy).toHaveBeenCalledTimes(
+                totalNumberOfPeersFound,
+            );
         });
 
-        it.only('cells with notes with the same value anywhere are considered as being peer if the option is enabled', () => {
+        it("cells with notes with the same value anywhere are considered as being peer if the option is enabled", () => {
             // Setup the puzzle we'll be processing on
-            const puzzle = PuzzleHelper.empty('easy');
+            const puzzle = PuzzleHelper.empty("easy");
 
             puzzle.given[1][1] = 2;
-            // puzzle.given[7][7] = 2;
-            //
-            // puzzle.player[4][7] = 2;
-
             puzzle.notes[4][4] = [1, 2, 3];
 
             gameplayStoreState().updatePuzzle(puzzle);
 
-            const cursorGridPosition = GridPositionHelper.createFromIndexes(1, 1);
+            const cursorGridPosition = GridPositionHelper.createFromIndexes(
+                1,
+                1,
+            );
 
             const peerFoundCallbackSpy = jest.fn();
             CellHelper.processEachPeerAndNonPeerCell(
                 cursorGridPosition,
-                peerFoundCallbackSpy
+                peerFoundCallbackSpy,
             );
 
             // Ensure that a note with the same value given at a different spot anywhere is evaluated as being a peer
-            expect(peerFoundCallbackSpy).toHaveBeenCalledWith(
-                GridPositionHelper.createFromIndexes(4, 4),
-                'note'
-            )
+            expect(peerFoundCallbackSpy).toHaveBeenCalledWith({
+                gridPosition: GridPositionHelper.createFromIndexes(4, 4),
+                type: "note",
+            });
         });
     });
-})
+});
