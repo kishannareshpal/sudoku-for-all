@@ -13,12 +13,14 @@
         "start": "expo start",
         "start:clear": "expo start --clear",
         "stop": "./scripts/stop",
+        "prepare": "husky",
         "//version:bump-comment": "This is used to update the user facing version of the app befor creating a new store build. Learn more in the Builds section of our README document.",
         "version:bump": "node ./scripts/version-bump",
         "//build:comment": "Learn more about builds in this project by reading the Builds section of our README document.",
         "eas": "npx eas-cli@latest",
         "prebuild": "npx expo prebuild --clean",
-        "prebuild:ios": "npx expo run:ios",
+        "android": "expo run:android",
+        "ios": "expo run:ios",
         "build:with-eas": "npm run eas -- build",
         "build:with-eas:ios": "npm run build:with-eas -- -p ios",
         "build:with-eas:android": "npm run build:with-eas -- -p android",
@@ -49,8 +51,7 @@
         "compile": "tsc --noEmit --skipLibCheck",
         "prelint": "npm run expo:gen:typings",
         "lint": "npx expo lint .",
-        "lint:fix": "npm run lint -- --fix",
-        "prepare": "husky"
+        "lint:fix": "npm run lint -- --fix"
     },
     "dependencies": {
         "@expo/ui": "~0.2.0-beta.2",

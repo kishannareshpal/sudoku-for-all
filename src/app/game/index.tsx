@@ -1,8 +1,10 @@
 import { Board } from "@/lib/components/game/board/board";
 import { ControlButton } from "@/lib/components/game/control-button";
+import { UndoControl } from "@/lib/components/game/controls/undo";
 import { CursorModeToggle } from "@/lib/components/game/cursor-mode-toggle";
 import { NumberPad } from "@/lib/components/game/number-pad/number-pad";
 import { CellHelper } from "@/lib/helpers/cell-helper";
+import { Host, HStack } from "@expo/ui/swift-ui";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -23,9 +25,15 @@ const GameScreen = () => {
 
             <Board />
 
+            <Host>
+                <HStack>
+                    <UndoControl />
+                </HStack>
+            </Host>
+
             {/*<View style={{ flexShrink: 1 }}>*/}
             <View style={styles.controlsRow}>
-                <ControlButton
+                {/*<ControlButton
                     iconProps={{
                         type: "material",
                         name: "undo-variant",
@@ -48,13 +56,15 @@ const GameScreen = () => {
                     onPress={handleHint}
                 />
 
+
+
                 <ControlButton
                     iconProps={{
                         type: "material",
                         name: "eraser",
                     }}
                     onPress={handleEraser}
-                />
+                />*/}
             </View>
 
             <View style={styles.controlsContainer}>
