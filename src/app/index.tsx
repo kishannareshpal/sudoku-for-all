@@ -3,8 +3,7 @@ import { Title } from "@/lib/components/home/title";
 import { GameHelper } from "@/lib/helpers/game-helper";
 import { Difficulty } from "@/lib/shared-types";
 import { useRouter } from "expo-router";
-import { StyleSheet } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const HomeScreen = () => {
@@ -45,7 +44,7 @@ const HomeScreen = () => {
 
 const styles = StyleSheet.create({
     scrollViewContainer: {
-        backgroundColor: "#0D1013",
+        backgroundColor: "green",
     },
     scrollViewContentContainer: {
         flex: 1,

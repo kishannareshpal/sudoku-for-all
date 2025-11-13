@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["SudokuForAllUIModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.sudokuforallui.SudokuForAllUIModule"]
+  }
+}
