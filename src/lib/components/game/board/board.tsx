@@ -1,14 +1,17 @@
+import { COLUMNS_COUNT, ROWS_COUNT } from "@/lib/constants/board";
 import { CellHelper } from "@/lib/helpers/cell-helper";
+import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { graphicsStoreState } from "@/lib/store/board";
 import { Canvas } from "@shopify/react-native-skia";
-import React, { useRef } from "react";
-import { StyleSheet, View } from "react-native";
+import React from "react";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { withUniwind } from 'uniwind';
+import { Cell } from "./cell/cell";
 import { Dividers } from "./cell/dividers";
 
-export const Board = () => {
-    // const boardDimensions = use$(boardDimensions$);
-    const containerRef = useRef<View>(null!);
+const StyledCanvas = withUniwind(Canvas);
 
+export const Board = () => {
     // const fontManager = useSkiaFonts({
     //     SplineSansMonoRegular: [
     //         require("@assets/fonts/spline-sans-mono-regular.ttf"),
@@ -56,89 +59,57 @@ export const Board = () => {
     //     });
     // }, [fontManager, boardDimensions]);
 
-    const measureLayout = (): void => {
-        containerRef.current?.measure((_x, _y, width, height) => {
-            const fitBoardLength = Math.min(width, height);
-
-            graphicsStoreState().setDimensions({
-                boardLength: fitBoardLength,
-                cellLength: CellHelper.calculateCellLength(fitBoardLength)
-            })
-        });
-    };
-
-    // const panGesture = Gesture.Pan()
-    //     .averageTouches(true)
-    //     .onBegin((event) => {
-    //         CellHelper.moveCursorToPoint(event);
-    //     })
-    //     .onChange((event) => {
-    //         CellHelper.moveCursorToPoint(event);
-    //     })
-    //     .runOnJS(true);
+    const panGesture = Gesture.Pan()
+        .averageTouches(true)
+        .onBegin((event) => {
+            CellHelper.moveCursorToPoint(event);
+            console.log("Loaded board!", graphicsStoreState());
+        })
+        .onChange((event) => {
+            CellHelper.moveCursorToPoint(event);
+        })
+        .runOnJS(true);
 
     const renderCells = () => {
         const cells = [];
 
-        // for (let rowIndex = 0; rowIndex < ROWS_COUNT; rowIndex++) {
-        //     for (let colIndex = 0; colIndex < COLUMNS_COUNT; colIndex++) {
-        //         const gridPosition = GridPositionHelper.createFromIndexes(
-        //             colIndex,
-        //             rowIndex,
-        //         );
+        for (let rowIndex = 0; rowIndex < ROWS_COUNT; rowIndex++) {
+            for (let colIndex = 0; colIndex < COLUMNS_COUNT; colIndex++) {
+                const gridPosition = GridPositionHelper.createFromIndexes(
+                    colIndex,
+                    rowIndex,
+                );
 
-        //         cells.push(
-        //             <Cell
-        //                 key={GridPositionHelper.stringNotationOf(gridPosition)}
-        //                 gridPosition={gridPosition}
-        //             />,
-        //         );
-        //     }
-        // }
+                cells.push(
+                    <Cell
+                        key={GridPositionHelper.stringNotationOf(gridPosition)}
+                        gridPosition={gridPosition}
+                    />,
+                );
+            }
+        }
 
         return cells;
     };
 
     return (
-        <View
-            ref={containerRef}
-            onLayout={measureLayout}
-            className="flex-1 justify-center items-center"
-        >
-            <View
-                style={{
-                    width: boardLength,
-                    height: boardLength,
-                }}
-            >
-                {/* <GestureDetector gesture={panGesture}> */}
-                <Canvas style={styles.canvas}>
-                    {/*
-                          Render order matters here:
-                          - Elements listed earlier are drawn first / appear "behind"
-                          - Elements listed later are drawn on top / appear "after / atop" the ones earlier
-                          This is like z-index: later children overlay earlier ones
-                        */}
+        <GestureDetector gesture={panGesture}>
+            <StyledCanvas className="flex-1">
+                {/*
+                Render order matters here:
+                - Elements listed earlier are drawn first / appear "behind"
+                - Elements listed later are drawn on top / appear "after / atop" the ones earlier
+                This is like z-index: later children overlay earlier ones
+            */}
 
-                    {/* <PeerCells /> */}
+                {/* <PeerCells /> */}
 
-                    {/* {renderCells()} */}
+                {renderCells()}
 
-                    <Dividers />
+                <Dividers />
 
-                    {/* <CursorCell /> */}
-                </Canvas>
-                {/* </GestureDetector> */}
-            </View>
-        </View>
+                {/* <CursorCell /> */}
+            </StyledCanvas>
+        </GestureDetector>
     );
 };
-
-const styles = StyleSheet.create({
-    canvas: {
-        flex: 1,
-        backgroundColor: "red",
-    },
-
-    canvasContainer: {},
-});

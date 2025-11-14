@@ -1,8 +1,7 @@
+import { Board } from "@/lib/components/game/board/board";
 import { BoardWrapper } from "@/lib/components/game/board/board-wrapper";
-import { Header } from "@/lib/components/game/header";
 import { gameplayStoreState } from "@/lib/store/gameplay-store";
-import { StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet, View } from "react-native";
 
 const GameScreen = () => {
     const handleUndo = (): void => {
@@ -23,11 +22,11 @@ const GameScreen = () => {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Header />
+        <View className="flex-1 bg-amber-200 p-3">
+            {/* <Header /> */}
 
             <BoardWrapper>
-                {/* <Board /> */}
+                <Board />
             </BoardWrapper>
 
             {/* <View style={styles.controlsContainer}>
@@ -69,7 +68,7 @@ const GameScreen = () => {
 
                 <CursorModeToggle /> */}
             {/* </View> */}
-        </SafeAreaView >
+        </View>
     );
 }
 
@@ -89,10 +88,7 @@ const GameScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        padding: 12,
-        backgroundColor: '#191509',
-        gap: 24
+
     },
 
     controlsContainer: {

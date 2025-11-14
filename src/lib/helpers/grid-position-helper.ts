@@ -6,7 +6,7 @@ import {
 } from "@/lib/constants/board";
 import { NumberHelper } from "@/lib/helpers/number-helper";
 import { GridIndex, GridPosition, Point } from "@/lib/shared-types";
-import { boardDimensions$ } from "@/lib/store/observables/board-dimensions";
+import { graphicsStoreState } from "../store/board";
 
 export class GridPositionHelper {
     static zero(): GridPosition {
@@ -24,7 +24,7 @@ export class GridPositionHelper {
     }
 
     static createFromPoint(point: Point): GridPosition | undefined {
-        const cellLengthIgnoringBorders = boardDimensions$.cellLengthIgnoringBordersSpacing.get();
+        const cellLengthIgnoringBorders = graphicsStoreState().rawCellLength;
 
         const colIndex = Math.floor(point.x / cellLengthIgnoringBorders);
         const rowIndex = Math.floor(point.y / cellLengthIgnoringBorders);

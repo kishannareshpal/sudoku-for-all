@@ -22,16 +22,16 @@ const HomeScreen = () => {
 
     return (
         <ScrollView
-            style={styles.scrollViewContainer}
-            contentContainerStyle={[
-                styles.scrollViewContentContainer,
+            className="bg-neutral-800"
+            contentContainerClassName="flex-1 justify-center items-center gap-6"
+            contentContainerStyle={
                 {
                     paddingTop: safeAreaInsets.top + 12,
                     paddingBottom: safeAreaInsets.bottom + 12,
                     paddingLeft: safeAreaInsets.left + 12,
                     paddingRight: safeAreaInsets.right + 12,
-                },
-            ]}
+                }
+            }
         >
             <Title />
 
@@ -45,12 +45,6 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
     scrollViewContainer: {
         backgroundColor: "green",
-    },
-    scrollViewContentContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 24,
     },
 });
 

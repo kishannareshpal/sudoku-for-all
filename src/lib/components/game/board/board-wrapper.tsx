@@ -1,19 +1,18 @@
-import { CellHelper } from "@/lib/helpers/cell-helper";
 import { graphicsStoreState } from "@/lib/store/board";
-import React, { PropsWithChildren, useRef } from "react";
+import React, { PropsWithChildren, useRef, useState } from "react";
 import { View } from "react-native";
 
 export const BoardWrapper = ({ children }: PropsWithChildren) => {
     const containerRef = useRef<View>(null!);
 
+    const [boardLength, setBoardLength] = useState<number>(0);
+
     const measureLayout = (): void => {
         containerRef.current?.measure((_x, _y, width, height) => {
-            const fitBoardLength = Math.min(width, height);
+            const availableBoardLength = Math.min(width, height);
 
-            graphicsStoreState().setDimensions({
-                boardLength: fitBoardLength,
-                cellLength: CellHelper.calculateCellLength(fitBoardLength)
-            })
+            const fittedBoardLength = graphicsStoreState().setLayout(availableBoardLength)
+            setBoardLength(fittedBoardLength);
         });
     };
 
@@ -23,7 +22,11 @@ export const BoardWrapper = ({ children }: PropsWithChildren) => {
             onLayout={measureLayout}
             className="flex-1 justify-center items-center"
         >
-            {children}
+            {boardLength ? (
+                <View className="bg-white" style={{ minWidth: boardLength, minHeight: boardLength }}>
+                    {children}
+                </View>
+            ) : null}
         </View>
     );
 };

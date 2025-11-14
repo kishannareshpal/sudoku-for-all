@@ -1,13 +1,13 @@
 import { CellHelper } from "@/lib/helpers/cell-helper";
+import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
 import { GridPosition, NumberCharacter, Point } from "@/lib/shared-types";
+import { useGraphicsStore } from "@/lib/store/board";
 import { useGameplayStore } from "@/lib/store/gameplay-store";
-import { Group, Rect, SkFont, Text } from "@shopify/react-native-skia";
-import { BaseCell, CommonCellProps } from "./base-cell";
-import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
-import { use$ } from "@legendapp/state/react";
 import { fonts$ } from "@/lib/store/observables/fonts";
-import { boardDimensions$ } from "@/lib/store/observables/board-dimensions";
+import { use$ } from "@legendapp/state/react";
+import { Group, Rect, Text } from "@shopify/react-native-skia";
+import { BaseCell, CommonCellProps } from "./base-cell";
 
 type CellProps = CommonCellProps & {};
 
@@ -69,7 +69,7 @@ const NumberCellText = ({
     isStatic = true,
 }: NumberCellTextProps) => {
     const fonts = use$(fonts$);
-    const cellLength = use$(boardDimensions$.cellLength);
+    const cellLength = useGraphicsStore((state) => state.cellLength)
     const charSize = fonts.charSizeFor(
         "number",
         value.toString() as NumberCharacter,
@@ -146,7 +146,7 @@ const NoteText = ({
     );
 
     const fonts = use$(fonts$);
-    const cellLength = use$(boardDimensions$.cellLength);
+    const cellLength = useGraphicsStore((state) => state.cellLength)
     const charSize = fonts.charSizeFor(
         "note",
         value.toString() as NumberCharacter,

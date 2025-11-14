@@ -1,4 +1,9 @@
+import {
+    COLUMNS_COUNT,
+    ROWS_COUNT
+} from "@/lib/constants/board";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
+import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
 import {
     BoardGridNotation,
     BoardGridNotationValue,
@@ -12,14 +17,6 @@ import {
     Point,
 } from "@/lib/shared-types";
 import { gameplayStoreState } from "@/lib/store/gameplay-store";
-import {
-    BOARD_OUTLINE_WIDTH,
-    CELL_OUTLINE_WIDTH,
-    COLUMNS_COUNT,
-    ROWS_COUNT,
-    SUBGRID_OUTLINE_WIDTH,
-} from "@/lib/constants/board";
-import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
 
 type ProcessEachPeerAndNonPeerCellOptions = {
     /**
@@ -52,16 +49,6 @@ type ProcessEachPeerAndNonPeerCellOptions = {
 };
 
 export class CellHelper {
-    static calculateCellLength(boardLength: number): number {
-        return (
-            (boardLength -
-                BOARD_OUTLINE_WIDTH * 2 -
-                SUBGRID_OUTLINE_WIDTH * 2 -
-                CELL_OUTLINE_WIDTH * 6) /
-            9
-        );
-    }
-
     static getToggledNotesAtCursor(
         notesGridNotation:
             | BoardNotesGridNotation
@@ -138,7 +125,7 @@ export class CellHelper {
         CellHelper.moveCursorTo(newGridPosition);
     }
 
-    static applyHintAt(gridPosition: GridPosition): void {}
+    static applyHintAt(gridPosition: GridPosition): void { }
 
     static eraseAt(gridPosition: GridPosition): void {
         const store = gameplayStoreState();

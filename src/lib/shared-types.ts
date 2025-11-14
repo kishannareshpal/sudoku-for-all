@@ -51,7 +51,7 @@ export type BoardDimensions = {
     /**
      * The length of each cell in the board, considering the borders (cell, subgrid) spacing it is subject to.
      */
-    cellLength: number;
+    cellLengthWithBorderSpacing: number;
 };
 
 export type NumberCharacter =

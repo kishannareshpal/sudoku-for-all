@@ -1,28 +1,34 @@
-import { BoardDimensions } from "@/lib/shared-types";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import { COLUMNS_COUNT } from "../constants/board";
+import { ROWS_OR_COLUMNS_COUNT } from "../constants/board";
+import { BoardHelper } from "../helpers/board-helper";
 
-type GraphicsStoreState = BoardDimensions;
-
-type GraphicsStoreComputeds = {
+type GraphicsStoreState = {
     /**
-     * A computed attribute that returns the length of each cell in the board, ignoring the borders (cell, subgrid)
-     * spacing it is subject to.
-     *
-     * @see BoardDimensions.cellLength - for the length of each cell in the board, considering the borders spacing it is subject to.
+     * The best length for the board.
      */
-    cellLengthIgnoringBordersSpacing: () => number
-};
+    boardLength: number,
 
-type GraphicsStoreActions = {
-    setDimensions: (dimensions: BoardDimensions) => void,
+    /**
+     * The length of each cell in the board, ignoring the borders (cell, subgrid) spacing it is subject to.
+     */
+    cellLength: number
+
+    /**
+     * The length of each cell in the board, considering the borders spacing it is subject to.
+     */
+    rawCellLength: number,
 }
 
-type GraphicsStore = (GraphicsStoreState & GraphicsStoreComputeds) & GraphicsStoreActions;
+type GraphicsStoreActions = {
+    setLayout: (availableBoardLength: number) => number,
+}
+
+type GraphicsStore = GraphicsStoreState & GraphicsStoreActions;
 
 const initialState: GraphicsStoreState = {
     boardLength: 0,
+    rawCellLength: 0,
     cellLength: 0
 };
 
@@ -31,32 +37,22 @@ export const useGraphicsStore = create<GraphicsStore>()(
         (set, get) => ({
             ...initialState,
 
-            cellLengthIgnoringBordersSpacing() {
-                return get().boardLength / COLUMNS_COUNT
-            },
+            setLayout(availableBoardLength) {
+                const fittedBoardLayout = BoardHelper.calculateFittedBoardLayout(availableBoardLength);
 
-            setDimensions(dimensions) {
-                set({})
+                const rawCellLength = fittedBoardLayout.boardLength / ROWS_OR_COLUMNS_COUNT;
+                set({
+                    boardLength: fittedBoardLayout.boardLength,
+                    cellLength: fittedBoardLayout.cellLength,
+                    rawCellLength: rawCellLength
+                })
+
+                return fittedBoardLayout.boardLength;
             },
         })
     )
 );
 
-/**
- * Just an alias
- */
 export const gameplayStore = useGraphicsStore;
 
 export const graphicsStoreState = (): GraphicsStore => gameplayStore.getState();
-
-// export const boardDimensions$ = observable<GraphicsStore>({
-//     ...initialState,
-
-//     cellLengthIgnoringBordersSpacing: () => {
-//         return boardDimensions$.boardLength.get() / 9;
-//     },
-
-//     setDimensions: (dimensions) => {
-//         boardDimensions$.assign(dimensions);
-//     }
-// });

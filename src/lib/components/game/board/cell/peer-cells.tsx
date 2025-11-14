@@ -56,8 +56,8 @@ const PeerCell = ({ gridPosition }: CommonCellProps) => {
                     <Rect
                         x={cellPointForGridPosition.x}
                         y={cellPointForGridPosition.y}
-                        width={boardDimensions.cellLength}
-                        height={boardDimensions.cellLength}
+                        width={boardDimensions.cellLengthWithBorderSpacing}
+                        height={boardDimensions.cellLengthWithBorderSpacing}
                         style="fill"
                         strokeWidth={CURSOR_CELL_OUTLINE_WIDTH}
                         color="#ff000047"
@@ -74,7 +74,7 @@ type PeerNoteProps = CommonCellProps & {
 
 const PeerNote = ({ gridPosition, value }: PeerNoteProps) => {
     const fonts = use$(fonts$);
-    const cellLength = use$(boardDimensions$.cellLength);
+    const cellLength = use$(boardDimensions$.cellLengthWithBorderSpacing);
 
     const cellPointForGridPosition = PointHelper.createFromGridPosition(
         gridPosition,

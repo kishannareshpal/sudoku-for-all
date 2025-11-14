@@ -1,10 +1,14 @@
-import { BOARD_OUTLINE_WIDTH, CELL_OUTLINE_WIDTH, ROWS_COUNT, SUBGRID_OUTLINE_WIDTH } from "@/lib/constants/board";
+import { BOARD_OUTLINE_WIDTH, CELL_OUTLINE_WIDTH, COLUMNS_COUNT, ROWS_COUNT, SUBGRID_OUTLINE_WIDTH } from "@/lib/constants/board";
 import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
 import { GridIndex } from "@/lib/shared-types";
+import { useGraphicsStore } from "@/lib/store/board";
 import { Group, Points, Rect, vec } from "@shopify/react-native-skia";
+import { useShallow } from 'zustand/react/shallow';
 
 export const Dividers = () => {
-    const [boardLength, cellLength] = [100, 100]/* useGraphicsStore((state) => [100, 100]) */;
+    const { boardLength, cellLength } = useGraphicsStore(
+        useShallow((state) => ({ boardLength: state.boardLength, cellLength: state.cellLength }))
+    )
 
     const buildLines = () => {
         const lines = [];
@@ -29,7 +33,7 @@ export const Dividers = () => {
         }
 
         // Build the horizontal dividing lines
-        for (let colIndex = 1; colIndex < ROWS_COUNT; colIndex++) {
+        for (let colIndex = 1; colIndex < COLUMNS_COUNT; colIndex++) {
             const isSubgridColIndex = colIndex % 3 === 0;
             if (isSubgridColIndex) {
                 // Don't draw lines for sub-grids - they are drawn separately
@@ -70,7 +74,7 @@ export const Dividers = () => {
         }
 
         // Build the horizontal dividing lines
-        for (let colIndex = 1; colIndex < ROWS_COUNT; colIndex++) {
+        for (let colIndex = 1; colIndex < COLUMNS_COUNT; colIndex++) {
             const isSubgridColIndex = colIndex % 3 === 0;
             if (!isSubgridColIndex) {
                 continue;
@@ -94,7 +98,7 @@ export const Dividers = () => {
                 antiAlias
                 points={buildLines()}
                 mode="lines"
-                color="#183609"
+                color="black"
                 style="stroke"
                 strokeWidth={CELL_OUTLINE_WIDTH}
             />
@@ -103,7 +107,7 @@ export const Dividers = () => {
                 antiAlias
                 points={buildSubgridDividingLines()}
                 mode="lines"
-                color="#1F440E"
+                color="black"
                 strokeJoin="bevel"
                 style="stroke"
                 strokeWidth={SUBGRID_OUTLINE_WIDTH}
@@ -115,7 +119,7 @@ export const Dividers = () => {
                 antiAlias
                 width={boardLength - BOARD_OUTLINE_WIDTH}
                 height={boardLength - BOARD_OUTLINE_WIDTH}
-                color="#1F440E"
+                color="black"
                 style="stroke"
                 strokeWidth={BOARD_OUTLINE_WIDTH}
             />

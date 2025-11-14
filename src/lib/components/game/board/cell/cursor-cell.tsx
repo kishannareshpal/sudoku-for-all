@@ -34,7 +34,7 @@ export const CursorCell = () => {
             gridPosition={cursorGridPosition}
             renderChildren={(boardDimensions, cellPointForGridPosition) => {
                 const cellLength =
-                    boardDimensions.cellLength - CURSOR_CELL_OUTLINE_WIDTH;
+                    boardDimensions.cellLengthWithBorderSpacing - CURSOR_CELL_OUTLINE_WIDTH;
 
                 return (
                     <Rect
