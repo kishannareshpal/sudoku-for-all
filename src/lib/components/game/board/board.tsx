@@ -1,10 +1,13 @@
+import { CellHelper } from "@/lib/helpers/cell-helper";
 import { Canvas } from "@shopify/react-native-skia";
 import React from "react";
 import { View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { withUniwind } from 'uniwind';
 import { CellCollection } from "./cell/collection";
+import { CursorCell } from "./cell/cursor-cell";
 import { Dividers } from "./cell/dividers";
+import { PeerCells } from "./cell/peer-cells";
 
 const StyledCanvas = withUniwind(Canvas);
 
@@ -12,11 +15,11 @@ export const Board = () => {
     const panGesture = Gesture.Pan()
         .averageTouches(true)
         .onBegin((event) => {
-            // CellHelper.moveCursorToPoint(event);
+            CellHelper.moveCursorToPoint(event);
             // console.log("Touched the board", graphicsStoreState());
         })
         .onChange((event) => {
-            // CellHelper.moveCursorToPoint(event);
+            CellHelper.moveCursorToPoint(event);
         })
         .runOnJS(true);
 
@@ -25,19 +28,19 @@ export const Board = () => {
             <View className="flex-1 relative">
                 <StyledCanvas className="flex-1">
                     {/*
-                Render order matters here:
-                - Elements listed earlier are drawn first / appear "behind"
-                - Elements listed later are drawn on top / appear "after / atop" the ones earlier
-                This is like z-index: later children overlay earlier ones
-            */}
+                        Render order matters here:
+                        - Elements listed earlier are drawn first / appear "behind"
+                        - Elements listed later are drawn on top / appear "after / atop" the ones earlier
+                        This is like z-index: later children overlay earlier ones
+                    */}
 
-                    {/* <PeerCells /> */}
+                    <PeerCells />
 
                     <CellCollection />
 
                     <Dividers />
 
-                    {/* <CursorCell /> */}
+                    <CursorCell />
                 </StyledCanvas>
 
                 {/* <View className="absolute inset-0">

@@ -9,9 +9,7 @@ import { BaseCell } from "./base-cell";
 
 export const CursorCell = () => {
     const cellLength = useGraphicsStore((state) => state.boardLayout.cellLength)
-    const cursorGridPosition = useGameplayStore(
-        (state) => state.cursorGridPosition,
-    );
+    const cursorGridPosition = useGameplayStore((state) => state.cursorGridPosition);
 
     useStoreSubscription(
         useGameplayStore,
@@ -19,13 +17,8 @@ export const CursorCell = () => {
         () => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
         },
-        {
-            equalityFn: GridPositionHelper.notChanged,
-        },
+        { equalityFn: GridPositionHelper.notChanged },
     );
-
-    const strokeWidth = CURSOR_CELL_OUTLINE_WIDTH;
-    const halfOfStrokeWidth = strokeWidth / 2;
 
     if (!cursorGridPosition) {
         return null;
@@ -35,18 +28,15 @@ export const CursorCell = () => {
         <BaseCell
             gridPosition={cursorGridPosition}
             renderChildren={(cellPointForGridPosition) => {
-                // const cellLength =
-                //     boardDimensions.cellLengthWithBorderSpacing - CURSOR_CELL_OUTLINE_WIDTH;
-
                 return (
                     <Rect
-                        x={cellPointForGridPosition.x + halfOfStrokeWidth}
-                        y={cellPointForGridPosition.y + halfOfStrokeWidth}
+                        x={cellPointForGridPosition.x}
+                        y={cellPointForGridPosition.y}
                         width={cellLength}
                         height={cellLength}
+                        strokeWidth={CURSOR_CELL_OUTLINE_WIDTH}
                         style="stroke"
-                        strokeWidth={strokeWidth}
-                        color="red"
+                        color="orange"
                     />
                 );
             }}

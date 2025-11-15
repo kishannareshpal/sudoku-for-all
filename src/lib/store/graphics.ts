@@ -95,6 +95,6 @@ export const useGraphicsStore = create<GraphicsStore>()(
     )
 );
 
-export const gameplayStore = useGraphicsStore;
+export const graphicsStore = useGraphicsStore;
 
-export const graphicsStoreState = (): GraphicsStore => gameplayStore.getState();
+export const graphicsStoreState = (): GraphicsStore => graphicsStore.getState();

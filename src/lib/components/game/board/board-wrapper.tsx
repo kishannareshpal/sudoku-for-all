@@ -21,7 +21,7 @@ export const BoardWrapper = ({ children }: PropsWithChildren) => {
         }
 
         const numberFontSize = boardLayout.cellLength * 0.8 // 80% of the cell length
-        const notesFontSize = boardLayout.subCellLength * 0.8 // A grid of 3x3 notes can be placed within each cell
+        const notesFontSize = boardLayout.subCellLength * 0.9 // A grid of 3x3 notes can be placed within each cell
 
         const numberFont = matchFont({ fontSize: numberFontSize, fontFamily: "SFANumber" }, fonts);
         const notesFont = matchFont({ fontSize: notesFontSize, fontFamily: "SFANumber" }, fonts);

@@ -37,4 +37,4 @@ export const SUBGRID_OUTLINE_WIDTH: number = 3 as const;
 
 export const BOARD_OUTLINE_WIDTH: number = 3 as const;
 
-export const CURSOR_CELL_OUTLINE_WIDTH: number = CELL_OUTLINE_WIDTH * 1.4;
+export const CURSOR_CELL_OUTLINE_WIDTH: number = CELL_OUTLINE_WIDTH * 2;

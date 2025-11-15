@@ -31,12 +31,7 @@ export const CellCollection = () => {
 
     return (
         <Group>
-            {/* <Cell
-                gridPosition={GridPositionHelper.createFromIndexes(4, 4)}
-            /> */}
-
             {cells}
         </Group>
-
     );
 }

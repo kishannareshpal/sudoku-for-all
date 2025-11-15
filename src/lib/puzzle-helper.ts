@@ -1,6 +1,4 @@
-import { init } from "array-fns";
 import { getSudoku } from "sudoku-gen";
-import { CELLS_COUNT } from "./constants/board";
 import { BoardNotationHelper } from "./helpers/board-notation-helper";
 import { Difficulty, Puzzle } from "./shared-types";
 
@@ -30,11 +28,8 @@ export class PuzzleHelper {
          * @remarks This particular sudoku generator library uses dash ('-') as empty cells in the notation,
          * but our app uses '0' instead. We need to replace all occurences of '-' with '0'
          */
-        // const givenPlainStringNotation = puzzle.puzzle.replaceAll('-', '0'); // TODO: uncomment this line
-        const givenPlainStringNotation = init(CELLS_COUNT, () => '0').join(','); // TODO: delete this line
-
-        // const solutionPlainStringNotation = puzzle.solution;
-        const solutionPlainStringNotation = init(CELLS_COUNT, () => '6').join(',') // TODO: delete this line
+        const givenPlainStringNotation = puzzle.puzzle.replaceAll('-', '0');
+        const solutionPlainStringNotation = puzzle.solution;
 
         return {
             timeElapsedInSeconds: 0,
@@ -58,9 +53,7 @@ export class PuzzleHelper {
                 return 'hard';
 
             case "very-hard":
-                return 'expert';
-
-            case "extreme":
+            case "extreme": ;
                 return 'expert'
         }
     }

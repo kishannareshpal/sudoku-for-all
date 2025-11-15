@@ -19,7 +19,6 @@ export const BaseCell = (
     }: BaseCellProps,
 ) => {
     const cellLength = useGraphicsStore((state) => state.boardLayout.cellLength);
-
     const point = PointHelper.createFromGridPosition(
         gridPosition,
         cellLength,
