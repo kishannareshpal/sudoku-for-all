@@ -3,10 +3,10 @@ import { CellHelper } from "@/lib/helpers/cell-helper";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { PointHelper } from "@/lib/helpers/point-helper";
 import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
+import { BaseCellProps } from "@/lib/shared-types";
 import { useGameplayStore } from "@/lib/store/gameplay";
 import { useGraphicsStore } from "@/lib/store/graphics";
 import { Group, Rect } from "@shopify/react-native-skia";
-import { BaseCell, CommonCellProps } from "./base-cell";
 
 export const PeerCells = () => {
     const cursorValue = useGameplayStore((store) =>
@@ -63,30 +63,28 @@ export const PeerCells = () => {
     );
 };
 
-const PeerCell = ({ gridPosition }: CommonCellProps) => {
+type PeerCellProps = BaseCellProps;
+const PeerCell = ({ gridPosition }: PeerCellProps) => {
     const cellLength = useGraphicsStore((state) => state.boardLayout.cellLength);
+    const cellPoint = PointHelper.createFromGridPosition(
+        gridPosition,
+        cellLength,
+    )
 
     return (
-        <BaseCell
-            gridPosition={gridPosition}
-            renderChildren={(cellPointForGridPosition) => {
-                return (
-                    <Rect
-                        x={cellPointForGridPosition.x}
-                        y={cellPointForGridPosition.y}
-                        width={cellLength}
-                        height={cellLength}
-                        style="fill"
-                        strokeWidth={CURSOR_CELL_OUTLINE_WIDTH}
-                        color="#ffff005e"
-                    />
-                );
-            }}
+        <Rect
+            x={cellPoint.x}
+            y={cellPoint.y}
+            width={cellLength}
+            height={cellLength}
+            style="fill"
+            strokeWidth={CURSOR_CELL_OUTLINE_WIDTH}
+            color="#ffff005e"
         />
     );
 };
 
-type PeerNoteProps = CommonCellProps & {
+type PeerNoteProps = BaseCellProps & {
     value: number;
 };
 

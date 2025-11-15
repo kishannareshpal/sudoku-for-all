@@ -1,13 +1,13 @@
 import { CellHelper } from "@/lib/helpers/cell-helper";
 import { PointHelper } from "@/lib/helpers/point-helper";
+import { BaseCellProps } from "@/lib/shared-types";
 import { useGameplayStore } from "@/lib/store/gameplay";
 import { useGraphicsStore } from "@/lib/store/graphics";
 import { useShallow } from "zustand/react/shallow";
-import { CommonCellProps } from "./base-cell";
 import { NotesCellContent } from "./notes-cell-content";
 import { NumberCellContent } from "./number-cell-content";
 
-type CellProps = CommonCellProps & {};
+type CellProps = BaseCellProps;
 
 export const Cell = ({ gridPosition }: CellProps) => {
     const { given, player } = useGameplayStore(

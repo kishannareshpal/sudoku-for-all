@@ -211,3 +211,7 @@ export type FontLayout = {
     numberCharSizeMap: CharSizeMap,
     noteCharSizeMap: CharSizeMap
 }
+
+export type BaseCellProps = {
+    gridPosition: GridPosition
+}
