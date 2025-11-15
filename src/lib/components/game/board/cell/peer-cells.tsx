@@ -24,6 +24,7 @@ export const PeerCells = () => {
                 const key = `rc-${GridPositionHelper.stringNotationOf(
                     peerCellMetadata.gridPosition,
                 )}`;
+
                 if (peerCellMetadata.type === "note") {
                     return (
                         <PeerNote
@@ -32,13 +33,30 @@ export const PeerCells = () => {
                             value={cursorValue}
                         />
                     );
-                } else {
+                } else if (peerCellMetadata.type === 'number') {
                     return (
                         <PeerCell
                             key={key}
                             gridPosition={peerCellMetadata.gridPosition}
                         />
                     );
+                } else if (peerCellMetadata.type === 'both') {
+                    return (
+                        <Group key={key}>
+                            <PeerNote
+                                key={key}
+                                gridPosition={peerCellMetadata.gridPosition}
+                                value={cursorValue}
+                            />
+
+                            <PeerCell
+                                key={key}
+                                gridPosition={peerCellMetadata.gridPosition}
+                            />
+                        </Group>
+                    )
+                } else {
+                    return null
                 }
             })}
         </Group>
