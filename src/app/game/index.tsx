@@ -1,6 +1,6 @@
 import { Board } from "@/lib/components/game/board/board";
 import { BoardWrapper } from "@/lib/components/game/board/board-wrapper";
-import { gameplayStoreState } from "@/lib/store/gameplay-store";
+import { gameplayStoreState } from "@/lib/store/gameplay";
 import { StyleSheet, View } from "react-native";
 
 const GameScreen = () => {
@@ -22,7 +22,7 @@ const GameScreen = () => {
     }
 
     return (
-        <View className="flex-1 bg-amber-200 p-3">
+        <View className="flex-1 bg-yellow-500 p-3">
             {/* <Header /> */}
 
             <BoardWrapper>

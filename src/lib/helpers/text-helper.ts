@@ -1,5 +1,5 @@
 import { SkFont } from "@shopify/react-native-skia";
-import { Difficulty, Size, CharSizeMap } from "../shared-types";
+import { CharSizeMap, Difficulty, Size } from "../shared-types";
 
 export class TextHelper {
     static formatDifficulty(difficulty: Difficulty): string {
@@ -32,23 +32,32 @@ export class TextHelper {
      * @returns - A map of each character (number) and its size that you can cache anywhere (e.g. a store)
      */
     static measureAllNumbersForFont(
-        font: Pick<SkFont, "measureText">,
+        font: Pick<SkFont, "measureText" | "getTextWidth">,
     ): CharSizeMap {
-        const sizes: Size[] = [];
-        for (let i = 1; i <= 9; i++) {
-            sizes.push(font.measureText(i.toString()));
+        const measure = (textValue: string): Size => {
+            /**
+             * @remark I'm explicitly using the deprecated `getTextWidth` API (which is currently deprecated in favor of `measureText`) because
+             * measureText's width are incorrect for monospaced fonts. See: https://github.com/Shopify/react-native-skia/issues/3488
+            */
+            const width = font.getTextWidth(textValue);
+            const { height } = font.measureText(textValue);
+
+            return {
+                width: width,
+                height: height
+            }
         }
 
         return {
-            1: font.measureText("1"),
-            2: font.measureText("2"),
-            3: font.measureText("3"),
-            4: font.measureText("4"),
-            5: font.measureText("5"),
-            6: font.measureText("6"),
-            7: font.measureText("7"),
-            8: font.measureText("8"),
-            9: font.measureText("9"),
+            1: measure('1'),
+            2: measure('2'),
+            3: measure('3'),
+            4: measure('4'),
+            5: measure('5'),
+            6: measure('6'),
+            7: measure('7'),
+            8: measure('8'),
+            9: measure('9'),
         };
     }
 }

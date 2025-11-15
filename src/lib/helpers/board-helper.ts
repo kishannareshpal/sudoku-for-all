@@ -2,8 +2,10 @@ import {
     BOARD_OUTLINE_WIDTH,
     CELL_OUTLINE_WIDTH,
     ROWS_OR_COLUMNS_COUNT,
-    SUBGRID_OUTLINE_WIDTH
+    SUBGRID_OUTLINE_WIDTH,
+    SUBGRID_ROWS_OR_COLUMNS_COUNT
 } from "@/lib/constants/board";
+import { BoardLayout } from "../shared-types";
 
 export class BoardHelper {
     /**
@@ -11,15 +13,20 @@ export class BoardHelper {
      * 
      * @param availableBoardLength - the maximum available width/height of the view where a square board can be drawn, which is where we're trying to fit our board into
      */
-    static calculateFittedBoardLayout(availableBoardLength: number): { boardLength: number, cellLength: number } {
+    static calculateFittedBoardLayout(availableBoardLength: number): BoardLayout {
         const fittedCellLength = this.calculateFittedCellLength(availableBoardLength);
         const totalOutlineSpacing = this.getOutlineTotalSpacing();
 
         const fittedBoardLength = fittedCellLength * ROWS_OR_COLUMNS_COUNT + totalOutlineSpacing;
+        const rawCellLength = fittedBoardLength / ROWS_OR_COLUMNS_COUNT;
+
+        const subCellLength = fittedCellLength / SUBGRID_ROWS_OR_COLUMNS_COUNT;
 
         return {
             boardLength: fittedBoardLength,
-            cellLength: fittedCellLength
+            cellLength: fittedCellLength,
+            subCellLength: subCellLength,
+            rawCellLength
         }
     }
 

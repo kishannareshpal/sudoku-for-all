@@ -1,8 +1,8 @@
-import { CursorMode } from "@/lib/shared-types";
+import { EntryType } from "@/lib/shared-types";
 
 export type Option = {
     label: string;
-    value: CursorMode;
+    value: EntryType;
 };
 
 export type OptionElementWidthMap = {

@@ -1,6 +1,6 @@
 import { TextHelper } from "@/lib/helpers/text-helper";
 import { TimeHelper } from "@/lib/helpers/time-helper";
-import { gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay-store";
+import { gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay";
 import * as Haptics from 'expo-haptics';
 import { router } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";

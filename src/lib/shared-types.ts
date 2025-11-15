@@ -1,4 +1,5 @@
 import { LocationNotation } from "@/lib/location";
+import { SkFont } from "@shopify/react-native-skia";
 
 export type GridIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 export type SubgridIndex = 0 | 1 | 2;
@@ -15,7 +16,7 @@ export type Difficulty = "easy" | "medium" | "hard" | "very-hard" | "extreme";
 
 export type ForceToggleOperation = "add" | "remove";
 
-export type CursorMode = "number" | "note";
+export type EntryType = "number" | "note";
 
 export type Bounds = {
     min: number;
@@ -178,3 +179,35 @@ export type BoardNotesGridNotation = BoardNotesGridNotationRow[];
  * @todo Explain the format
  */
 export type BoardNotesPlainStringNotation = string;
+
+
+export type BoardLayout = {
+    /**
+     * The best length for the board.
+     */
+    boardLength: number,
+
+    /**
+     * The length of each cell in the board, considering the borders spacing it is subject to.
+     */
+    cellLength: number,
+
+    /**
+     * The length of each sub-cell (notes) in a board cell, ignoring the borders (cell, subgrid) spacing it is subject to.
+     */
+    subCellLength: number,
+
+    /**
+     * The length of each cell in the board, ignoring the borders (cell, subgrid) spacing it is subject to.
+     */
+    rawCellLength: number,
+}
+
+export type FontLayout = {
+    numberFont: SkFont | null,
+    notesFont: SkFont | null,
+    numberFontSize: number,
+    notesFontSize: number,
+    numberCharSizeMap: CharSizeMap,
+    noteCharSizeMap: CharSizeMap
+}

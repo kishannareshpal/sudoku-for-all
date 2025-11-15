@@ -2,7 +2,7 @@ import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import {
     BoardGridNotationValue,
     BoardNotesGridNotationValue,
-    CursorMode, ForceToggleOperation,
+    EntryType, ForceToggleOperation,
     GameState,
     GridPosition, PeerCellMetadata,
     Puzzle
@@ -13,7 +13,7 @@ import { subscribeWithSelector } from 'zustand/middleware';
 
 type GameplayStoreState = {
     state: GameState,
-    cursorMode: CursorMode,
+    cursorMode: EntryType,
     cursorGridPosition: GridPosition,
     cursorPeerCells: PeerCellMetadata[],
     puzzle?: Puzzle
@@ -24,7 +24,7 @@ type GameplayStoreActions = {
     toggleGameState: () => void,
     updateCursorGridPosition: (position: GridPosition) => void,
     updateCursorPeerCells: (peerCells: PeerCellMetadata[]) => void,
-    updateCursorMode: (mode: CursorMode) => void,
+    updateCursorMode: (mode: EntryType) => void,
     updatePuzzle: (puzzle: Puzzle) => void,
     updatePlayerValueAt: (position: GridPosition, value: BoardGridNotationValue) => void,
     erasePlayerValueAt: (position: GridPosition) => void,
@@ -65,19 +65,19 @@ export const useGameplayStore = create<GameplayStore>()(
             },
 
             updateCursorGridPosition: (position) => {
-                set({cursorGridPosition: position})
+                set({ cursorGridPosition: position })
             },
 
             updateCursorPeerCells: (peerCells) => {
-                set({cursorPeerCells: peerCells})
+                set({ cursorPeerCells: peerCells })
             },
 
             updateCursorMode: (mode) => {
-                set({cursorMode: mode})
+                set({ cursorMode: mode })
             },
 
             updatePuzzle: (puzzle) => {
-                set({puzzle: puzzle})
+                set({ puzzle: puzzle })
             },
 
             erasePlayerValueAt: (position) => {
@@ -139,7 +139,8 @@ export const useGameplayStore = create<GameplayStore>()(
                         }
                     })
                 )
-            }})
+            }
+        })
     )
 )
 

@@ -3,7 +3,7 @@ import { CellHelper } from "@/lib/helpers/cell-helper";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { useStoreSubscription } from "@/lib/hooks/use-store-subscription";
 import { BoardNotesGridNotationValue, GridIndex } from "@/lib/shared-types";
-import { gameplayStore, useGameplayStore } from "@/lib/store/gameplay-store";
+import { gameplayStore, useGameplayStore } from "@/lib/store/gameplay";
 import * as Haptics from 'expo-haptics';
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -42,7 +42,7 @@ export const NumberPad = () => {
         } else {
             CellHelper.toggleNotesValueAtCursor([value]);
         }
-                      
+
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
 

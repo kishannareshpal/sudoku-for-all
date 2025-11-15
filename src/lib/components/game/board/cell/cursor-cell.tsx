@@ -1,12 +1,14 @@
 import { CURSOR_CELL_OUTLINE_WIDTH } from "@/lib/constants/board";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { useStoreSubscription } from "@/lib/hooks/use-store-subscription";
-import { useGameplayStore } from "@/lib/store/gameplay-store";
+import { useGameplayStore } from "@/lib/store/gameplay";
+import { useGraphicsStore } from "@/lib/store/graphics";
 import { Rect } from "@shopify/react-native-skia";
 import * as Haptics from "expo-haptics";
 import { BaseCell } from "./base-cell";
 
 export const CursorCell = () => {
+    const cellLength = useGraphicsStore((state) => state.boardLayout.cellLength)
     const cursorGridPosition = useGameplayStore(
         (state) => state.cursorGridPosition,
     );
@@ -32,9 +34,9 @@ export const CursorCell = () => {
     return (
         <BaseCell
             gridPosition={cursorGridPosition}
-            renderChildren={(boardDimensions, cellPointForGridPosition) => {
-                const cellLength =
-                    boardDimensions.cellLengthWithBorderSpacing - CURSOR_CELL_OUTLINE_WIDTH;
+            renderChildren={(cellPointForGridPosition) => {
+                // const cellLength =
+                //     boardDimensions.cellLengthWithBorderSpacing - CURSOR_CELL_OUTLINE_WIDTH;
 
                 return (
                     <Rect

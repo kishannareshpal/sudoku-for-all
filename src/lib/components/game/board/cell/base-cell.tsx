@@ -1,7 +1,6 @@
 import { PointHelper } from "@/lib/helpers/point-helper";
-import { BoardDimensions, GridPosition, Point } from "@/lib/shared-types";
-import { boardDimensions$ } from "@/lib/store/observables/board-dimensions";
-import { use$ } from "@legendapp/state/react";
+import { GridPosition, Point } from "@/lib/shared-types";
+import { useGraphicsStore } from "@/lib/store/graphics";
 import { Group } from "@shopify/react-native-skia";
 import React from "react";
 
@@ -10,7 +9,7 @@ export type CommonCellProps = {
 }
 
 export type BaseCellProps = CommonCellProps & {
-    renderChildren?: (boardDimensions: BoardDimensions, point: Point) => React.ReactNode
+    renderChildren?: (point: Point) => React.ReactNode
 }
 
 export const BaseCell = (
@@ -19,16 +18,16 @@ export const BaseCell = (
         renderChildren
     }: BaseCellProps,
 ) => {
-    const dimensions = use$(boardDimensions$);
+    const cellLength = useGraphicsStore((state) => state.boardLayout.cellLength);
 
     const point = PointHelper.createFromGridPosition(
         gridPosition,
-        dimensions.cellLengthWithBorderSpacing,
+        cellLength,
     )
 
     return (
         <Group>
-            {renderChildren?.(dimensions, point)}
+            {renderChildren?.(point)}
         </Group>
     )
 }

@@ -1,13 +1,13 @@
 import { BOARD_OUTLINE_WIDTH, CELL_OUTLINE_WIDTH, COLUMNS_COUNT, ROWS_COUNT, SUBGRID_OUTLINE_WIDTH } from "@/lib/constants/board";
 import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
 import { GridIndex } from "@/lib/shared-types";
-import { useGraphicsStore } from "@/lib/store/board";
+import { useGraphicsStore } from "@/lib/store/graphics";
 import { Group, Points, Rect, vec } from "@shopify/react-native-skia";
 import { useShallow } from 'zustand/react/shallow';
 
 export const Dividers = () => {
     const { boardLength, cellLength } = useGraphicsStore(
-        useShallow((state) => ({ boardLength: state.boardLength, cellLength: state.cellLength }))
+        useShallow((state) => state.boardLayout)
     )
 
     const buildLines = () => {

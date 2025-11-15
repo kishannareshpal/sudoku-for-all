@@ -9,14 +9,14 @@ import {
     BoardGridNotationValue,
     BoardNotesGridNotation,
     BoardNotesGridNotationValue,
-    CursorMode,
+    EntryType,
     ForceToggleOperation,
     GridPosition,
     PeerCellMetadata,
     PeerType,
     Point,
 } from "@/lib/shared-types";
-import { gameplayStoreState } from "@/lib/store/gameplay-store";
+import { gameplayStoreState } from "@/lib/store/gameplay";
 
 type ProcessEachPeerAndNonPeerCellOptions = {
     /**
@@ -142,8 +142,8 @@ export class CellHelper {
     }
 
     static eraseAtCursor(): void {
-        const store = gameplayStoreState();
-        const cursorGridPosition = store.cursorGridPosition;
+        const state = gameplayStoreState();
+        const cursorGridPosition = state.cursorGridPosition;
         this.eraseAt(cursorGridPosition);
     }
 
@@ -153,7 +153,7 @@ export class CellHelper {
         this.changePlayerValueAt(cursorGridPosition, value);
     }
 
-    static toggleCursorMode(mode?: CursorMode): void {
+    static toggleCursorMode(mode?: EntryType): void {
         const store = gameplayStoreState();
 
         const nextCursorMode =

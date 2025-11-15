@@ -1,7 +1,7 @@
 import { CellHelper } from "@/lib/helpers/cell-helper";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { PuzzleHelper } from "@/lib/puzzle-helper";
-import { gameplayStoreState } from "@/lib/store/gameplay-store";
+import { gameplayStoreState } from "@/lib/store/gameplay";
 
 describe("CellHelper", () => {
     describe("#processEachPeerAndNonPeerCell", () => {

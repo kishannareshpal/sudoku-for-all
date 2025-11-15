@@ -1,14 +1,13 @@
-import { CURSOR_CELL_OUTLINE_WIDTH } from "@/lib/constants/board";
 import { CellHelper } from "@/lib/helpers/cell-helper";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { PointHelper } from "@/lib/helpers/point-helper";
 import { SubgridPositionHelper } from "@/lib/helpers/sub-grid-position-helper";
-import { useGameplayStore } from "@/lib/store/gameplay-store";
-import { boardDimensions$ } from "@/lib/store/observables/board-dimensions";
+import { useGameplayStore } from "@/lib/store/gameplay";
+import { useGraphicsStore } from "@/lib/store/graphics";
 import { fonts$ } from "@/lib/store/observables/fonts";
 import { use$ } from "@legendapp/state/react";
 import { Group, Rect } from "@shopify/react-native-skia";
-import { BaseCell, CommonCellProps } from "./base-cell";
+import { CommonCellProps } from "./base-cell";
 
 export const PeerCells = () => {
     const cursorValue = useGameplayStore((store) =>
@@ -49,22 +48,23 @@ export const PeerCells = () => {
 
 const PeerCell = ({ gridPosition }: CommonCellProps) => {
     return (
-        <BaseCell
-            gridPosition={gridPosition}
-            renderChildren={(boardDimensions, cellPointForGridPosition) => {
-                return (
-                    <Rect
-                        x={cellPointForGridPosition.x}
-                        y={cellPointForGridPosition.y}
-                        width={boardDimensions.cellLengthWithBorderSpacing}
-                        height={boardDimensions.cellLengthWithBorderSpacing}
-                        style="fill"
-                        strokeWidth={CURSOR_CELL_OUTLINE_WIDTH}
-                        color="#ff000047"
-                    />
-                );
-            }}
-        />
+        null
+        // <BaseCell
+        //     gridPosition={gridPosition}
+        //     renderChildren={(cellPointForGridPosition) => {
+        //         return (
+        //             <Rect
+        //                 x={cellPointForGridPosition.x}
+        //                 y={cellPointForGridPosition.y}
+        //                 width={boardDimensions.cellLengthWithBorderSpacing}
+        //                 height={boardDimensions.cellLengthWithBorderSpacing}
+        //                 style="fill"
+        //                 strokeWidth={CURSOR_CELL_OUTLINE_WIDTH}
+        //                 color="#ff000047"
+        //             />
+        //         );
+        //     }}
+        // />
     );
 };
 
@@ -74,7 +74,7 @@ type PeerNoteProps = CommonCellProps & {
 
 const PeerNote = ({ gridPosition, value }: PeerNoteProps) => {
     const fonts = use$(fonts$);
-    const cellLength = use$(boardDimensions$.cellLengthWithBorderSpacing);
+    const cellLength = useGraphicsStore((state) => state.boardLayout.cellLength)
 
     const cellPointForGridPosition = PointHelper.createFromGridPosition(
         gridPosition,
