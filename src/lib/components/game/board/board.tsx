@@ -35,17 +35,10 @@ export const Board = () => {
                     */}
 
                     <PeerCells />
-
                     <CellCollection />
-
                     <Dividers />
-
                     <CursorCell />
                 </StyledCanvas>
-
-                {/* <View className="absolute inset-0">
-                    <NativeCellCollection />
-                </View> */}
             </View>
         </GestureDetector>
     );
