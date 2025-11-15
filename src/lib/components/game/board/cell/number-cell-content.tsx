@@ -1,3 +1,4 @@
+import { BOARD_OUTLINE_WIDTH } from "@/lib/constants/board";
 import { NumberCharacter, Point } from "@/lib/shared-types";
 import { useGraphicsStore } from "@/lib/store/graphics";
 import { Skia, TextBlob } from "@shopify/react-native-skia";
@@ -28,7 +29,7 @@ export const NumberCellContent = ({
 
     const centeredTextPoint = {
         x: cellPoint.x + (cellLength / 2) - (valueCharSize.width / 2),
-        y: cellPoint.y + (cellLength / 2) + (valueCharSize.height / 2),
+        y: cellPoint.y + (cellLength / 2) + (valueCharSize.height / 2) - (BOARD_OUTLINE_WIDTH / 2),
     };
 
     return (
