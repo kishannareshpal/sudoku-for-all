@@ -9,7 +9,7 @@ import {
     BoardGridNotationValue,
     BoardNotesGridNotation,
     BoardNotesGridNotationValue,
-    EntryType,
+    EntryMode,
     ForceToggleOperation,
     GridPosition,
     PeerCellMetadata,
@@ -153,12 +153,12 @@ export class CellHelper {
         this.changePlayerValueAt(cursorGridPosition, value);
     }
 
-    static toggleCursorMode(mode?: EntryType): void {
+    static toggleCursorMode(mode?: EntryMode): void {
         const store = gameplayStoreState();
 
         const nextCursorMode =
-            (mode ?? store.cursorMode === "number") ? "note" : "number";
-        gameplayStoreState().updateCursorMode(nextCursorMode);
+            (mode ?? store.entryMode === "number") ? "note" : "number";
+        gameplayStoreState().setEntryMode(nextCursorMode);
     }
 
     static changePlayerValueAt(

@@ -19,8 +19,8 @@ export const CursorCell = () => {
     useStoreSubscription(
         useGameplayStore,
         (state) => state.cursorGridPosition,
-        () => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
+        async () => {
+            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
         },
         { equalityFn: GridPositionHelper.notChanged },
     );

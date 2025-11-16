@@ -16,7 +16,7 @@ export type Difficulty = "easy" | "medium" | "hard" | "very-hard" | "extreme";
 
 export type ForceToggleOperation = "add" | "remove";
 
-export type EntryType = "number" | "note";
+export type EntryMode = "number" | "note";
 
 export type Bounds = {
     min: number;

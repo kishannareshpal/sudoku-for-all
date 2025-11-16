@@ -1,5 +1,6 @@
 import { Board } from "@/lib/components/game/board/board";
 import { BoardWrapper } from "@/lib/components/game/board/board-wrapper";
+import { EntryModeToggle } from "@/lib/components/game/entry-mode-toggle";
 import { Header } from "@/lib/components/game/header";
 import { NumberPad } from "@/lib/components/game/number-pad/number-pad";
 import { gameplayStoreState } from "@/lib/store/gameplay";
@@ -35,9 +36,9 @@ const GameScreen = () => {
                     </BoardWrapper>
                 </View>
 
-                <View className="flex-1 items-center justify-center">
-                    {/* <CursorModeToggle /> */}
+                <View className="flex-1 items-center justify-center gap-2">
                     <NumberPad />
+                    <EntryModeToggle />
                 </View>
 
                 {/* <View style={styles.controlsContainer}>

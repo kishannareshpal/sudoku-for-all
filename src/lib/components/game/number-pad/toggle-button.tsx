@@ -1,4 +1,5 @@
-import Animted, { useAnimatedStyle, withSpring } from "react-native-reanimated";
+import { Text } from "react-native";
+import { useAnimatedStyle, withSpring } from "react-native-reanimated";
 import { PressableBounce, PressableBounceProps } from "../../shared/pressable-bounce";
 
 type ToggleButtonProps = PressableBounceProps & {
@@ -13,45 +14,24 @@ export const ToggleButton = (
         ...props
     }: ToggleButtonProps,
 ) => {
-    const animatedButtonStyle = useAnimatedStyle(
-        () => ({
-            backgroundColor: withSpring(toggled ? '#FFD147' : '#222222', {
-                duration: 150,
-            })
-        }),
-        [toggled]
-    );
-
-    const animatedButtonTextStyle = useAnimatedStyle(
-        () => ({
-            color: withSpring(toggled ? 'black' : 'white', {
-                duration: 260,
-            })
-        }),
-        [toggled]
-    );
+    const animatedButtonStyle = useAnimatedStyle(() => {
+        return {
+            backgroundColor: withSpring(toggled ? '#FFD147' : '#222222', { duration: 50 }),
+        };
+    });
 
     return (
         <PressableBounce
-            className="bg-neutral-800 min-w-12 min-h-12 p-1 items-center justify-center rounded-xl"
+            className="bg-neutral-800 size-14 p-1 items-center justify-center rounded-xl"
             style={animatedButtonStyle}
             {...props}
         >
-            <Animted.Text style={animatedButtonTextStyle} className="font-bold text-base">
+            <Text
+                className="font-bold text-bas text-[22px]"
+                style={{ color: toggled ? 'black' : 'white' }}
+            >
                 {value}
-            </Animted.Text>
+            </Text>
         </PressableBounce>
     )
-
-    // return (
-    //     // <PressableScale
-    //     //     activeScale={0.90}
-    //     //     style={[styles.button, animatedButtonStyle]}
-    //     //     {...restProps}
-    //     // >
-    //     //     <Animated.Text style={[styles.buttonText, animatedButtonTextStyle]}>
-    //     //         {value}
-    //     //     </Animated.Text>
-    //     // </PressableScale>
-    // );
 };

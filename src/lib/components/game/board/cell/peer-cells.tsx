@@ -21,7 +21,7 @@ export const PeerCells = () => {
     return (
         <Group>
             {cursorPeerCells.map((peerCellMetadata) => {
-                const key = `rc-${GridPositionHelper.stringNotationOf(
+                const key = `pc-${peerCellMetadata.type}-${GridPositionHelper.stringNotationOf(
                     peerCellMetadata.gridPosition,
                 )}`;
 
@@ -44,13 +44,11 @@ export const PeerCells = () => {
                     return (
                         <Group key={key}>
                             <PeerNote
-                                key={key}
                                 gridPosition={peerCellMetadata.gridPosition}
                                 value={cursorValue}
                             />
 
                             <PeerCell
-                                key={key}
                                 gridPosition={peerCellMetadata.gridPosition}
                             />
                         </Group>

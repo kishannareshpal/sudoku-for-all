@@ -5,37 +5,48 @@ import { useStoreSubscription } from "@/lib/hooks/use-store-subscription";
 import { BoardNotesGridNotationValue, GridIndex } from "@/lib/shared-types";
 import { gameplayStore, useGameplayStore } from "@/lib/store/gameplay";
 import * as Haptics from 'expo-haptics';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
-import Animated, { useAnimatedStyle, withSpring } from "react-native-reanimated";
+import Animated, { interpolateColor, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import shallowEqual from "shallowequal";
+
+export const NUMBER_ENTRY_MODE_BACKDROP_COLOR = 'transparent';
+export const NOTES_ENTRY_MODE_BACKDROP_COLOR = '#222222';
 
 export const NumberPad = () => {
     const [cursorCellToggledNotes, setCursorCellToggledNotes] = useState<BoardNotesGridNotationValue>([]);
+    const entryMode = useGameplayStore((store) => store.entryMode);
 
-    const cursorMode = useGameplayStore((store) => store.cursorMode);
-
-    const animatedContainerStyle = useAnimatedStyle(
-        () => ({
-            backgroundColor: withSpring(cursorMode === 'note' ? '#222222' : 'transparent'),
-        }),
-        [cursorMode]
-    );
+    const backdropColor = useSharedValue(0);
+    const animatedBackdropStyle = useAnimatedStyle(() => {
+        return {
+            backgroundColor: interpolateColor(
+                backdropColor.value,
+                [0, 1],
+                [NUMBER_ENTRY_MODE_BACKDROP_COLOR, NOTES_ENTRY_MODE_BACKDROP_COLOR]
+            )
+        };
+    });
 
     useStoreSubscription(
         gameplayStore,
-        (store) => [store.cursorMode, store.cursorGridPosition, store.puzzle?.notes],
+        (store) => [store.entryMode, store.cursorGridPosition, store.puzzle?.notes],
         () => {
             // On cursor movement...
             setCursorCellToggledNotes(CellHelper.getToggledNotesAtCursor());
         },
         {
-            equalityFn: shallowEqual
+            equalityFn: shallowEqual,
+            fireImmediately: true
         }
     );
 
+    useEffect(() => {
+        backdropColor.value = withSpring(entryMode === "number" ? 0 : 1, { duration: 75 });
+    }, [backdropColor, entryMode]);
+
     const onNumberPress = (value: number) => {
-        if (cursorMode === 'number') {
+        if (entryMode === 'number') {
             CellHelper.changePlayerValueAtCursorTo(value);
         } else {
             CellHelper.toggleNotesValueAtCursor([value]);
@@ -52,7 +63,7 @@ export const NumberPad = () => {
 
             for (let colIndex = 0; colIndex < 3; colIndex++) {
                 const value = (colIndex + rowIndex * 3) + 1;
-                const toggled = (cursorMode === 'note') && cursorCellToggledNotes.includes(value);
+                const toggled = (entryMode === 'note') && cursorCellToggledNotes.includes(value);
                 const id = `nptb-${GridPositionHelper.stringNotationOf({ row: rowIndex as GridIndex, col: colIndex as GridIndex })}`
 
                 buttonRow.push(
@@ -78,7 +89,7 @@ export const NumberPad = () => {
     return (
         <Animated.View
             className="gap-1 p-3 rounded-2xl self-center justify-center items-center"
-            style={animatedContainerStyle}
+            style={animatedBackdropStyle}
         >
             {renderButtons()}
         </Animated.View>

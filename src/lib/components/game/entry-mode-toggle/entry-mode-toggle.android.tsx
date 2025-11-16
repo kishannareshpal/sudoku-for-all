@@ -1,9 +1,9 @@
 import { ButtonGroup } from "@modules/sudokuforallui";
 import React from "react";
 import { StyleSheet } from "react-native";
-import { CURSOR_MODE_OPTIONS } from "./constants";
+import { ENTRY_MODES } from "./shared";
 
-export const CursorModeToggle = () => {
+export const EntryModeToggle = () => {
     // const cursorMode = useGameplayStore((state) => state.cursorMode);
 
     // const onToggle = async (mode: CursorMode) => {
@@ -29,8 +29,8 @@ export const CursorModeToggle = () => {
     return (
         <ButtonGroup
             style={{ flex: 1 }}
-            options={CURSOR_MODE_OPTIONS}
-            // onSelectionChange={() => Alert.alert("You have changed bro")}
+            options={ENTRY_MODES}
+        // onSelectionChange={() => Alert.alert("You have changed bro")}
         />
     );
 };

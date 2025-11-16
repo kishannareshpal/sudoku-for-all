@@ -2,7 +2,7 @@ import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import {
     BoardGridNotationValue,
     BoardNotesGridNotationValue,
-    EntryType, ForceToggleOperation,
+    EntryMode, ForceToggleOperation,
     GameState,
     GridPosition, PeerCellMetadata,
     Puzzle
@@ -13,7 +13,7 @@ import { subscribeWithSelector } from 'zustand/middleware';
 
 type GameplayStoreState = {
     state: GameState,
-    cursorMode: EntryType,
+    entryMode: EntryMode,
     cursorGridPosition: GridPosition,
     cursorPeerCells: PeerCellMetadata[],
     puzzle?: Puzzle
@@ -24,7 +24,7 @@ type GameplayStoreActions = {
     toggleGameState: () => void,
     updateCursorGridPosition: (position: GridPosition) => void,
     updateCursorPeerCells: (peerCells: PeerCellMetadata[]) => void,
-    updateCursorMode: (mode: EntryType) => void,
+    setEntryMode: (entryMode: EntryMode) => void,
     updatePuzzle: (puzzle: Puzzle) => void,
     updatePlayerValueAt: (position: GridPosition, value: BoardGridNotationValue) => void,
     erasePlayerValueAt: (position: GridPosition) => void,
@@ -39,7 +39,7 @@ type GameplayStore = GameplayStoreState & GameplayStoreActions;
 
 const initialState: GameplayStoreState = {
     state: 'playing',
-    cursorMode: 'number',
+    entryMode: 'number',
     cursorGridPosition: GridPositionHelper.zero(),
     cursorPeerCells: [],
     puzzle: undefined
@@ -72,8 +72,8 @@ export const useGameplayStore = create<GameplayStore>()(
                 set({ cursorPeerCells: peerCells })
             },
 
-            updateCursorMode: (mode) => {
-                set({ cursorMode: mode })
+            setEntryMode: (mode) => {
+                set({ entryMode: mode })
             },
 
             updatePuzzle: (puzzle) => {
