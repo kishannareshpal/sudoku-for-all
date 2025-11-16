@@ -83,6 +83,7 @@
         "its-fine": "^2.0.0",
         "jotai": "^2.14.0",
         "lucide-react-native": "^0.511.0",
+        "pressto": "^0.6.0",
         "react": "19.1.0",
         "react-dom": "19.1.0",
         "react-native": "0.81.5",

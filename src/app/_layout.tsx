@@ -8,7 +8,7 @@ const RootLayout = () => {
     return (
         <GestureHandlerRootView>
             <SafeAreaProvider>
-                <Stack screenOptions={{ headerShown: false }} />
+                <Stack />
             </SafeAreaProvider>
         </GestureHandlerRootView>
     );

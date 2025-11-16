@@ -1,6 +1,9 @@
 import { Board } from "@/lib/components/game/board/board";
 import { BoardWrapper } from "@/lib/components/game/board/board-wrapper";
+import { Header } from "@/lib/components/game/header";
+import { NumberPad } from "@/lib/components/game/number-pad/number-pad";
 import { gameplayStoreState } from "@/lib/store/gameplay";
+import { Stack } from "expo-router";
 import { StyleSheet, View } from "react-native";
 
 const GameScreen = () => {
@@ -22,14 +25,22 @@ const GameScreen = () => {
     }
 
     return (
-        <View className="flex-1 bg-yellow-500 p-3">
-            {/* <Header /> */}
+        <>
+            <Stack.Screen options={{ header: () => <Header /> }} />
 
-            <BoardWrapper>
-                <Board />
-            </BoardWrapper>
+            <View className="flex-1 bg-white p-3">
+                <View className="flex-1">
+                    <BoardWrapper>
+                        <Board />
+                    </BoardWrapper>
+                </View>
 
-            {/* <View style={styles.controlsContainer}>
+                <View className="flex-1 items-center justify-center">
+                    {/* <CursorModeToggle /> */}
+                    <NumberPad />
+                </View>
+
+                {/* <View style={styles.controlsContainer}>
                 <View style={styles.controlsRow}>
                     <ControlButton
                         iconProps={{
@@ -67,8 +78,9 @@ const GameScreen = () => {
                 <NumberPad />
 
                 <CursorModeToggle /> */}
-            {/* </View> */}
-        </View>
+                {/* </View> */}
+            </View>
+        </>
     );
 }
 

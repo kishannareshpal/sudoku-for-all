@@ -1,9 +1,9 @@
 import { ReactElement } from "react";
 import { ActivityIndicator, StyleSheet, Text, TextProps } from "react-native";
 import { Icon } from "./icon";
-import { PressableScale, PressableScaleProps } from "./pressable-scale";
+import { PressableBounce, PressableBounceProps } from "./pressable-bounce";
 
-export type ButtonProps = PressableScaleProps & {
+export type ButtonProps = PressableBounceProps & {
     label?: string,
     textProps?: TextProps,
     loading?: boolean,
@@ -23,7 +23,7 @@ export const Button = (
     }: ButtonProps
 ) => {
     return (
-        <PressableScale
+        <PressableBounce
             style={[
                 styles.container,
                 disabled ? styles.disabled : undefined,
@@ -43,7 +43,7 @@ export const Button = (
             {loading ? (
                 <ActivityIndicator />
             ) : null}
-        </PressableScale>
+        </PressableBounce>
     );
 }
 

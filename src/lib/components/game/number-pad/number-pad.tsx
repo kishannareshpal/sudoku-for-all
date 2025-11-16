@@ -1,4 +1,4 @@
-import { NumberPadButton } from "@/lib/components/game/number-pad/number-pad-button";
+import { ToggleButton } from "@/lib/components/game/number-pad/toggle-button";
 import { CellHelper } from "@/lib/helpers/cell-helper";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { useStoreSubscription } from "@/lib/hooks/use-store-subscription";
@@ -6,9 +6,9 @@ import { BoardNotesGridNotationValue, GridIndex } from "@/lib/shared-types";
 import { gameplayStore, useGameplayStore } from "@/lib/store/gameplay";
 import * as Haptics from 'expo-haptics';
 import { useState } from "react";
-import { StyleSheet, View } from "react-native";
-import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
-import shallowequal from "shallowequal";
+import { View } from "react-native";
+import Animated, { useAnimatedStyle, withSpring } from "react-native-reanimated";
+import shallowEqual from "shallowequal";
 
 export const NumberPad = () => {
     const [cursorCellToggledNotes, setCursorCellToggledNotes] = useState<BoardNotesGridNotationValue>([]);
@@ -17,9 +17,7 @@ export const NumberPad = () => {
 
     const animatedContainerStyle = useAnimatedStyle(
         () => ({
-            backgroundColor: withTiming(cursorMode === 'note' ? '#222222' : 'transparent', {
-                duration: 200,
-            }),
+            backgroundColor: withSpring(cursorMode === 'note' ? '#222222' : 'transparent'),
         }),
         [cursorMode]
     );
@@ -32,7 +30,7 @@ export const NumberPad = () => {
             setCursorCellToggledNotes(CellHelper.getToggledNotesAtCursor());
         },
         {
-            equalityFn: shallowequal
+            equalityFn: shallowEqual
         }
     );
 
@@ -54,24 +52,21 @@ export const NumberPad = () => {
 
             for (let colIndex = 0; colIndex < 3; colIndex++) {
                 const value = (colIndex + rowIndex * 3) + 1;
-                const selected = (cursorMode === 'note') && cursorCellToggledNotes.includes(value);
+                const toggled = (cursorMode === 'note') && cursorCellToggledNotes.includes(value);
+                const id = `nptb-${GridPositionHelper.stringNotationOf({ row: rowIndex as GridIndex, col: colIndex as GridIndex })}`
 
                 buttonRow.push(
-                    <NumberPadButton
-                        key={GridPositionHelper.stringNotationOf({ row: rowIndex as GridIndex, col: colIndex as GridIndex })}
+                    <ToggleButton
+                        key={id}
                         value={value}
                         onPress={() => onNumberPress(value)}
-                        onLongPress={() => onNumberPress(value)}
-                        selected={selected}
+                        toggled={toggled}
                     />
                 )
             }
 
             buttonRows.push(
-                <View
-                    key={rowIndex}
-                    style={styles.row}
-                >
+                <View key={rowIndex} className="flex-row gap-1">
                     {buttonRow}
                 </View>
             );
@@ -81,27 +76,11 @@ export const NumberPad = () => {
     }
 
     return (
-        <Animated.View style={[styles.container, animatedContainerStyle]}>
+        <Animated.View
+            className="gap-1 p-3 rounded-2xl self-center justify-center items-center"
+            style={animatedContainerStyle}
+        >
             {renderButtons()}
         </Animated.View>
     );
 };
-
-
-const styles = StyleSheet.create({
-    container: {
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 0,
-        alignSelf: 'center',
-        gap: 6,
-        padding: 8,
-        borderRadius: 12,
-        backgroundColor: 'transparent',
-    },
-
-    row: {
-        flexDirection: 'row',
-        gap: 6
-    }
-})

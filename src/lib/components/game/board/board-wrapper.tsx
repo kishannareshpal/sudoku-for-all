@@ -55,7 +55,7 @@ export const BoardWrapper = ({ children }: PropsWithChildren) => {
             className="flex-1 justify-center items-center"
         >
             {boardLayout.boardLength ? (
-                <View className="bg-neutral-300" style={{ minWidth: boardLayout.boardLength, minHeight: boardLayout.boardLength }}>
+                <View style={{ minWidth: boardLayout.boardLength, minHeight: boardLayout.boardLength }}>
                     {children}
                 </View>
             ) : null}

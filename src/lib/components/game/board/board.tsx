@@ -16,7 +16,6 @@ export const Board = () => {
         .averageTouches(true)
         .onBegin((event) => {
             CellHelper.moveCursorToPoint(event);
-            // console.log("Touched the board", graphicsStoreState());
         })
         .onChange((event) => {
             CellHelper.moveCursorToPoint(event);
@@ -25,7 +24,7 @@ export const Board = () => {
 
     return (
         <GestureDetector gesture={panGesture}>
-            <View className="flex-1 relative">
+            <View className="flex-1 bg-white relative">
                 <StyledCanvas className="flex-1">
                     {/*
                         Render order matters here:
