@@ -1,9 +1,9 @@
-import { NewGameOptions } from "@/lib/components/home/new-game-options";
-import { Title } from "@/lib/components/home/title";
+import { NewGameOptions } from "@/lib/components/screens/home/new-game-options";
+import { Title } from "@/lib/components/screens/home/title";
 import { GameHelper } from "@/lib/helpers/game-helper";
 import { Difficulty } from "@/lib/shared-types";
 import { Stack, useRouter } from "expo-router";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const HomeScreen = () => {
@@ -45,11 +45,5 @@ const HomeScreen = () => {
         </>
     );
 };
-
-const styles = StyleSheet.create({
-    scrollViewContainer: {
-        backgroundColor: "green",
-    },
-});
 
 export default HomeScreen;

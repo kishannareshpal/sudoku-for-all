@@ -1,7 +1,13 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
+# Ignore app native projects
 android
 ios
+
+# Keep custom modules native projects as they represent the module
+!modules/*/android
+!modules/*/ios
+
 node_modules/
 npm-debug.*
 .idea/

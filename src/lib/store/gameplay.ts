@@ -21,7 +21,7 @@ type GameplayStoreState = {
 
 type GameplayStoreActions = {
     updateGameState: (state: GameState) => void,
-    toggleGameState: () => void,
+    toggleGameState: () => GameState,
     updateCursorGridPosition: (position: GridPosition) => void,
     updateCursorPeerCells: (peerCells: PeerCellMetadata[]) => void,
     setEntryMode: (entryMode: EntryMode) => void,
@@ -54,14 +54,17 @@ export const useGameplayStore = create<GameplayStore>()(
                 set({ state: state });
             },
 
-            toggleGameState: () => {
+            toggleGameState: (): GameState => {
                 const currentState = get().state;
                 if (currentState === 'over') {
                     // Cannot toggle a finished game
-                    return;
+                    return 'over';
                 }
 
-                set({ state: currentState === 'paused' ? 'playing' : 'paused' })
+                const nextState = currentState === 'paused' ? 'playing' : 'paused';
+                set({ state: nextState })
+
+                return nextState;
             },
 
             updateCursorGridPosition: (position) => {
