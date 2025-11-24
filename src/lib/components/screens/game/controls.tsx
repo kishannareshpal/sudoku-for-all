@@ -1,23 +1,25 @@
 import { View } from "react-native"
 import { EraseButton } from "./controls/erase-button"
+import { ControlGroup } from "./controls/group"
 import { HintButton } from "./controls/hint-button"
 import { RedoButton } from "./controls/redo-button"
 import { UndoButton } from "./controls/undo-button"
+import { EntryModeToggle } from "./entry-mode-toggle"
 
 export const Controls = () => {
     return (
-        <View className="flex-row justify-between gap-2">
-            <View className="flex-row gap-3 bg-neutral-100 border border-neutral-300 rounded-full p-1.5">
-                <View className="flex-row gap-2">
-                    <UndoButton />
-                    <RedoButton />
-                </View>
-            </View>
+        <View className="flex-row justify-between items-center gap-2">
+            <ControlGroup>
+                <UndoButton />
+                <RedoButton />
+            </ControlGroup>
 
-            <View className="flex-row gap-3 bg-neutral-100 border border-neutral-300 rounded-full p-1.5">
+            <EntryModeToggle />
+
+            <ControlGroup>
                 <HintButton />
                 <EraseButton />
-            </View>
+            </ControlGroup>
         </View>
     )
 }

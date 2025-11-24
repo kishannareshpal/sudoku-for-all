@@ -1,6 +1,6 @@
 import { getSudoku } from "sudoku-gen";
-import { BoardNotationHelper } from "./helpers/board-notation-helper";
-import { Difficulty, Puzzle } from "./shared-types";
+import { Difficulty, Puzzle } from "../shared-types";
+import { BoardNotationHelper } from "./board-notation-helper";
 
 /**
  * Type from 'sudoku-gen'
@@ -16,6 +16,10 @@ export class PuzzleHelper {
             given: BoardNotationHelper.emptyGridNotation(),
             player: BoardNotationHelper.emptyGridNotation(),
             notes: BoardNotationHelper.emptyNotesGridNotation(),
+            moveHistory: {
+                currentMoveIndex: -1,
+                moves: []
+            }
         }
     }
 
@@ -37,7 +41,11 @@ export class PuzzleHelper {
             solution: BoardNotationHelper.transformPlainStringToGridNotation(solutionPlainStringNotation),
             given: BoardNotationHelper.transformPlainStringToGridNotation(givenPlainStringNotation),
             notes: BoardNotationHelper.emptyNotesGridNotation(),
-            player: BoardNotationHelper.emptyGridNotation()
+            player: BoardNotationHelper.emptyGridNotation(),
+            moveHistory: {
+                currentMoveIndex: -1,
+                moves: []
+            }
         }
     }
 

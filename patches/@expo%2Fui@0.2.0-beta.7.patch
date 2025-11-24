@@ -1,0 +1,53 @@
+diff --git a/node_modules/@expo/ui/.bun-tag-b963083f04706658 b/.bun-tag-b963083f04706658
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/ios/Modifiers/ViewModifierRegistry.swift b/ios/Modifiers/ViewModifierRegistry.swift
+index 745a1585474e58c7a30e416fb4b955c00f9f3d17..0cc91a15fc12c16ab5dfc29be5ea929f1dc9944b 100644
+--- a/ios/Modifiers/ViewModifierRegistry.swift
++++ b/ios/Modifiers/ViewModifierRegistry.swift
+@@ -5,6 +5,34 @@ import SwiftUI
+ 
+ // MARK: - Individual ViewModifier Structs
+ 
++internal enum PreferredColorSchemeType: String, Enumerable {
++  case light
++  case dark
++  case none
++}
++
++internal struct PreferredColorSchemeModifier: ViewModifier, Record {
++  @Field var colorScheme: PreferredColorSchemeType?
++
++  func body(content: Content) -> some View {
++    switch colorScheme {
++    case .light:
++      content
++        .colorScheme(.light)
++        .preferredColorScheme(.light)
++    case .dark:
++      content
++        .colorScheme(.dark)
++        .preferredColorScheme(.dark)
++    case .none:
++      content
++        .preferredColorScheme(.none)
++    default:
++      content
++    }
++  }
++}
++
+ internal struct BackgroundModifier: ViewModifier, Record {
+   @Field var color: Color?
+ 
+@@ -884,6 +912,10 @@ internal struct ButtonStyleModifier: ViewModifier, Record {
+ // swiftlint:disable:next no_grouping_extension
+ extension ViewModifierRegistry {
+   private func registerBuiltInModifiers() {
++    register("preferredColorScheme") { params, appContext, _ in
++        return try PreferredColorSchemeModifier(from: params, appContext: appContext)
++    }
++
+     register("background") { params, appContext, _ in
+       return try BackgroundModifier(from: params, appContext: appContext)
+     }

@@ -21,8 +21,8 @@
         "prebuild": "npx expo prebuild --clean",
         "native:android": "expo run:android",
         "native:ios": "expo run:ios",
-        "open:ui:xcode": "xed modules/sudokuforallui/ios",
-        "open:ui:androidstudio": "open -a \"Android Studio\" modules/sudokuforallui/android",
+        "open:xcode": "xed ios",
+        "open:androidstudio": "open -a \"Android Studio\" android",
         "build:with-eas": "npm run eas -- build",
         "build:with-eas:ios": "npm run build:with-eas -- -p ios",
         "build:with-eas:android": "npm run build:with-eas -- -p android",
@@ -102,6 +102,7 @@
         "react-test-renderer": "19.0.0",
         "shallowequal": "^1.1.0",
         "sudoku-gen": "^1.0.2",
+        "tailwind-merge": "^3.4.0",
         "tailwindcss": "^4.1.17",
         "uniwind": "^1.0.1",
         "use-immer": "^0.11.0",
@@ -131,5 +132,8 @@
         "transformIgnorePatterns": [
             "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg|immer|use-immer)"
         ]
+    },
+    "patchedDependencies": {
+        "@expo/ui@0.2.0-beta.7": "patches/@expo%2Fui@0.2.0-beta.7.patch"
     }
 }

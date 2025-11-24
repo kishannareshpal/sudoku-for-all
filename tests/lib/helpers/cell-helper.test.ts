@@ -1,6 +1,6 @@
 import { CellHelper } from "@/lib/helpers/cell-helper";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
-import { PuzzleHelper } from "@/lib/puzzle-helper";
+import { PuzzleHelper } from "@/lib/helpers/puzzle-helper";
 import { gameplayStoreState } from "@/lib/store/gameplay";
 
 describe("CellHelper", () => {
@@ -31,7 +31,7 @@ describe("CellHelper", () => {
                 [0, 0, 0, 0, 0, 0, 0, 0, 0],
             ];
 
-            gameplayStoreState().updatePuzzle(puzzle);
+            gameplayStoreState().start(puzzle);
 
             const cursorGridPosition = GridPositionHelper.createFromIndexes(
                 1,
@@ -73,7 +73,7 @@ describe("CellHelper", () => {
             puzzle.given[1][1] = 2;
             puzzle.notes[4][4] = [1, 2, 3];
 
-            gameplayStoreState().updatePuzzle(puzzle);
+            gameplayStoreState().start(puzzle);
 
             const cursorGridPosition = GridPositionHelper.createFromIndexes(
                 1,

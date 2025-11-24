@@ -1,8 +1,11 @@
 import { gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay";
 import { Host, Picker } from "@expo/ui/swift-ui";
-import { fixedSize, glassEffect } from "@expo/ui/swift-ui/modifiers";
+import { createModifier, fixedSize } from "@expo/ui/swift-ui/modifiers";
 import { useState } from "react";
 import { ENTRY_MODES } from "./shared";
+
+const preferredColorScheme = (colorScheme: 'dark' | 'light' | 'none') => createModifier('preferredColorScheme', { colorScheme: colorScheme })
+// const background = () => createModifier('background', { color: 'black' })
 
 export const EntryModeToggle = () => {
     const entryMode = useGameplayStore((state) => state.entryMode);
@@ -23,15 +26,10 @@ export const EntryModeToggle = () => {
                     handleOptionSelection(index);
                 }}
                 modifiers={[
-                    glassEffect({
-                        glass: {
-                            variant: 'regular',
-                        },
-                    }),
-                    fixedSize()
+                    preferredColorScheme('light'),
+                    fixedSize(),
                 ]}
                 variant="segmented"
-                color="white"
             />
         </Host>
     )

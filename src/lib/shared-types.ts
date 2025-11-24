@@ -1,14 +1,8 @@
-import { LocationNotation } from "@/lib/location";
 import { SkFont } from "@shopify/react-native-skia";
 
 export type GridIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
-export type SubgridIndex = 0 | 1 | 2;
 
-/**
- * -------------
- * Board Move Notation
- * -------------
- */
+export type SubgridIndex = 0 | 1 | 2;
 
 export type GameState = "paused" | "playing" | "over";
 
@@ -77,13 +71,32 @@ export type PeerCellMetadata = {
     type: PeerType;
 };
 
+export type MoveType =
+    | 'set-number'
+    | 'set-note'
+    | 'erase-number'
+    | 'erase-notes'
+
+export type Move = {
+    index: number,
+    position: GridPosition,
+    type: MoveType,
+    values: number[],
+}
+
+export type MoveHistory = {
+    moves: Move[],
+    currentMoveIndex: number,
+}
+
 export type Puzzle = {
-    difficulty: Difficulty;
-    solution: BoardGridNotation;
-    notes: BoardNotesGridNotation;
-    given: BoardGridNotation;
-    player: BoardGridNotation;
-    timeElapsedInSeconds: number;
+    difficulty: Difficulty,
+    solution: BoardGridNotation,
+    notes: BoardNotesGridNotation,
+    given: BoardGridNotation,
+    player: BoardGridNotation,
+    timeElapsedInSeconds: number,
+    moveHistory: MoveHistory
 };
 
 /**
@@ -108,7 +121,7 @@ export type BoardMovePlainStringNotation = string;
 export type BoardMove = {
     type: BoardMoveType;
     index: number;
-    locationNotation: LocationNotation;
+    locationNotation: string;
     value: number;
 };
 

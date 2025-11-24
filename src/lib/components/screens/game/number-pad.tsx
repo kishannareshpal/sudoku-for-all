@@ -5,28 +5,14 @@ import { useStoreSubscription } from "@/lib/hooks/use-store-subscription";
 import { BoardNotesGridNotationValue, GridIndex } from "@/lib/shared-types";
 import { gameplayStore, useGameplayStore } from "@/lib/store/gameplay";
 import * as Haptics from 'expo-haptics';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { View } from "react-native";
-import Animated, { interpolateColor, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import shallowEqual from "shallowequal";
-
-export const NUMBER_ENTRY_MODE_BACKDROP_COLOR = 'transparent';
-export const NOTES_ENTRY_MODE_BACKDROP_COLOR = '#222222';
+import { NumberPadContainer } from "./number-pad/container";
 
 export const NumberPad = () => {
     const [cursorCellToggledNotes, setCursorCellToggledNotes] = useState<BoardNotesGridNotationValue>([]);
     const entryMode = useGameplayStore((store) => store.entryMode);
-
-    const backdropColor = useSharedValue(0);
-    const animatedBackdropStyle = useAnimatedStyle(() => {
-        return {
-            backgroundColor: interpolateColor(
-                backdropColor.value,
-                [0, 1],
-                [NUMBER_ENTRY_MODE_BACKDROP_COLOR, NOTES_ENTRY_MODE_BACKDROP_COLOR]
-            )
-        };
-    });
 
     useStoreSubscription(
         gameplayStore,
@@ -41,13 +27,9 @@ export const NumberPad = () => {
         }
     );
 
-    useEffect(() => {
-        backdropColor.value = withSpring(entryMode === "number" ? 0 : 1, { duration: 75 });
-    }, [backdropColor, entryMode]);
-
     const onNumberPress = (value: number) => {
         if (entryMode === 'number') {
-            CellHelper.changePlayerValueAtCursorTo(value);
+            CellHelper.setPlayerValueAtCursorTo(value);
         } else {
             CellHelper.toggleNotesValueAtCursor([value]);
         }
@@ -87,11 +69,8 @@ export const NumberPad = () => {
     }
 
     return (
-        <Animated.View
-            className="gap-1 p-3 rounded-2xl self-center justify-center items-center"
-            style={animatedBackdropStyle}
-        >
+        <NumberPadContainer entryMode={entryMode}>
             {renderButtons()}
-        </Animated.View>
+        </NumberPadContainer>
     );
 };

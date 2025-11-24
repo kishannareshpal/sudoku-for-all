@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const HomeScreen = () => {
     const router = useRouter();
+    const insets = useSafeAreaInsets();
 
     const handleStartNewGame = (difficulty: Difficulty) => {
         GameHelper.newGame(difficulty);
@@ -18,8 +19,6 @@ const HomeScreen = () => {
         });
     };
 
-    const safeAreaInsets = useSafeAreaInsets();
-
     return (
         <>
             <Stack.Screen options={{ headerShown: false }} />
@@ -29,10 +28,10 @@ const HomeScreen = () => {
                 contentContainerClassName="flex-1 justify-center items-center gap-6"
                 contentContainerStyle={
                     {
-                        paddingTop: safeAreaInsets.top + 12,
-                        paddingBottom: safeAreaInsets.bottom + 12,
-                        paddingLeft: safeAreaInsets.left + 12,
-                        paddingRight: safeAreaInsets.right + 12,
+                        paddingTop: insets.top + 12,
+                        paddingBottom: insets.bottom + 12,
+                        paddingLeft: insets.left + 12,
+                        paddingRight: insets.right + 12,
                     }
                 }
             >

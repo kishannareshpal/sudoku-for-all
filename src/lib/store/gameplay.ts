@@ -4,14 +4,15 @@ import {
     BoardNotesGridNotationValue,
     EntryMode, ForceToggleOperation,
     GameState,
-    GridPosition, PeerCellMetadata,
+    GridPosition, Move,
+    PeerCellMetadata,
     Puzzle
 } from "@/lib/shared-types";
 import { produce } from "immer";
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 
-type GameplayStoreState = {
+export type GameplayStoreState = {
     state: GameState,
     entryMode: EntryMode,
     cursorGridPosition: GridPosition,
@@ -20,19 +21,24 @@ type GameplayStoreState = {
 }
 
 type GameplayStoreActions = {
-    updateGameState: (state: GameState) => void,
+    setGameState: (state: GameState) => void,
+    start: (puzzle: Puzzle) => void,
+    incrementTimeElapsed: () => void,
     toggleGameState: () => GameState,
-    updateCursorGridPosition: (position: GridPosition) => void,
-    updateCursorPeerCells: (peerCells: PeerCellMetadata[]) => void,
+    setCursorGridPosition: (position: GridPosition) => void,
+    setCursorPeerCells: (peerCells: PeerCellMetadata[]) => void,
     setEntryMode: (entryMode: EntryMode) => void,
-    updatePuzzle: (puzzle: Puzzle) => void,
-    updatePlayerValueAt: (position: GridPosition, value: BoardGridNotationValue) => void,
-    erasePlayerValueAt: (position: GridPosition) => void,
+    setPlayerValueAt: (position: GridPosition, value: BoardGridNotationValue, saveMoveToHistory?: boolean) => void,
+    erasePlayerValueAt: (position: GridPosition, saveMoveToHistory?: boolean) => void,
     toggleNotesValueAt: (
         position: GridPosition,
         notes: BoardNotesGridNotationValue,
-        forceOperation?: ForceToggleOperation
-    ) => void
+        forceOperation?: ForceToggleOperation,
+        saveMoveToHistory?: boolean,
+    ) => void,
+
+    recordMove: (params: Pick<Move, 'position' | 'type' | 'values'>) => void,
+    commitMove: (action: 'undo' | 'redo') => void,
 }
 
 type GameplayStore = GameplayStoreState & GameplayStoreActions;
@@ -50,8 +56,77 @@ export const useGameplayStore = create<GameplayStore>()(
         (set, get) => ({
             ...initialState,
 
-            updateGameState: (state) => {
+            setGameState: (state) => {
                 set({ state: state });
+            },
+
+            recordMove: ({ position, type, values }) => {
+                if (!get().puzzle) {
+                    return;
+                }
+
+                set(
+                    produce((state: GameplayStoreState) => {
+                        if (state.puzzle) {
+                            const newMoveIndex = state.puzzle.moveHistory.currentMoveIndex + 1;
+                            state.puzzle.moveHistory.currentMoveIndex = newMoveIndex;
+
+                            // Only keep items in the history that before the current index, remove everything after
+                            state.puzzle.moveHistory.moves = state.puzzle.moveHistory.moves.filter(
+                                (entry) => entry.index < newMoveIndex
+                            );
+
+                            state.puzzle.moveHistory.moves.push({
+                                position: position,
+                                index: newMoveIndex,
+                                type: type,
+                                values: values
+                            })
+                        }
+                    })
+                )
+
+                console.log('move recorded!')
+
+                // self.moveIndex += 1
+
+                // let entry = MoveEntry(
+                //     index: self.moveIndex,
+                //     locationNotation: locationNotation,
+                //     type: type,
+                //     value: value
+                // )
+
+                // self.moves.removeAll { entry in entry.index >= self.moveIndex }
+                // self.moves.append(entry)
+            },
+
+            commitMove: (action) => {
+                set(
+                    produce((state: GameplayStoreState) => {
+                        if (state.puzzle) {
+                            if (action === 'undo') {
+                                state.puzzle.moveHistory.currentMoveIndex -= 1
+                            } else {
+                                state.puzzle.moveHistory.currentMoveIndex += 1
+                            }
+                        }
+                    })
+                )
+            },
+
+            incrementTimeElapsed: () => {
+                if (!get().puzzle || get().state !== 'playing') {
+                    return;
+                }
+
+                set(
+                    produce((state: GameplayStoreState) => {
+                        if (state.puzzle) {
+                            state.puzzle.timeElapsedInSeconds += 1;
+                        }
+                    })
+                )
             },
 
             toggleGameState: (): GameState => {
@@ -67,11 +142,11 @@ export const useGameplayStore = create<GameplayStore>()(
                 return nextState;
             },
 
-            updateCursorGridPosition: (position) => {
+            setCursorGridPosition: (position) => {
                 set({ cursorGridPosition: position })
             },
 
-            updateCursorPeerCells: (peerCells) => {
+            setCursorPeerCells: (peerCells) => {
                 set({ cursorPeerCells: peerCells })
             },
 
@@ -79,31 +154,28 @@ export const useGameplayStore = create<GameplayStore>()(
                 set({ entryMode: mode })
             },
 
-            updatePuzzle: (puzzle) => {
-                set({ puzzle: puzzle })
+            start: (puzzle) => {
+                set({
+                    puzzle: puzzle,
+                    state: 'playing',
+                    cursorGridPosition: GridPositionHelper.zero(),
+                    cursorPeerCells: [],
+                })
             },
 
-            erasePlayerValueAt: (position) => {
+            erasePlayerValueAt: (position, saveMoveToHistory) => {
+                get().setPlayerValueAt(position, 0, saveMoveToHistory);
+            },
+
+            setPlayerValueAt: (position, value, saveMoveToHistory) => {
                 // Ensure a puzzle exists
-                if (!get().puzzle) {
+                const currentPuzzle = get().puzzle;
+                if (!currentPuzzle) {
                     return;
                 }
 
-                set(
-                    produce((state: GameplayStoreState) => {
-                        if (state.puzzle) {
-                            state.puzzle.player[position.row][position.col] = 0;
-                            state.puzzle.notes[position.row][position.col] = [];
-                        }
-                    })
-                )
-            },
-
-            updatePlayerValueAt: (position, value) => {
-                // Ensure a puzzle exists
-                if (!get().puzzle) {
-                    return;
-                }
+                const erasing = value <= 0;
+                const currentNotes = currentPuzzle.notes[position.row][position.col]
 
                 set(
                     produce((state: GameplayStoreState) => {
@@ -113,35 +185,73 @@ export const useGameplayStore = create<GameplayStore>()(
                         }
                     })
                 )
+
+                if (saveMoveToHistory) {
+                    // Save move to history
+                    if (currentNotes.length) {
+                        get().recordMove({
+                            type: 'erase-notes',
+                            position: position,
+                            values: currentNotes
+                        })
+                    }
+
+                    get().recordMove({
+                        type: erasing ? 'erase-number' : 'set-number',
+                        position: position,
+                        values: [value]
+                    })
+                }
             },
 
-            toggleNotesValueAt: (position, notes, forceOperation) => {
+            toggleNotesValueAt: (position, notes, forceOperation, saveMoveToHistory) => {
                 // Ensure a puzzle exists
-                if (!get().puzzle) {
+                const currentPuzzle = get().puzzle;
+                if (!currentPuzzle) {
                     return;
                 }
 
-                set(
-                    produce((state: GameplayStoreState) => {
-                        if (state.puzzle) {
-                            for (const note of notes) {
-                                const noteIndexInCurrentValues = state.puzzle.notes[position.row][position.col].findIndex((value) => value === note);
+                for (const note of notes) {
+                    const noteIndexInCurrentValues = currentPuzzle.notes[position.row][position.col].findIndex((value) => value === note);
 
-                                if (noteIndexInCurrentValues !== -1) {
-                                    // Added already
-                                    if (!forceOperation || forceOperation === 'remove') {
-                                        state.puzzle.notes[position.row][position.col].splice(noteIndexInCurrentValues, 1);
-                                    }
-                                } else {
-                                    // Not added yet
-                                    if (!forceOperation || forceOperation === 'add') {
-                                        state.puzzle.notes[position.row][position.col].push(note);
-                                    }
+                    if (noteIndexInCurrentValues !== -1) {
+                        // Added already
+                        if (!forceOperation || forceOperation === 'remove') {
+                            set(produce((state: GameplayStoreState) => {
+                                if (state.puzzle) {
+                                    state.puzzle.notes[position.row][position.col].splice(noteIndexInCurrentValues, 1);
                                 }
+                            }))
+
+                            if (saveMoveToHistory) {
+                                // Save move to history
+                                get().recordMove({
+                                    type: 'erase-notes',
+                                    position: position,
+                                    values: [note]
+                                })
                             }
                         }
-                    })
-                )
+                    } else {
+                        // Not added yet
+                        if (!forceOperation || forceOperation === 'add') {
+                            set(produce((state: GameplayStoreState) => {
+                                if (state.puzzle) {
+                                    state.puzzle.notes[position.row][position.col].push(note);
+                                }
+                            }))
+
+                            if (saveMoveToHistory) {
+                                // Save move to history
+                                get().recordMove({
+                                    type: 'set-note',
+                                    position: position,
+                                    values: [note]
+                                })
+                            }
+                        }
+                    }
+                }
             }
         })
     )

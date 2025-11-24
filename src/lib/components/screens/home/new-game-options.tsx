@@ -1,7 +1,8 @@
 import { TextHelper } from "@/lib/helpers/text-helper";
 import { Difficulty } from "@/lib/shared-types";
-import { StyleSheet, View } from "react-native";
-import { Button } from "../../common/button";
+import { PlusIcon } from "lucide-react-native";
+import { Text, View } from "react-native";
+import { PressableBounce } from "../../common/pressable-bounce";
 
 type Option = {
     name: string,
@@ -16,10 +17,7 @@ const difficulties: Difficulty[] = [
     'extreme'
 ]
 const options: Option[] = difficulties.map((difficulty) => (
-    {
-        name: TextHelper.formatDifficulty(difficulty),
-        value: difficulty
-    }
+    { name: TextHelper.formatDifficulty(difficulty), value: difficulty }
 ));
 
 type NewGameOptionsProps = {
@@ -27,47 +25,27 @@ type NewGameOptionsProps = {
 }
 
 export const NewGameOptions = (
-    {
-        onOptionPress
-    }: NewGameOptionsProps
+    { onOptionPress }: NewGameOptionsProps
 ) => {
     return (
-        <View style={styles.container}>
+        <View className="gap-2 w-full">
             {options.map((option) => (
-                <Button
+                <PressableBounce
                     key={option.value}
-                    label={option.name}
+                    className="bg-neutral-700 px-4 py-5 flex-row rounded-xl items-center justify-between"
                     onPress={() => onOptionPress(option)}
-                    style={styles.button}
-                    activeScale={0.95}
-                    textProps={{
-                        style: styles.buttonText
-                    }}
-                />
+                >
+                    <Text className="font-bold text-white text-base">{option.name}</Text>
+
+                    <PlusIcon size={22} color="white" />
+                </PressableBounce>
+
+                // <Button
+                //     key={option.value}
+                //     label={option.name}
+                //     onPress={() => onOptionPress(option)}
+                // />
             ))}
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'column',
-        gap: 6,
-    },
-
-    button: {
-        backgroundColor: '#3b3b3b',
-        padding: 12,
-        borderRadius: 12,
-        paddingVertical: 18,
-        width: 400,
-        maxWidth: '100%',
-        cursor: 'pointer'
-    },
-
-    buttonText: {
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 16
-    }
-});

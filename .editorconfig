@@ -3,3 +3,6 @@ root = true
 [*]
 indent_size = 4
 indent_style = space
+
+[*.swift]
+indent_size = 2

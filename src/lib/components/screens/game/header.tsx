@@ -3,7 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackButton } from "./header/back-button";
 import { PauseButton } from "./header/pause-button";
 import { StatsText } from "./header/stats-text";
-import { Timer } from "./header/timer";
+import { Timer } from "./header/timer-text";
 
 export const Header = () => {
     const insets = useSafeAreaInsets();
@@ -32,7 +32,3 @@ export const Header = () => {
         </View>
     );
 }
-
-
-
-

@@ -1,8 +1,8 @@
+import { cn } from "@/lib/cn";
 import { useGameplayStore } from "@/lib/store/gameplay";
-import clsx from "clsx";
 import { BlurView } from "expo-blur";
 import { useEffect } from "react";
-import Animated, { useAnimatedProps, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
+import Animated, { useAnimatedProps, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 // import { useBoardGraphicsContext } from "./board/board-graphics-context";
 
 const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
@@ -19,19 +19,19 @@ export const PausedGameOverlay = () => {
     const isPaused = useGameplayStore((state) => state.state === 'paused');
 
     useEffect(() => {
-        currentBlurIntensity.value = withSpring(isPaused ? 40 : 0, {
-            duration: 75
+        currentBlurIntensity.value = withTiming(isPaused ? 40 : 0, {
+            duration: 300
         });
 
         textScale.value = withSpring(isPaused ? 1 : 0, {
             stiffness: 80,
-            damping: 10,
-            mass: 0.75,
+            damping: 80,
+            mass: 1,
             velocity: 10
         });
 
-        textOpacity.value = withSpring(isPaused ? 1 : 0, { duration: 300 });
-        containerOpacity.value = withSpring(isPaused ? 1 : 0, { duration: 75 })
+        textOpacity.value = withSpring(isPaused ? 1 : 0, { duration: 1000 });
+        containerOpacity.value = withSpring(isPaused ? 1 : 0, { duration: 10 })
     }, [containerOpacity, currentBlurIntensity, isPaused, textOpacity, textScale])
 
     const animatedTextStyle = useAnimatedStyle(
@@ -56,7 +56,7 @@ export const PausedGameOverlay = () => {
 
     return (
         <Animated.View
-            className={clsx(
+            className={cn(
                 'flex-1 relative justify-center items-center',
                 isPaused ? 'pointer-events-all' : undefined
             )}
