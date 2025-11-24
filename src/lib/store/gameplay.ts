@@ -211,45 +211,48 @@ export const useGameplayStore = create<GameplayStore>()(
                     return;
                 }
 
-                for (const note of notes) {
-                    const noteIndexInCurrentValues = currentPuzzle.notes[position.row][position.col].findIndex((value) => value === note);
+                const movesToSave: Pick<Move, 'type' | 'position' | 'values'>[] = [];
 
-                    if (noteIndexInCurrentValues !== -1) {
-                        // Added already
-                        if (!forceOperation || forceOperation === 'remove') {
-                            set(produce((state: GameplayStoreState) => {
-                                if (state.puzzle) {
-                                    state.puzzle.notes[position.row][position.col].splice(noteIndexInCurrentValues, 1);
+                set(
+                    produce((state: GameplayStoreState) => {
+                        const cellNotes = state.puzzle!.notes[position.row][position.col];
+
+                        for (const note of notes) {
+                            const idx = cellNotes.indexOf(note);
+
+                            const shouldRemove = idx !== -1 && (!forceOperation || forceOperation === "remove");
+                            const shouldAdd = idx === -1 && (!forceOperation || forceOperation === "add");
+
+                            if (shouldRemove) {
+                                cellNotes.splice(idx, 1);
+                                if (saveMoveToHistory) {
+                                    movesToSave.push({
+                                        type: 'erase-notes',
+                                        position,
+                                        values: [note]
+                                    });
                                 }
-                            }))
+                            }
 
-                            if (saveMoveToHistory) {
-                                // Save move to history
-                                get().recordMove({
-                                    type: 'erase-notes',
-                                    position: position,
-                                    values: [note]
-                                })
+                            if (shouldAdd) {
+                                cellNotes.push(note);
+                                if (saveMoveToHistory) {
+                                    movesToSave.push({
+                                        type: "set-note",
+                                        position,
+                                        values: [note]
+                                    });
+                                }
                             }
                         }
-                    } else {
-                        // Not added yet
-                        if (!forceOperation || forceOperation === 'add') {
-                            set(produce((state: GameplayStoreState) => {
-                                if (state.puzzle) {
-                                    state.puzzle.notes[position.row][position.col].push(note);
-                                }
-                            }))
+                    })
+                );
 
-                            if (saveMoveToHistory) {
-                                // Save move to history
-                                get().recordMove({
-                                    type: 'set-note',
-                                    position: position,
-                                    values: [note]
-                                })
-                            }
-                        }
+                // record history after state update
+                if (saveMoveToHistory) {
+                    const recordMove = get().recordMove;
+                    for (const move of movesToSave) {
+                        recordMove(move)
                     }
                 }
             }
