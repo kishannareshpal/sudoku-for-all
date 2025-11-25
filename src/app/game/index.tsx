@@ -6,6 +6,7 @@ import { NumberPad } from "@/lib/components/screens/game/number-pad";
 import { PausedGameOverlay } from "@/lib/components/screens/game/paused-game-overlay";
 import { useGameplayStore } from "@/lib/store/gameplay";
 import { Stack } from "expo-router";
+import p from 'json-stringify-pretty-compact';
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -46,8 +47,8 @@ const DebugMoves = () => {
 
     return (
         <ScrollView className="h-50">
-            <Text>
-                {JSON.stringify(moveHistory, null, 2)}
+            <Text style={{ fontSize: 12 }}>
+                {p(moveHistory, { indent: 2 })}
             </Text>
         </ScrollView>
     )

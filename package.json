@@ -84,6 +84,7 @@
         "expo-web-browser": "~15.0.9",
         "its-fine": "^2.0.0",
         "jotai": "^2.14.0",
+        "json-stringify-pretty-compact": "^4.0.0",
         "lucide-react-native": "^0.511.0",
         "pressto": "^0.6.0",
         "react": "19.1.0",

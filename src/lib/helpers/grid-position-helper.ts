@@ -6,14 +6,10 @@ import {
 } from "@/lib/constants/board";
 import { NumberHelper } from "@/lib/helpers/number-helper";
 import { GridIndex, GridPosition, Point } from "@/lib/shared-types";
-import { graphicsStoreState } from "../store/graphics";
 
 export class GridPositionHelper {
     static zero(): GridPosition {
-        return {
-            row: 0,
-            col: 0
-        };
+        return { row: 0, col: 0 };
     }
 
     static createFromIndexes(colIndex: number, rowIndex: number): GridPosition {
@@ -23,9 +19,7 @@ export class GridPositionHelper {
         return { col, row };
     }
 
-    static createFromPoint(point: Point): GridPosition | undefined {
-        const cellLengthIgnoringBorders = graphicsStoreState().boardLayout.rawCellLength;
-
+    static createFromPoint(point: Point, cellLengthIgnoringBorders: number): GridPosition | undefined {
         const colIndex = Math.floor(point.x / cellLengthIgnoringBorders);
         const rowIndex = Math.floor(point.y / cellLengthIgnoringBorders);
 

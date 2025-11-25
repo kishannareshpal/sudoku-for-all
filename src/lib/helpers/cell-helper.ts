@@ -18,6 +18,7 @@ import {
     Point
 } from "@/lib/shared-types";
 import { GameplayStoreState, gameplayStoreState } from "@/lib/store/gameplay";
+import { graphicsStoreState } from "../store/graphics";
 
 type ProcessEachPeerAndNonPeerCellOptions = {
     /**
@@ -117,7 +118,8 @@ export class CellHelper {
     }
 
     static moveCursorToPoint(point: Point): void {
-        const newGridPosition = GridPositionHelper.createFromPoint(point);
+        const cellLengthIgnoringBorders = graphicsStoreState().boardLayout.rawCellLength;
+        const newGridPosition = GridPositionHelper.createFromPoint(point, cellLengthIgnoringBorders);
         if (!newGridPosition) {
             // Out of bounds, do nothing
             return;
@@ -141,128 +143,36 @@ export class CellHelper {
     }
 
     static undoLastMove(gameplay: GameplayStoreState): void {
-        if (gameplay.state !== "playing") return;
-        if (!gameplay.puzzle) return;
-
-        const moveHistory = gameplay.puzzle.moveHistory;
-        if (!this.isMoveUndoable(moveHistory)) return;
-
-        const index = moveHistory.currentMoveIndex;
-        const move = moveHistory.moves.find(m => m.index === index);
-        if (!move) return;
-
-        // Move cursor to affected cell
-        this.moveCursorTo(move.position);
-
-        const store = gameplayStoreState();
-
-        switch (move.type) {
-            case "set-number": {
-                const previousMove = moveHistory.moves.findLast(
-                    (pm) => pm.index < move.index && GridPositionHelper.equals(move.position, move.position)
-                )
-
-                if (!previousMove) {
-                    store.erasePlayerValueAt(move.position)
-                    break;
-                }
-
-                if (previousMove?.type === 'erase-notes') {
-                    store.erasePlayerValueAt(previousMove.position, false)
-                    store.toggleNotesValueAt(previousMove.position, previousMove.values, 'add', false);
-                } else {
-                    store.setPlayerValueAt(move.position, previousMove.values[0], false)
-                }
-                break;
-            }
-
-            case "erase-number": {
-                // undo = put erased number back
-                const value = move.values[0];
-                store.setPlayerValueAt(move.position, value, false);
-                break;
-            }
-
-            case "set-note": {
-                // undo = remove this note
-                store.toggleNotesValueAt(move.position, move.values, "remove", false);
-                break;
-            }
-
-            case "erase-notes": {
-                // undo = restore all removed notes
-                store.toggleNotesValueAt(move.position, move.values, "add", false);
-                break;
-            }
+        if (gameplay.state !== 'playing') {
+            return;
         }
 
-        // now move the pointer backward
-        gameplayStoreState().commitMove("undo");
+        if (!gameplay.puzzle) {
+            return;
+        }
+
+        const moveHistory = gameplay.puzzle.moveHistory
+        const targetMoveIndex = moveHistory.currentMoveIndex
+        const targetMove = moveHistory.moves[targetMoveIndex]
+
+        if (!targetMove) {
+            return;
+        }
+
+        this.moveCursorTo(targetMove.position)
+
+        const deltaValue = targetMove.delta.before
+        if (deltaValue.type === 'empty') {
+            this.erasePlayerValueAt(targetMove.position, false);
+        } else if (deltaValue.type === 'number') {
+            this.setPlayerValueAt(targetMove.position, deltaValue.value, false);
+        } else if (deltaValue.type === 'notes') {
+            this.erasePlayerValueAt(targetMove.position, false)
+            this.toggleNotesValueAt(targetMove.position, deltaValue.value, 'add', false)
+        }
+
+        gameplayStoreState().commitMoveTravel('undo');
     }
-
-    // static undoLastMove(gameplay: GameplayStoreState): void {
-    //     if (gameplay.state !== 'playing') {
-    //         return;
-    //     }
-
-    //     if (!gameplay.puzzle) {
-    //         return;
-    //     }
-
-    //     const moveHistory = gameplay.puzzle.moveHistory;
-    //     if (!this.isMoveUndoable(moveHistory)) {
-    //         return;
-    //     }
-
-    //     // TODO: can potentially do: moveHistory.moves[moveHistory.currentMoveIndex]? and get rid of the `index` field in `Move`?
-    //     const undoneMove = moveHistory.moves.find((move) => move.index === moveHistory.currentMoveIndex);
-    //     if (!undoneMove) {
-    //         return;
-    //     }
-
-    //     const handle = (undoneMove: Move, moveHistory: MoveHistory): void => {
-    //         this.moveCursorTo(undoneMove.position)
-
-    //         if (undoneMove.type === 'set-number') {
-    //             // Undoing a move that set a number means that we have to unset the number
-    //             this.erasePlayerValueAt(undoneMove.position, false);
-
-    //             // Additionally, lookup the history for the last known move made at this position (if any) and undo that
-    //             const previousMoveOnThisCell = moveHistory.moves.findLast((move) => move.index < undoneMove.index && GridPositionHelper.equals(move.position, undoneMove.position))
-    //             if (previousMoveOnThisCell) {
-    //                 // Prior to the move we're undoing, there was no other move done on this cell, so undoing should clear out the cell
-    //                 if (previousMoveOnThisCell.type === 'set-number') {
-    //                     this.setPlayerValueAt(previousMoveOnThisCell.position, previousMoveOnThisCell.values[0], false)
-    //                     gameplayStoreState().commitMove('undo');
-    //                 } else if (previousMoveOnThisCell.type === 'erase-notes') {
-    //                     this.toggleNotesValueAt(previousMoveOnThisCell.position, previousMoveOnThisCell.values, 'add', false)
-    //                     gameplayStoreState().commitMove('undo');
-    //                 } else {
-    //                     const updatedMoveHistory = gameplayStoreState().puzzle?.moveHistory ?? { currentMoveIndex: 0, moves: [] };
-    //                     handle(previousMoveOnThisCell, updatedMoveHistory)
-    //                 }
-    //             } else {
-    //                 gameplayStoreState().commitMove('undo');
-    //             }
-    //         } else if (undoneMove.type === 'erase-number') {
-    //             // Undoing a move that has erased a number means that we have to set the number
-    //             this.setPlayerValueAt(undoneMove.position, undoneMove.values[0], false)
-    //             gameplayStoreState().commitMove('undo');
-    //         } else if (undoneMove.type === 'set-note') {
-    //             // Undoing a move that set a note means erasing the note
-    //             this.toggleNotesValueAt(undoneMove.position, undoneMove.values, 'remove', false);
-    //             gameplayStoreState().commitMove('undo');
-    //         } else if (undoneMove.type === 'erase-notes') {
-    //             // Undoing a move that erased notes means setting them
-    //             this.toggleNotesValueAt(undoneMove.position, undoneMove.values, 'add', false)
-    //             gameplayStoreState().commitMove('undo');
-    //         } else {
-    //             return;
-    //         }
-    //     }
-
-    //     handle(undoneMove, moveHistory)
-    // }
 
     static redoLastMove(gameplay: GameplayStoreState): void {
         if (gameplay.state !== 'playing') {
@@ -273,36 +183,27 @@ export class CellHelper {
             return;
         }
 
-        const moveHistory = gameplay.puzzle.moveHistory;
-        if (!this.isMoveRedoable(moveHistory)) {
+        const moveHistory = gameplay.puzzle.moveHistory
+        const targetMoveIndex = moveHistory.currentMoveIndex + 1
+        const targetMove = moveHistory.moves[targetMoveIndex]
+
+        if (!targetMove) {
             return;
         }
 
-        const redoingMoveIndex = moveHistory.currentMoveIndex + 1
-        const redoingMove = moveHistory.moves.find((move) => move.index === redoingMoveIndex);
-        if (!redoingMove) {
-            return;
+        this.moveCursorTo(targetMove.position)
+
+        const deltaValue = targetMove.delta.after
+        if (deltaValue.type === 'empty') {
+            this.erasePlayerValueAt(targetMove.position, false);
+        } else if (deltaValue.type === 'number') {
+            this.setPlayerValueAt(targetMove.position, deltaValue.value, false);
+        } else if (deltaValue.type === 'notes') {
+            this.erasePlayerValueAt(targetMove.position, false)
+            this.toggleNotesValueAt(targetMove.position, deltaValue.value, 'add', false)
         }
 
-        this.moveCursorTo(redoingMove.position)
-
-        if (redoingMove.type === 'set-number') {
-            // Redoing a move that set a number, should set the number
-            this.setPlayerValueAt(redoingMove.position, redoingMove.values[0], false)
-        } else if (redoingMove.type === 'erase-number') {
-            // Redoing a move that erased a number, should erase a number
-            this.erasePlayerValueAt(redoingMove.position, false)
-        } else if (redoingMove.type === 'set-note') {
-            // Redoing a move that set a note, should set a note
-            this.toggleNotesValueAt(redoingMove.position, redoingMove.values, 'add', false)
-        } else if (redoingMove.type === 'erase-notes') {
-            // Redoing a move that set a note, should set a note
-            this.toggleNotesValueAt(redoingMove.position, redoingMove.values, 'remove', false)
-        } else {
-            return;
-        }
-
-        gameplayStoreState().commitMove('redo');
+        gameplayStoreState().commitMoveTravel('redo');
     }
 
     static isMoveUndoable(moveHistory: MoveHistory): boolean {

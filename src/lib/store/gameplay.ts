@@ -1,16 +1,18 @@
-import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
+// import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import {
     BoardGridNotationValue,
     BoardNotesGridNotationValue,
     EntryMode, ForceToggleOperation,
     GameState,
     GridPosition, Move,
+    MoveDeltaValue,
     PeerCellMetadata,
     Puzzle
 } from "@/lib/shared-types";
 import { produce } from "immer";
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
+import { GridPositionHelper } from "../helpers/grid-position-helper";
 
 export type GameplayStoreState = {
     state: GameState,
@@ -37,8 +39,8 @@ type GameplayStoreActions = {
         saveMoveToHistory?: boolean,
     ) => void,
 
-    recordMove: (params: Pick<Move, 'position' | 'type' | 'values'>) => void,
-    commitMove: (action: 'undo' | 'redo') => void,
+    recordMove: (move: Move) => void,
+    commitMoveTravel: (action: 'undo' | 'redo') => void,
 }
 
 type GameplayStore = GameplayStoreState & GameplayStoreActions;
@@ -60,7 +62,7 @@ export const useGameplayStore = create<GameplayStore>()(
                 set({ state: state });
             },
 
-            recordMove: ({ position, type, values }) => {
+            recordMove: (move) => {
                 if (!get().puzzle) {
                     return;
                 }
@@ -68,40 +70,18 @@ export const useGameplayStore = create<GameplayStore>()(
                 set(
                     produce((state: GameplayStoreState) => {
                         if (state.puzzle) {
-                            const newMoveIndex = state.puzzle.moveHistory.currentMoveIndex + 1;
-                            state.puzzle.moveHistory.currentMoveIndex = newMoveIndex;
+                            const nextMoveIndex = state.puzzle.moveHistory.currentMoveIndex + 1;
+                            state.puzzle.moveHistory.currentMoveIndex = nextMoveIndex;
 
-                            // Only keep items in the history that before the current index, remove everything after
-                            state.puzzle.moveHistory.moves = state.puzzle.moveHistory.moves.filter(
-                                (entry) => entry.index < newMoveIndex
-                            );
-
-                            state.puzzle.moveHistory.moves.push({
-                                position: position,
-                                index: newMoveIndex,
-                                type: type,
-                                values: values
-                            })
+                            // Remove all moves in the stack including/after the next move index
+                            state.puzzle.moveHistory.moves.splice(nextMoveIndex, state.puzzle.moveHistory.moves.length - 1);
+                            state.puzzle.moveHistory.moves.push(move)
                         }
                     })
                 )
-
-                console.log('move recorded!')
-
-                // self.moveIndex += 1
-
-                // let entry = MoveEntry(
-                //     index: self.moveIndex,
-                //     locationNotation: locationNotation,
-                //     type: type,
-                //     value: value
-                // )
-
-                // self.moves.removeAll { entry in entry.index >= self.moveIndex }
-                // self.moves.append(entry)
             },
 
-            commitMove: (action) => {
+            commitMoveTravel: (action) => {
                 set(
                     produce((state: GameplayStoreState) => {
                         if (state.puzzle) {
@@ -175,85 +155,81 @@ export const useGameplayStore = create<GameplayStore>()(
                 }
 
                 const erasing = value <= 0;
+                const currentValue = currentPuzzle.player[position.row][position.col]
                 const currentNotes = currentPuzzle.notes[position.row][position.col]
 
-                set(
-                    produce((state: GameplayStoreState) => {
-                        if (state.puzzle) {
-                            state.puzzle.player[position.row][position.col] = value;
-                            state.puzzle.notes[position.row][position.col] = [];
-                        }
-                    })
-                )
+                set(produce((state: GameplayStoreState) => {
+                    if (state.puzzle) {
+                        state.puzzle.player[position.row][position.col] = value;
+                        state.puzzle.notes[position.row][position.col] = [];
+                    }
+                }))
 
                 if (saveMoveToHistory) {
                     // Save move to history
-                    if (currentNotes.length) {
-                        get().recordMove({
-                            type: 'erase-notes',
-                            position: position,
-                            values: currentNotes
-                        })
-                    }
+                    const deltaBeforeValue: MoveDeltaValue =
+                        currentNotes.length ? { type: 'notes', value: currentNotes }
+                            : currentValue ? { type: 'number', value: currentValue }
+                                : { type: 'empty' }
+
+                    const deltaAfterValue: MoveDeltaValue =
+                        erasing ? { type: 'empty' }
+                            : { type: 'number', value: value }
 
                     get().recordMove({
-                        type: erasing ? 'erase-number' : 'set-number',
                         position: position,
-                        values: [value]
+                        delta: {
+                            before: deltaBeforeValue,
+                            after: deltaAfterValue
+                        }
                     })
                 }
             },
 
             toggleNotesValueAt: (position, notes, forceOperation, saveMoveToHistory) => {
-                // Ensure a puzzle exists
-                const currentPuzzle = get().puzzle;
-                if (!currentPuzzle) {
-                    return;
-                }
-
-                const movesToSave: Pick<Move, 'type' | 'position' | 'values'>[] = [];
-
-                set(
-                    produce((state: GameplayStoreState) => {
-                        const cellNotes = state.puzzle!.notes[position.row][position.col];
-
-                        for (const note of notes) {
-                            const idx = cellNotes.indexOf(note);
-
-                            const shouldRemove = idx !== -1 && (!forceOperation || forceOperation === "remove");
-                            const shouldAdd = idx === -1 && (!forceOperation || forceOperation === "add");
-
-                            if (shouldRemove) {
-                                cellNotes.splice(idx, 1);
-                                if (saveMoveToHistory) {
-                                    movesToSave.push({
-                                        type: 'erase-notes',
-                                        position,
-                                        values: [note]
-                                    });
-                                }
-                            }
-
-                            if (shouldAdd) {
-                                cellNotes.push(note);
-                                if (saveMoveToHistory) {
-                                    movesToSave.push({
-                                        type: "set-note",
-                                        position,
-                                        values: [note]
-                                    });
-                                }
-                            }
-                        }
-                    })
-                );
-
-                // record history after state update
-                if (saveMoveToHistory) {
-                    const recordMove = get().recordMove;
-                    for (const move of movesToSave) {
-                        recordMove(move)
+                const originalState = get();
+                const updatedState = produce(originalState, (state: GameplayStoreState) => {
+                    if (!state.puzzle) {
+                        return;
                     }
+
+                    const existingNotes = state.puzzle.notes[position.row][position.col];
+                    for (const note of notes) {
+                        const existingNoteIndex = existingNotes.indexOf(note);
+                        const present = existingNoteIndex !== -1;
+
+                        let mustBeOn: boolean;
+                        if (!present && (!forceOperation || forceOperation === 'add')) {
+                            // The note should be toggled on
+                            mustBeOn = true
+                        } else if (present && (!forceOperation || forceOperation === 'remove')) {
+                            // The note should be toggled off
+                            mustBeOn = false
+                        } else {
+                            // invalid action, skip iteration
+                            continue;
+                        }
+
+                        if (mustBeOn) {
+                            state.puzzle.notes[position.row][position.col].push(note);
+                        } else {
+                            state.puzzle.notes[position.row][position.col].splice(existingNoteIndex, 1)
+                        }
+                    }
+                })
+                set(updatedState)
+
+                if (saveMoveToHistory) {
+                    const deltaAfterValue = updatedState.puzzle?.notes[position.row][position.col] ?? []
+                    const deltaBeforeValue = originalState.puzzle?.notes[position.row][position.col] ?? []
+
+                    get().recordMove({
+                        position: position,
+                        delta: {
+                            before: { type: 'notes', value: deltaBeforeValue },
+                            after: { type: 'notes', value: deltaAfterValue }
+                        },
+                    })
                 }
             }
         })

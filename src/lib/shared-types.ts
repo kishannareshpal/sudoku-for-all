@@ -50,21 +50,21 @@ export type BoardDimensions = {
 };
 
 export type NumberCharacter =
-    | "1"
-    | "2"
-    | "3"
-    | "4"
-    | "5"
-    | "6"
-    | "7"
-    | "8"
-    | "9";
+    | '1'
+    | '2'
+    | '3'
+    | '4'
+    | '5'
+    | '6'
+    | '7'
+    | '8'
+    | '9';
 export type CharSizeMap = Record<NumberCharacter, Size>;
 
 /**
  * The type of peer found during the processing via {@link CellHelper.processEachPeerAndNonPeerCell}
  */
-export type PeerType = "note" | "number" | "both";
+export type PeerType = 'note' | 'number' | 'both';
 
 export type PeerCellMetadata = {
     gridPosition: GridPosition;
@@ -77,11 +77,17 @@ export type MoveType =
     | 'erase-number'
     | 'erase-notes'
 
+export type MoveDeltaValue =
+    | { type: 'empty' }
+    | { type: 'number', value: number }
+    | { type: 'notes', value: number[] }
+
 export type Move = {
-    index: number,
     position: GridPosition,
-    type: MoveType,
-    values: number[],
+    delta: {
+        before: MoveDeltaValue,
+        after: MoveDeltaValue,
+    }
 }
 
 export type MoveHistory = {
