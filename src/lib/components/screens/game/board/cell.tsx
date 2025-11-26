@@ -1,5 +1,5 @@
-import { CellHelper } from "@/lib/helpers/cell-helper";
 import { PointHelper } from "@/lib/helpers/point-helper";
+import { isValueStaticAt } from "@/lib/helpers/values";
 import { BaseCellProps } from "@/lib/shared-types";
 import { useGameplayStore } from "@/lib/store/gameplay";
 import { useGraphicsStore } from "@/lib/store/graphics";
@@ -20,7 +20,7 @@ export const Cell = ({ gridPosition }: CellProps) => {
     )
 
     const notes = useGameplayStore((state) => state.puzzle?.notes?.[gridPosition.row]?.[gridPosition.col]) ?? []
-    const isStatic = useGameplayStore((state) => CellHelper.isStaticAt(gridPosition, state.puzzle?.given));
+    const isStatic = useGameplayStore((state) => !!state.puzzle && isValueStaticAt({ position: gridPosition, givenGridNotation: state.puzzle.given }));
     const number: number = given || player || 0;
 
     const cellLength = useGraphicsStore((state) => state.boardLayout.cellLength);

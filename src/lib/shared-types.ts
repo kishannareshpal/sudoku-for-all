@@ -62,7 +62,7 @@ export type NumberCharacter =
 export type CharSizeMap = Record<NumberCharacter, Size>;
 
 /**
- * The type of peer found during the processing via {@link CellHelper.processEachPeerAndNonPeerCell}
+ * The type of peer found during the processing via {@link processEachPeerAndNonPeerCell}
  */
 export type PeerType = 'note' | 'number' | 'both';
 
@@ -97,10 +97,10 @@ export type MoveHistory = {
 
 export type Puzzle = {
     difficulty: Difficulty,
-    solution: BoardGridNotation,
-    notes: BoardNotesGridNotation,
-    given: BoardGridNotation,
-    player: BoardGridNotation,
+    solution: NumbersGridNotation,
+    notes: NotesGridNotation,
+    given: NumbersGridNotation,
+    player: NumbersGridNotation,
     timeElapsedInSeconds: number,
     moveHistory: MoveHistory
 };
@@ -134,7 +134,7 @@ export type BoardMove = {
 /**
  * Represents the final board move grid notation.
  */
-export type BoardMoveGridNotation = BoardMove[];
+export type MoveGridNotation = BoardMove[];
 
 /**
  * -------------------
@@ -145,31 +145,31 @@ export type BoardMoveGridNotation = BoardMove[];
 /**
  * Represents each cell value in the grid notation.
  */
-export type BoardGridNotationValue = number;
+export type NumbersGridNotationValue = number;
 
 /**
  * Represents each row in the board grid notation.
  */
-export type BoardGridNotationRow = BoardGridNotationValue[];
+export type NumbersGridNotationRow = NumbersGridNotationValue[];
 
 /**
  * Represents the final / parsed board grid notation.
  */
-export type BoardGridNotation = BoardGridNotationRow[];
+export type NumbersGridNotation = NumbersGridNotationRow[];
 
 /**
  * Represents the board notation as plain string.
  *
  * @todo Explain the format
  */
-export type BoardPlainStringNotation = string;
+export type PlainStringNotation = string;
 
 /**
  * Represents the board notation as plain numbers.
  *
  * @todo Explain the format
  */
-export type BoardPlainNumberNotation = number[];
+export type PlainNumberNotation = number[];
 
 /**
  * --------------------
@@ -180,24 +180,24 @@ export type BoardPlainNumberNotation = number[];
 /**
  * Represents each cell value in the grid notation for notes on the board.
  */
-export type BoardNotesGridNotationValue = number[];
+export type NotesGridNotationValue = number[];
 
 /**
  * Represents each row in the grid notation for notes on the board.
  */
-export type BoardNotesGridNotationRow = BoardNotesGridNotationValue[];
+export type NotesGridNotationRow = NotesGridNotationValue[];
 
 /**
  * Represents the final / parsed grid notation for notes on the board.
  */
-export type BoardNotesGridNotation = BoardNotesGridNotationRow[];
+export type NotesGridNotation = NotesGridNotationRow[];
 
 /**
  * Represents the plain string notation for notes on the board.
  *
  * @todo Explain the format
  */
-export type BoardNotesPlainStringNotation = string;
+export type NotesPlainStringNotation = string;
 
 
 export type BoardLayout = {

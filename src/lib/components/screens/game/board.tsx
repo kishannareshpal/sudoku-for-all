@@ -1,4 +1,5 @@
-import { CellHelper } from "@/lib/helpers/cell-helper";
+import { moveCursorToPoint } from "@/lib/helpers/cursor";
+import { useGraphicsStore } from "@/lib/store/graphics";
 import { Canvas } from "@shopify/react-native-skia";
 import { View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -11,13 +12,15 @@ import { Peers } from "./board/peers";
 const StyledCanvas = withUniwind(Canvas);
 
 export const Board = () => {
+    const rawCellLength = useGraphicsStore((state) => state.boardLayout.rawCellLength);
+
     const panGesture = Gesture.Pan()
         .averageTouches(true)
         .onBegin((event) => {
-            CellHelper.moveCursorToPoint(event);
+            moveCursorToPoint({ point: { x: event.x, y: event.y }, cellLength: rawCellLength });
         })
         .onChange((event) => {
-            CellHelper.moveCursorToPoint(event);
+            moveCursorToPoint({ point: { x: event.x, y: event.y }, cellLength: rawCellLength });
         })
         .runOnJS(true);
 

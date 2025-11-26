@@ -1,9 +1,9 @@
 import { ToggleButton } from "@/lib/components/screens/game/number-pad/toggle-button";
-import { CellHelper } from "@/lib/helpers/cell-helper";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
+import { getNotesValueAt, setPlayerValueAt, toggleNotesValueAt } from "@/lib/helpers/values";
 import { useStoreSubscription } from "@/lib/hooks/use-store-subscription";
-import { BoardNotesGridNotationValue, GridIndex } from "@/lib/shared-types";
-import { gameplayStore, useGameplayStore } from "@/lib/store/gameplay";
+import { GridIndex, NotesGridNotationValue } from "@/lib/shared-types";
+import { gameplayStore, gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay";
 import * as Haptics from 'expo-haptics';
 import { useState } from "react";
 import { View } from "react-native";
@@ -11,15 +11,22 @@ import shallowEqual from "shallowequal";
 import { NumberPadContainer } from "./number-pad/container";
 
 export const NumberPad = () => {
-    const [cursorCellToggledNotes, setCursorCellToggledNotes] = useState<BoardNotesGridNotationValue>([]);
+    const [cursorCellToggledNotes, setCursorCellToggledNotes] = useState<NotesGridNotationValue>([]);
     const entryMode = useGameplayStore((store) => store.entryMode);
 
     useStoreSubscription(
         gameplayStore,
-        (store) => [store.entryMode, store.cursorGridPosition, store.puzzle?.notes],
-        () => {
+        (store) => store.cursorGridPosition,
+        (cursorGridPosition) => {
             // On cursor movement...
-            setCursorCellToggledNotes(CellHelper.getToggledNotesAtCursor());
+            const puzzle = gameplayStoreState().puzzle
+            if (!puzzle) {
+                return;
+            }
+
+            setCursorCellToggledNotes(
+                getNotesValueAt({ position: cursorGridPosition, notesGridNotation: puzzle.notes })
+            );
         },
         {
             equalityFn: shallowEqual,
@@ -28,10 +35,12 @@ export const NumberPad = () => {
     );
 
     const onNumberPress = (value: number) => {
+        const cursorPosition = gameplayStoreState().cursorGridPosition;
+
         if (entryMode === 'number') {
-            CellHelper.setPlayerValueAtCursorTo(value);
+            setPlayerValueAt({ position: cursorPosition, value: value });
         } else {
-            CellHelper.toggleNotesValueAtCursor([value]);
+            toggleNotesValueAt({ position: cursorPosition, value: [value] })
         }
 
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);

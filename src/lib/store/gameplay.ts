@@ -1,11 +1,11 @@
 // import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import {
-    BoardGridNotationValue,
-    BoardNotesGridNotationValue,
     EntryMode, ForceToggleOperation,
     GameState,
     GridPosition, Move,
     MoveDeltaValue,
+    NotesGridNotationValue,
+    NumbersGridNotationValue,
     PeerCellMetadata,
     Puzzle
 } from "@/lib/shared-types";
@@ -30,11 +30,11 @@ type GameplayStoreActions = {
     setCursorGridPosition: (position: GridPosition) => void,
     setCursorPeerCells: (peerCells: PeerCellMetadata[]) => void,
     setEntryMode: (entryMode: EntryMode) => void,
-    setPlayerValueAt: (position: GridPosition, value: BoardGridNotationValue, saveMoveToHistory?: boolean) => void,
+    setPlayerValueAt: (position: GridPosition, value: NumbersGridNotationValue, saveMoveToHistory?: boolean) => void,
     erasePlayerValueAt: (position: GridPosition, saveMoveToHistory?: boolean) => void,
     toggleNotesValueAt: (
         position: GridPosition,
-        notes: BoardNotesGridNotationValue,
+        notes: NotesGridNotationValue,
         forceOperation?: ForceToggleOperation,
         saveMoveToHistory?: boolean,
     ) => void,

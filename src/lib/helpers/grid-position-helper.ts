@@ -19,9 +19,9 @@ export class GridPositionHelper {
         return { col, row };
     }
 
-    static createFromPoint(point: Point, cellLengthIgnoringBorders: number): GridPosition | undefined {
-        const colIndex = Math.floor(point.x / cellLengthIgnoringBorders);
-        const rowIndex = Math.floor(point.y / cellLengthIgnoringBorders);
+    static createFromPoint(point: Point, cellLength: number): GridPosition | undefined {
+        const colIndex = Math.floor(point.x / cellLength);
+        const rowIndex = Math.floor(point.y / cellLength);
 
         const gridPosition = this.createFromIndexes(colIndex, rowIndex);
 
