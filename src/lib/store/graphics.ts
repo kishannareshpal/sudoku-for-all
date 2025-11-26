@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import { BoardHelper } from "../helpers/board-helper";
 import { SizeHelper } from "../helpers/size-helper";
 import { BoardLayout, CharSizeMap, EntryMode, FontLayout, NumberCharacter, Size } from "../shared-types";
 
@@ -28,7 +27,7 @@ type GraphicsStoreState = {
 }
 
 type GraphicsStoreActions = {
-    setBoardLayout: (availableBoardLength: number) => BoardLayout,
+    setBoardLayout: (fittedBoardLayout: BoardLayout) => void,
     setFontLayout: (fontLayout: FontLayout) => void,
     getCharSizeFor: (entryType: EntryMode, char: NumberCharacter) => Size,
     reset: () => void,
@@ -58,12 +57,8 @@ export const useGraphicsStore = create<GraphicsStore>()(
         (set, get) => ({
             ...initialState,
 
-            setBoardLayout(availableBoardLength) {
-                const fittedBoardLayout = BoardHelper.calculateFittedBoardLayout(availableBoardLength);
-
+            setBoardLayout(fittedBoardLayout) {
                 set({ boardLayout: fittedBoardLayout })
-
-                return fittedBoardLayout;
             },
 
             setFontLayout(fontLayout) {

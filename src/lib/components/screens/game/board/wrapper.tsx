@@ -1,6 +1,8 @@
+import { BoardHelper } from "@/lib/helpers/board-helper";
 import { TextHelper } from "@/lib/helpers/text-helper";
+import { BoardLayout } from "@/lib/shared-types";
 import { graphicsStoreState, useGraphicsStore } from "@/lib/store/graphics";
-import { matchFont, useFonts } from "@shopify/react-native-skia";
+import { matchFont, SkTypefaceFontProvider, useFonts } from "@shopify/react-native-skia";
 import { PropsWithChildren, useEffect, useRef } from "react";
 import { View } from "react-native";
 import { useShallow } from "zustand/react/shallow";
@@ -11,40 +13,74 @@ export const BoardWrapper = ({ children }: PropsWithChildren) => {
         useShallow((state) => state.boardLayout)
     );
 
-    const fonts = useFonts({
+    const fontProvider = useFonts({
         SFANumber: [require("@assets/fonts/jetbrains-mono-regular.ttf")]
     });
 
-    useEffect(() => {
-        if (!fonts || !boardLayout.cellLength || !boardLayout.subCellLength) {
-            return;
-        }
+    const measureAndSetFontLayout = (fontProvider: SkTypefaceFontProvider, boardLayout: BoardLayout) => {
+        const numberFontSize = boardLayout.cellLength * 0.8;
+        const notesFontSize = boardLayout.subCellLength * 0.9;
 
-        const numberFontSize = boardLayout.cellLength * 0.8 // 80% of the cell length
-        const notesFontSize = boardLayout.subCellLength * 0.9 // A grid of 3x3 notes can be placed within each cell
-
-        const numberFont = matchFont({ fontSize: numberFontSize, fontFamily: "SFANumber" }, fonts);
-        const notesFont = matchFont({ fontSize: notesFontSize, fontFamily: "SFANumber" }, fonts);
+        const numberFont = matchFont(
+            { fontSize: numberFontSize, fontFamily: "SFANumber" },
+            fontProvider
+        );
+        const notesFont = matchFont(
+            { fontSize: notesFontSize, fontFamily: "SFANumber" },
+            fontProvider
+        );
 
         graphicsStoreState().setFontLayout({
-            numberFont: numberFont,
-            notesFont: notesFont,
-            numberFontSize: numberFontSize,
-            notesFontSize: notesFontSize,
+            numberFont,
+            notesFont,
+            numberFontSize,
+            notesFontSize,
             numberCharSizeMap: TextHelper.measureAllNumbersForFont(numberFont),
             noteCharSizeMap: TextHelper.measureAllNumbersForFont(notesFont),
-        })
+        });
+    };
 
-        return () => {
-            graphicsStoreState().reset();
+    useEffect(() => {
+        if (fontProvider) {
+            measureAndSetFontLayout(fontProvider, graphicsStoreState().boardLayout)
         }
-    }, [fonts, boardLayout.cellLength, boardLayout.subCellLength]);
+    }, [fontProvider])
+
+    // useEffect(() => {
+    //     if (!fonts || !boardLayout.cellLength || !boardLayout.subCellLength) {
+    //         return;
+    //     }
+
+    //     const numberFontSize = boardLayout.cellLength * 0.8 // 80% of the cell length
+    //     const notesFontSize = boardLayout.subCellLength * 0.9 // A grid of 3x3 notes can be placed within each cell
+
+    //     const numberFont = matchFont({ fontSize: numberFontSize, fontFamily: "SFANumber" }, fonts);
+    //     const notesFont = matchFont({ fontSize: notesFontSize, fontFamily: "SFANumber" }, fonts);
+
+    //     graphicsStoreState().setFontLayout({
+    //         numberFont: numberFont,
+    //         notesFont: notesFont,
+    //         numberFontSize: numberFontSize,
+    //         notesFontSize: notesFontSize,
+    //         numberCharSizeMap: TextHelper.measureAllNumbersForFont(numberFont),
+    //         noteCharSizeMap: TextHelper.measureAllNumbersForFont(notesFont),
+    //     })
+
+    //     return () => {
+    //         graphicsStoreState().reset();
+    //     }
+    // }, [fonts, boardLayout.cellLength, boardLayout.subCellLength]);
 
     const measureLayout = (): void => {
         containerRef.current?.measure((_x, _y, width, height) => {
             // Determine the board layout
             const availableBoardLength = Math.min(width, height);
-            graphicsStoreState().setBoardLayout(availableBoardLength)
+            const fittedBoardLayout = BoardHelper.calculateFittedBoardLayout(availableBoardLength);
+            graphicsStoreState().setBoardLayout(fittedBoardLayout);
+
+            if (fontProvider) {
+                measureAndSetFontLayout(fontProvider, fittedBoardLayout)
+            }
         });
     };
 

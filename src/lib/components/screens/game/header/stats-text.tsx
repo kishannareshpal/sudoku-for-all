@@ -10,8 +10,8 @@ export const StatsText = () => {
             <Text className="text-black">
                 {difficulty ? TextHelper.formatDifficulty(difficulty) : 'N/a'}
             </Text>
-            <Text className="text-black">•</Text>
-            <Text className="text-black">120 Points</Text>
+            {/* <Text className="text-black">•</Text>
+            <Text className="text-black">120 Points</Text> */}
         </View>
     );
 };
