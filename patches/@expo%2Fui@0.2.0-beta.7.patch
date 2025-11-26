@@ -1,3 +1,12 @@
+diff --git a/node_modules/@expo/ui/.bun-tag-2e5e38f32fb78e63 b/.bun-tag-2e5e38f32fb78e63
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/node_modules/@expo/ui/.bun-tag-6879768b91958cc1 b/.bun-tag-6879768b91958cc1
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/node_modules/@expo/ui/.bun-tag-a255f97415c0f695 b/.bun-tag-a255f97415c0f695
+new file mode 100644
+index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
 diff --git a/node_modules/@expo/ui/.bun-tag-b963083f04706658 b/.bun-tag-b963083f04706658
 new file mode 100644
 index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
@@ -51,3 +60,93 @@ index 745a1585474e58c7a30e416fb4b955c00f9f3d17..0cc91a15fc12c16ab5dfc29be5ea929f
      register("background") { params, appContext, _ in
        return try BackgroundModifier(from: params, appContext: appContext)
      }
+diff --git a/ios/PickerView.swift b/ios/PickerView.swift
+index 18d40e00fa6ad673bf13e566c8b4dfe7d02dafb3..0404705f16e42854c4112e14c5ba224429468fe6 100644
+--- a/ios/PickerView.swift
++++ b/ios/PickerView.swift
+@@ -28,38 +28,42 @@ struct PickerView: ExpoSwiftUI.View {
+   }
+ 
+   var body: some View {
+-    if #available(iOS 17.0, tvOS 17.0, *) {
+-      Picker(props.label ?? "", selection: $selection) {
+-        ForEach(Array(props.options.enumerated()), id: \.0) { index, option in
+-          Text(option).tag(index)
+-        }
++    Picker(props.label ?? "", selection: $selection) {
++      ForEach(Array(props.options.enumerated()), id: \.0) { index, option in
++        Text(option).tag(index)
+       }
+-      .tint(props.color)
+-      .modifier(CommonViewModifiers(props: props))
++    }
++    .tint(props.color)
++    .modifier(CommonViewModifiers(props: props))
+ #if !os(tvOS)
+-      .if(props.variant == "wheel", { $0.pickerStyle(.wheel) })
+-      .if(props.variant == "palette", { $0.pickerStyle(.palette) })
+-#endif
+-      .if(props.variant == "segmented", { $0.pickerStyle(.segmented) })
+-      .if(props.variant == "inline", { $0.pickerStyle(.inline) })
+-      .if(props.variant == "menu", { $0.pickerStyle(.menu) })
+-      .onChange(of: selection, perform: { newValue in
+-        if props.selectedIndex == newValue {
+-          return
+-        }
+-        let payload = [
+-          "index": newValue,
+-          "label": props.options[newValue]
+-        ]
+-        props.onOptionSelected(payload)
+-      })
+-      .onReceive(props.selectedIndex.publisher, perform: { newValue in
+-        if prevSelectedIndex == newValue {
+-          return
+-        }
+-        selection = newValue
+-        prevSelectedIndex = newValue
+-      })
++    .if(props.variant == "wheel", { $0.pickerStyle(.wheel) })
++    .apply { view in
++      if #available(iOS 17.0, *), props.variant == "palette" {
++        view.pickerStyle(.palette)
++      } else {
++        view
++      }
+     }
++#endif
++    .if(props.variant == "segmented", { $0.pickerStyle(.segmented) })
++    .if(props.variant == "inline", { $0.pickerStyle(.inline) })
++    .if(props.variant == "menu", { $0.pickerStyle(.menu) })
++    .onChange(of: selection, perform: { newValue in
++      if props.selectedIndex == newValue {
++        return
++      }
++      let payload = [
++        "index": newValue,
++        "label": props.options[newValue]
++      ]
++      props.onOptionSelected(payload)
++    })
++    .onReceive(props.selectedIndex.publisher, perform: { newValue in
++      if prevSelectedIndex == newValue {
++        return
++      }
++      selection = newValue
++      prevSelectedIndex = newValue
++    })
+   }
+ }
+diff --git a/node_modules/@expo/ui/ios/View+Extensions.swift b/ios/View+Extensions.swift
+new file mode 100644
+index 0000000000000000000000000000000000000000..943803ac39943a9bf594dbdcbaf605024d5a9f69
+--- /dev/null
++++ b/ios/View+Extensions.swift
+@@ -0,0 +1,7 @@
++// Copyright 2025-present 650 Industries. All rights reserved.
++
++import SwiftUI
++
++extension View {
++  func apply<V: View>(@ViewBuilder _ block: (Self) -> V) -> V { block(self) }
++}
