@@ -4,10 +4,8 @@ import { Controls } from "@/lib/components/screens/game/controls";
 import { Header } from "@/lib/components/screens/game/header";
 import { NumberPad } from "@/lib/components/screens/game/number-pad";
 import { PausedGameOverlay } from "@/lib/components/screens/game/paused-game-overlay";
-import { useGameplayStore } from "@/lib/store/gameplay";
 import { Stack } from "expo-router";
-import p from 'json-stringify-pretty-compact';
-import { ScrollView, Text, View } from "react-native";
+import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const GameScreen = () => {
@@ -17,7 +15,7 @@ const GameScreen = () => {
         <>
             <Stack.Screen options={{ header: () => <Header /> }} />
 
-            <View className="flex-1 bg-white p-3 gap-2" style={{ paddingBottom: insets.bottom }}>
+            <View className="flex-1 bg-white gap-2 p-2" style={{ paddingBottom: insets.bottom + 12 }}>
                 <View className="flex-1">
                     <BoardWrapper>
                         <Board />
@@ -31,8 +29,6 @@ const GameScreen = () => {
                 <View className="justify-center gap-3">
                     <Controls />
 
-                    <DebugMoves />
-
                     <View className="gap-3 items-center justify-center">
                         <NumberPad />
                     </View>
@@ -40,18 +36,6 @@ const GameScreen = () => {
             </View>
         </>
     );
-}
-
-const DebugMoves = () => {
-    const moveHistory = useGameplayStore((state) => state.puzzle?.moveHistory);
-
-    return (
-        <ScrollView className="h-50">
-            <Text style={{ fontSize: 12 }}>
-                {p(moveHistory, { indent: 2 })}
-            </Text>
-        </ScrollView>
-    )
 }
 
 export default GameScreen;
