@@ -1,8 +1,9 @@
 import { TextHelper } from "@/lib/helpers/text-helper";
 import { Difficulty } from "@/lib/shared-types";
-import { PlayCircleIcon } from "lucide-react-native";
-import { Text, View } from "react-native";
+import { PlusIcon } from "lucide-react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import { PressableBounce } from "../../common/pressable-bounce";
+import { useState } from "react";
 
 type Option = {
     name: string,
@@ -27,58 +28,38 @@ type NewGameOptionsProps = {
 export const NewGameOptions = (
     { onOptionPress }: NewGameOptionsProps
 ) => {
+    const [loadingDifficulty, setLoadingDifficulty] = useState<Difficulty | null>(null);
+
+    const handlePress = (option: Option) => {
+        setLoadingDifficulty(option.value);
+        // Use setTimeout to allow the UI to update before generating the puzzle
+        setTimeout(() => {
+            onOptionPress(option);
+            setLoadingDifficulty(null);
+        }, 50);
+    };
+
     return (
-        <View className="gap-8 w-full items-center">
-            <View className="gap-3">
-                <PressableBounce
-                    className="px-3 py-2.5 rounded-2xl bg-yellow-400 gap-3"
-                    onPress={() => { }}
-                >
-                    <View className="flex-row gap-2">
-                        <View>
-                            <Text className="text-base text-yellow-900 font-black">Easy</Text>
-                            <Text className="text-sm">Points: 320</Text>
-                            <Text className="text-sm">Played for: 2h 20m 12s</Text>
-                        </View>
-
-                        <PlayCircleIcon size={24} />
-                    </View>
-
-                    <Text className="font-semibold text-yellow-900">Tap to continue</Text>
-                </PressableBounce>
-
-                <View className="flex-row gap-2 justify-center">
+        <View className="gap-3 max-w-sm w-full">
+            <Text className="text-white text-center font-bold text-base">Start a new game:</Text>
+            <View className="gap-2">
+                {options.map((option) => (
                     <PressableBounce
-                        className="rounded-full bg-white/20 gap-3 self-center px-3 py-2"
-                        onPress={() => onOptionPress({ name: '', value: 'easy' })}
+                        key={option.value}
+                        className="bg-neutral-700 px-5 py-4 flex-row rounded-xl items-center justify-between"
+                        onPress={() => handlePress(option)}
+                        disabled={loadingDifficulty !== null}
+                        style={loadingDifficulty !== null ? { opacity: 0.3 } : undefined}
                     >
-                        <Text className="font-semibold text-white">Past games</Text>
+                        <Text className="text-white text-base font-medium">{option.name}</Text>
+                        {loadingDifficulty === option.value ? (
+                            <ActivityIndicator size="small" color="white" />
+                        ) : (
+                            <PlusIcon size={20} color="white" />
+                        )}
                     </PressableBounce>
-
-                    <PressableBounce
-                        className="rounded-full bg-yellow-100 gap-3 self-center px-3 py-2"
-                        onPress={() => onOptionPress({ name: '', value: 'easy' })}
-                    >
-                        <Text className="font-semibold text-yellow-800">New game</Text>
-                    </PressableBounce>
-                </View>
+                ))}
             </View>
-
-            {/* <View className="gap-3 max-w-sm w-full">
-                <Text className="text-white text-center">Start a new game</Text>
-                <View className="gap-2">
-                    {options.map((option) => (
-                        <PressableBounce
-                            key={option.value}
-                            className="bg-neutral-700 px-5 py-3 flex-row rounded-xl items-center justify-between"
-                            onPress={() => onOptionPress(option)}
-                        >
-                            <Text className="text-white text-base font-semibold">{option.name}</Text>
-                            <PlusIcon size={22} color="white" />
-                        </PressableBounce>
-                    ))}
-                </View>
-            </View> */}
         </View>
     );
 }
