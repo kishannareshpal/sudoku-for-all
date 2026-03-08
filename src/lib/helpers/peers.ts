@@ -67,7 +67,7 @@ export const processEachPeerAndNonPeerCell = (
     for (let rowIndex = 0; rowIndex < ROWS_COUNT; rowIndex++) {
         for (let colIndex = 0; colIndex < COLUMNS_COUNT; colIndex++) {
             const currentGridPosition =
-                GridPositionHelper.createFromIndexes(colIndex, rowIndex);
+                GridPositionHelper.createFromIndexes({ rowIndex, colIndex });
 
             // Check note peer condition
             const hasNotePeer = isNoteValueToggledAt({

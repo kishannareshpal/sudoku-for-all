@@ -22,7 +22,7 @@ export const ToggleButton = (
 
     return (
         <PressableBounce
-            className="bg-neutral-800 size-14 p-1 items-center justify-center rounded-xl"
+            className="bg-neutral-800 size-14 p-1 items-center justify-center rounded-2xl"
             style={animatedButtonStyle}
             {...props}
         >

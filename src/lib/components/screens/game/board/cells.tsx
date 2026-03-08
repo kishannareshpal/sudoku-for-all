@@ -10,10 +10,10 @@ export const Cells = () => {
 
         for (let rowIndex = 0; rowIndex < ROWS_COUNT; rowIndex++) {
             for (let colIndex = 0; colIndex < COLUMNS_COUNT; colIndex++) {
-                const gridPosition = GridPositionHelper.createFromIndexes(
-                    colIndex,
+                const gridPosition = GridPositionHelper.createFromIndexes({
                     rowIndex,
-                );
+                    colIndex,
+                });
 
                 const id = GridPositionHelper.stringNotationOf(gridPosition);
 

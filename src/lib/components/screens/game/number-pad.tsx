@@ -1,38 +1,25 @@
 import { ToggleButton } from "@/lib/components/screens/game/number-pad/toggle-button";
 import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import { getNotesValueAt, setPlayerValueAt, toggleNotesValueAt } from "@/lib/helpers/values";
-import { useStoreSubscription } from "@/lib/hooks/use-store-subscription";
 import { GridIndex, NotesGridNotationValue } from "@/lib/shared-types";
-import { gameplayStore, gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay";
+import { gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay";
 import * as Haptics from 'expo-haptics';
-import { useState } from "react";
+import { useMemo } from "react";
 import { View } from "react-native";
-import shallowEqual from "shallowequal";
 import { NumberPadContainer } from "./number-pad/container";
 
 export const NumberPad = () => {
-    const [cursorCellToggledNotes, setCursorCellToggledNotes] = useState<NotesGridNotationValue>([]);
+    const notes = useGameplayStore((state) => state.puzzle?.notes);
+    const cursorGridPosition = useGameplayStore((state) => state.cursorGridPosition);
     const entryMode = useGameplayStore((store) => store.entryMode);
 
-    useStoreSubscription(
-        gameplayStore,
-        (store) => store.cursorGridPosition,
-        (cursorGridPosition) => {
-            // On cursor movement...
-            const puzzle = gameplayStoreState().puzzle
-            if (!puzzle) {
-                return;
-            }
-
-            setCursorCellToggledNotes(
-                getNotesValueAt({ position: cursorGridPosition, notesGridNotation: puzzle.notes })
-            );
-        },
-        {
-            equalityFn: shallowEqual,
-            fireImmediately: true
+    const toggledNotes: NotesGridNotationValue = useMemo(() => {
+        if (!notes) {
+            return [];
         }
-    );
+
+        return getNotesValueAt({ position: cursorGridPosition, notesGridNotation: notes })
+    }, [notes, cursorGridPosition])
 
     const onNumberPress = (value: number) => {
         const cursorPosition = gameplayStoreState().cursorGridPosition;
@@ -54,7 +41,7 @@ export const NumberPad = () => {
 
             for (let colIndex = 0; colIndex < 3; colIndex++) {
                 const value = (colIndex + rowIndex * 3) + 1;
-                const toggled = (entryMode === 'note') && cursorCellToggledNotes.includes(value);
+                const toggled = (entryMode === 'note') && toggledNotes.includes(value);
                 const id = `nptb-${GridPositionHelper.stringNotationOf({ row: rowIndex as GridIndex, col: colIndex as GridIndex })}`
 
                 buttonRow.push(

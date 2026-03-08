@@ -12,7 +12,7 @@ export class GridPositionHelper {
         return { row: 0, col: 0 };
     }
 
-    static createFromIndexes(colIndex: number, rowIndex: number): GridPosition {
+    static createFromIndexes({ rowIndex, colIndex }: { rowIndex: number, colIndex: number }): GridPosition {
         const col = NumberHelper.clamp(colIndex, COL_INDEX_BOUNDS) as GridIndex;
         const row = NumberHelper.clamp(rowIndex, ROW_INDEX_BOUNDS) as GridIndex;
 
@@ -23,7 +23,7 @@ export class GridPositionHelper {
         const colIndex = Math.floor(point.x / cellLength);
         const rowIndex = Math.floor(point.y / cellLength);
 
-        const gridPosition = this.createFromIndexes(colIndex, rowIndex);
+        const gridPosition = this.createFromIndexes({ rowIndex, colIndex });
 
         if (this.isOutOfBounds(gridPosition)) {
             return undefined;
