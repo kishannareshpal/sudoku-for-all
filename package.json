@@ -3,11 +3,14 @@
     "name": "sudoku-for-all",
     "main": "expo-router/entry",
     "version": "1.0.0",
-    "//engines-comment": "Enforces the use of NPM as the package manager and NodeJS LTS.",
+    "packageManager": "pnpm@10.12.1",
     "engines": {
-        "node": ">=20",
-        "npm": ">=10",
-        "yarn": "Please use NPM (from the latest NodeJS LTS) instead of yarn to manage your dependencies. Thank you"
+        "node": ">=20"
+    },
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "@shopify/react-native-skia"
+        ]
     },
     "scripts": {
         "start": "expo start",
