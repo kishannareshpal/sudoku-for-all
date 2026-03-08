@@ -1,9 +1,7 @@
 import { ForceToggleOperation, GridPosition, NotesGridNotation, NotesGridNotationValue, NumbersGridNotation, NumbersGridNotationValue } from "@/lib/shared-types";
 import { COLUMNS_COUNT, ROWS_COUNT } from "../constants/board";
-import { randomNumberBetween } from "../random";
 import { gameplayStoreState } from "../store/gameplay";
 import { BoardNotationHelper } from "./board-notation-helper";
-import { moveCursorTo } from "./cursor";
 import { GridPositionHelper } from "./grid-position-helper";
 
 export const getNotesValueAt = (
@@ -195,41 +193,34 @@ export const toggleNotesValueAt = (
     state.toggleNotesValueAt(params.position, params.value, params.forceOperation, params.saveMoveToHistory);
 }
 
-export const insertHintAtRandom = (): boolean => {
+export const insertHintAtCurrentCell = (): boolean => {
     const state = gameplayStoreState();
     if (!state.puzzle) {
         return false;
     }
 
-    const positions: GridPosition[] = [];
-    for (let rowIndex = 0; rowIndex < ROWS_COUNT; rowIndex++) {
-        for (let colIndex = 0; colIndex < COLUMNS_COUNT; colIndex++) {
-            const position = GridPositionHelper.createFromIndexes({ rowIndex, colIndex });
+    const position = state.cursorGridPosition;
+    const given = BoardNotationHelper.getValueAt(position, state.puzzle.given);
+    const player = BoardNotationHelper.getValueAt(position, state.puzzle.player);
+    const solution = BoardNotationHelper.getValueAt(position, state.puzzle.solution);
 
-            const given = BoardNotationHelper.getValueAt(position, state.puzzle.given)
-            const player = BoardNotationHelper.getValueAt(position, state.puzzle.player)
-            const solution = BoardNotationHelper.getValueAt(position, state.puzzle.solution)
-
-            const unplayed = isNumberValueEmpty(given) && isNumberValueEmpty(player)
-
-            if (unplayed && (player !== solution)) {
-                positions.push(position)
-            }
-        }
-    }
-
-    if (!positions.length) {
-        // No more cells left in this puzzle
+    // Can't hint on given cells or cells already correctly filled
+    if (!isNumberValueEmpty(given) || player === solution) {
         return false;
     }
 
-    const randomIndex = randomNumberBetween(0, positions.length - 1);
-    const randomPosition = positions[randomIndex];
-
-    const solution = BoardNotationHelper.getValueAt(randomPosition, state.puzzle.solution);
-    setPlayerValueAt({ position: randomPosition, value: solution });
-    moveCursorTo({ position: randomPosition });
-
+    setPlayerValueAt({ position, value: solution });
     return true;
+}
+
+export const countNumberOccurrences = (value: number, puzzle: { given: NumbersGridNotation, player: NumbersGridNotation }): number => {
+    let count = 0;
+    for (let r = 0; r < ROWS_COUNT; r++) {
+        for (let c = 0; c < COLUMNS_COUNT; c++) {
+            const cellValue = puzzle.given[r][c] || puzzle.player[r][c];
+            if (cellValue === value) count++;
+        }
+    }
+    return count;
 }
 

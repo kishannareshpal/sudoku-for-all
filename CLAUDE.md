@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Sudoku for All is a cross-platform Sudoku game built with **Expo 55**, **React Native 0.83**, and **React 19**. It targets iOS, Android, and Web.
 
+### Motivation
+
+I'm porting my Swift game to React Native now to support both platforms.
+
 ## Common Commands
 
 ```bash

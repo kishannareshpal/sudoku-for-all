@@ -11,6 +11,7 @@ export class PuzzleHelper {
     static empty(difficulty: Difficulty): Puzzle {
         return {
             timeElapsedInSeconds: 0,
+            score: 0,
             difficulty: difficulty,
             solution: BoardNotationHelper.emptyGridNotation(),
             given: BoardNotationHelper.emptyGridNotation(),
@@ -37,6 +38,7 @@ export class PuzzleHelper {
 
         return {
             timeElapsedInSeconds: 0,
+            score: 0,
             difficulty: difficulty,
             solution: BoardNotationHelper.transformPlainStringToGridNotation(solutionPlainStringNotation),
             given: BoardNotationHelper.transformPlainStringToGridNotation(givenPlainStringNotation),

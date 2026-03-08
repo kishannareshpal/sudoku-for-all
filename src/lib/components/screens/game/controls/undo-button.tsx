@@ -1,13 +1,17 @@
 import { IconButton } from "@/lib/components/common/buttons/icon-button";
 import { isMoveUndoable, undoLastMove } from "@/lib/helpers/history";
 import { useGameplayStore } from "@/lib/store/gameplay";
+import * as Haptics from 'expo-haptics';
 import { Undo2Icon } from "lucide-react-native";
 
 export const UndoButton = () => {
-    const isUndoable = useGameplayStore((state) => state.puzzle && isMoveUndoable({ moveHistory: state.puzzle.moveHistory }))
+    const isUndoable = useGameplayStore((state) =>
+        state.state === 'playing' && !!state.puzzle && isMoveUndoable({ moveHistory: state.puzzle.moveHistory })
+    );
 
     const undo = () => {
-        undoLastMove()
+        undoLastMove();
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
     }
 
     return (

@@ -13,7 +13,7 @@ export const Timer = () => {
     }
 
     return (
-        <Text className="text-black font-bold text-lg">
+        <Text className="text-black font-bold text-lg" style={{ fontVariant: ['tabular-nums'] }}>
             {TimeHelper.formatInterval(timeElapsedInSeconds)}
         </Text>
     );

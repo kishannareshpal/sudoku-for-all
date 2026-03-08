@@ -1,71 +1,28 @@
+import { gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay";
+import { Host, Picker } from "@expo/ui/jetpack-compose";
+import { useState } from "react";
+import { ENTRY_MODES } from "./shared";
 
 export const EntryModeToggle = () => {
-    // const cursorMode = useGameplayStore((state) => state.cursorMode);
+    const entryMode = useGameplayStore((state) => state.entryMode);
+    const [selectedIndex, setSelectedIndex] = useState(ENTRY_MODES.findIndex((mode) => mode.value === entryMode));
 
-    // const onToggle = async (mode: CursorMode) => {
-    //     if (mode === cursorMode) {
-    //         // No change. Do nothing
-    //         return;
-    //     }
+    const handleOptionSelection = (modeIndex: number) => {
+        const mode = ENTRY_MODES[modeIndex];
+        gameplayStoreState().setEntryMode(mode.value);
+        setSelectedIndex(modeIndex);
+    }
 
-    //     gameplayStoreState().updateCursorMode(mode);
-
-    //     performDoubleHaptics();
-    // };
-
-    // const performDoubleHaptics = async () => {
-    //     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
-
-    //     // I don't think we really need to handle the timeout cancellation in this case
-    //     setTimeout(() => {
-    //         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
-    //     }, 120);
-    // };
-
-    // return (
-    //     <ButtonGroup
-    //         style={{ flex: 1 }}
-    //         options={ENTRY_MODES}
-    //     // onSelectionChange={() => Alert.alert("You have changed bro")}
-    //     />
-    // );
-
-    return null
+    return (
+        <Host matchContents colorScheme="light">
+            <Picker
+                options={ENTRY_MODES.map((mode) => mode.label)}
+                selectedIndex={selectedIndex}
+                onOptionSelected={({ nativeEvent: { index } }) => {
+                    handleOptionSelection(index);
+                }}
+                variant="segmented"
+            />
+        </Host>
+    );
 };
-
-// const styles = StyleSheet.create({
-//     container: {
-//         display: "flex",
-//         flexDirection: "row",
-//         flex: 0,
-//         alignSelf: "center",
-//         gap: 6,
-//         padding: 8,
-//         borderRadius: 50,
-//         backgroundColor: "#222222",
-//     },
-//     sliderBackground: {
-//         flex: 1,
-//         pointerEvents: "box-none",
-//         position: "absolute",
-//         height: "100%",
-//         backgroundColor: "white",
-//         borderRadius: 20,
-//         margin: 8,
-//         alignItems: "center",
-//         justifyContent: "center",
-//     },
-//     option: {
-//         opacity: 0.9,
-//         paddingHorizontal: 12,
-//         paddingVertical: 8,
-//         borderRadius: 50,
-//     },
-//     optionText: {
-//         color: "white",
-//         fontWeight: "bold",
-//     },
-//     optionTextSelected: {
-//         color: "black",
-//     },
-// });

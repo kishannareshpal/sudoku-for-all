@@ -1,4 +1,3 @@
-// import { GridPositionHelper } from "@/lib/helpers/grid-position-helper";
 import {
     EntryMode, ForceToggleOperation,
     GameState,
@@ -12,7 +11,10 @@ import {
 import { produce } from "immer";
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
+import { COLUMNS_COUNT, ROWS_COUNT } from "../constants/board";
 import { GridPositionHelper } from "../helpers/grid-position-helper";
+import { ScoreHelper } from "../helpers/score-helper";
+import { SubgridPositionHelper } from "../helpers/sub-grid-position-helper";
 
 export type GameplayStoreState = {
     state: GameState,
@@ -159,9 +161,43 @@ export const useGameplayStore = create<GameplayStore>()(
                 const currentNotes = currentPuzzle.notes[position.row][position.col]
 
                 set(produce((state: GameplayStoreState) => {
-                    if (state.puzzle) {
-                        state.puzzle.player[position.row][position.col] = value;
-                        state.puzzle.notes[position.row][position.col] = [];
+                    if (!state.puzzle) return;
+
+                    state.puzzle.player[position.row][position.col] = value;
+                    state.puzzle.notes[position.row][position.col] = [];
+
+                    // Score: only when placing a new number (not erasing, not during undo/redo)
+                    if (!erasing && saveMoveToHistory) {
+                        const solutionValue = state.puzzle.solution[position.row][position.col];
+                        const isCorrect = value === solutionValue;
+                        const points = isCorrect
+                            ? ScoreHelper.pointsForCorrectMove(state.puzzle.difficulty)
+                            : ScoreHelper.pointsForIncorrectMove(state.puzzle.difficulty);
+                        state.puzzle.score = ScoreHelper.clampScore(state.puzzle.score + points);
+                    }
+
+                    // Auto-remove notes from peers when placing a number
+                    if (!erasing && value > 0) {
+                        for (let r = 0; r < ROWS_COUNT; r++) {
+                            for (let c = 0; c < COLUMNS_COUNT; c++) {
+                                if (r === position.row && c === position.col) continue;
+
+                                const sameRow = r === position.row;
+                                const sameCol = c === position.col;
+                                const sameSubgrid = SubgridPositionHelper.equalsFromGridPositions(
+                                    { row: r, col: c } as GridPosition,
+                                    position,
+                                );
+
+                                if (sameRow || sameCol || sameSubgrid) {
+                                    const notes = state.puzzle.notes[r][c];
+                                    const noteIndex = notes.indexOf(value);
+                                    if (noteIndex !== -1) {
+                                        notes.splice(noteIndex, 1);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }))
 
@@ -183,6 +219,14 @@ export const useGameplayStore = create<GameplayStore>()(
                             after: deltaAfterValue
                         }
                     })
+                }
+
+                // Check win condition after placing a number
+                if (!erasing) {
+                    const puzzle = get().puzzle;
+                    if (puzzle && isPuzzleSolved(puzzle)) {
+                        set({ state: 'over' });
+                    }
                 }
             },
 
@@ -242,3 +286,16 @@ export const useGameplayStore = create<GameplayStore>()(
 export const gameplayStore = useGameplayStore;
 
 export const gameplayStoreState = (): GameplayStore => useGameplayStore.getState();
+
+function isPuzzleSolved(puzzle: Puzzle): boolean {
+    for (let r = 0; r < ROWS_COUNT; r++) {
+        for (let c = 0; c < COLUMNS_COUNT; c++) {
+            const given = puzzle.given[r][c];
+            const player = puzzle.player[r][c];
+            const solution = puzzle.solution[r][c];
+            const value = given || player;
+            if (value !== solution) return false;
+        }
+    }
+    return true;
+}

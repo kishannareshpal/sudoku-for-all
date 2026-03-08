@@ -102,6 +102,7 @@ export type Puzzle = {
     given: NumbersGridNotation,
     player: NumbersGridNotation,
     timeElapsedInSeconds: number,
+    score: number,
     moveHistory: MoveHistory
 };
 

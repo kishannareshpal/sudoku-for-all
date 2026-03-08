@@ -1,6 +1,7 @@
 import { Board } from "@/lib/components/screens/game/board";
 import { BoardWrapper } from "@/lib/components/screens/game/board/wrapper";
 import { Controls } from "@/lib/components/screens/game/controls";
+import { GameOverOverlay } from "@/lib/components/screens/game/game-over-overlay";
 import { Header } from "@/lib/components/screens/game/header";
 import { NumberPad } from "@/lib/components/screens/game/number-pad";
 import { PausedGameOverlay } from "@/lib/components/screens/game/paused-game-overlay";
@@ -33,6 +34,8 @@ const GameScreen = () => {
                         <NumberPad />
                     </View>
                 </View>
+
+                <GameOverOverlay />
             </View>
         </>
     );

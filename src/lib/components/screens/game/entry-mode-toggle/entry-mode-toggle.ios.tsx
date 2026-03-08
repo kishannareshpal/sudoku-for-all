@@ -1,32 +1,34 @@
 import { gameplayStoreState, useGameplayStore } from "@/lib/store/gameplay";
-import { Host, Picker } from "@expo/ui/swift-ui";
-import { fixedSize } from "@expo/ui/swift-ui/modifiers";
-import { useState } from "react";
+import { Host, Picker, Text } from "@expo/ui/swift-ui";
+import { fixedSize, pickerStyle, tag } from "@expo/ui/swift-ui/modifiers";
 import { ENTRY_MODES } from "./shared";
 
 export const EntryModeToggle = () => {
     const entryMode = useGameplayStore((state) => state.entryMode);
-    const [selectedIndex, setSelectedIndex] = useState(ENTRY_MODES.findIndex((mode) => mode.value === entryMode));
 
-    const handleOptionSelection = (modeIndex: number) => {
-        const mode = ENTRY_MODES[modeIndex];
-        gameplayStoreState().setEntryMode(mode.value)
-        setSelectedIndex(modeIndex)
+    const handleSelectionChange = (selectedValue: string | number | null) => {
+        const mode = ENTRY_MODES.find((m) => m.value === selectedValue);
+        if (mode) {
+            gameplayStoreState().setEntryMode(mode.value);
+        }
     }
 
     return (
         <Host matchContents colorScheme="light">
             <Picker
-                options={ENTRY_MODES.map((mode) => mode.label)}
-                selectedIndex={selectedIndex}
-                onOptionSelected={({ nativeEvent: { index } }) => {
-                    handleOptionSelection(index);
-                }}
+                selection={entryMode}
+                onSelectionChange={handleSelectionChange}
                 modifiers={[
+                    pickerStyle('segmented'),
                     fixedSize(),
                 ]}
-                variant="segmented"
-            />
+            >
+                {ENTRY_MODES.map((mode) => (
+                    <Text key={mode.value} modifiers={[tag(mode.value)]}>
+                        {mode.label}
+                    </Text>
+                ))}
+            </Picker>
         </Host>
     )
 };
